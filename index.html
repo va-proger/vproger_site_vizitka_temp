@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Андрей Викулов — Full-Stack Developer</title>
+    <meta name="description" content="Андрей Викулов — Full-Stack разработчик. PHP, Laravel, Bitrix, Django, React, DevOps, CI/CD, Tailwind, TypeScript. Создаю сайты, автоматизацию и инфраструктуру.">
+    <meta name="author" content="Андрей Викулов">
+    <meta name="keywords" content="Андрей Викулов, VProger, Full Stack, Laravel, Bitrix, PHP, Django, React, Tailwind, DevOps, GitLab, веб-разработка, разработчик">
+    <meta property="og:title" content="Андрей Викулов — Full-Stack Developer">
+    <meta property="og:description" content="Full-Stack разработчик · PHP · Laravel · Django · React · Bitrix · DevOps">
+    <meta property="og:image" content="assets/avatar.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+    <meta name="theme-color" content="#0e0f12">
+
+    <link rel="stylesheet" href="assets/reset.css">
+    <link rel="stylesheet" href="assets/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/6a3a5f6d7b.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button>
+
+<main class="container">
+    <header class="hero">
+        <div class="avatar-wrapper">
+            <img src="assets/avatar.png" alt="Аватар Андрей Викулов" class="avatar">
+        </div>
+        <h1>Андрей Викулов</h1>
+        <p class="subtitle">Full-Stack Developer · PHP · Laravel · Bitrix · React</p>
+        <p id="typing" class="typing"></p>
+
+        <div class="links">
+            <a href="https://vk.com/vproger" target="_blank"><i class="fa-brands fa-vk"></i></a>
+            <a href="https://github.com/vproger" target="_blank"><i class="fa-brands fa-github"></i></a>
+            <a href="https://gitlab.com/vproger" target="_blank"><i class="fa-brands fa-gitlab"></i></a>
+            <a href="mailto:work@vproger.dev"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+    </header>
+
+    <section class="about">
+        <h2>👋 Привет!</h2>
+        <p>Я — разработчик с более чем 13-летним опытом: создаю сайты, бэкенд-сервисы и автоматизацию на <b>PHP, Python, Laravel, Bitrix, Django и React</b>. Работаю с DevOps-инфраструктурой, CI/CD, контейнерами и оптимизацией серверов.</p>
+    </section>
+
+    <section class="stack">
+        <h2>⚙️ Технологии</h2>
+        <ul>
+            <li>PHP 8 · Laravel · Bitrix · WordPress</li>
+            <li>Python · Django · FastAPI</li>
+            <li>JavaScript / TypeScript · React · TailwindCSS</li>
+            <li>Linux · Nginx · Docker · GitLab CI</li>
+        </ul>
+    </section>
+
+    <section class="projects">
+        <h2>🚀 Текущие проекты</h2>
+        <ul class="projects-list">
+            <li>
+                <span class="tech">Laravel · Livewire · Inertia.js · Alpine.js · TailwindCSS · Lucide · Vue · TypeScript · SCSS</span><br>
+                <a href="#">Разработка серии лендингов и сайтов-визиток с динамическими интерфейсами и анимацией на Laravel FullStack</a>
+            </li>
+            <li>
+                <span class="tech">WordPress · ACF · Contact Form 7 · SEO Optimized</span><br>
+                <a href="#">Корпоративный сайт клининговой компании с удобной админкой и адаптивной версткой</a>
+            </li>
+            <li>
+                <span class="tech">Laravel · Inertia.js · Axios · Bootstrap</span><br>
+                <a href="#">Калькулятор септиков — интерактивный расчёт стоимости с визуализацией и AJAX-обменом</a>
+            </li>
+            <li>
+                <span class="tech">Django · TypeScript · SCSS · React</span><br>
+                <a href="#">UNFOLD — чат, отправляющий сообщения в Telegram в реальном времени</a>
+            </li>
+        </ul>
+    </section>
+
+    <footer class="footer">
+        <p>© 2025 Андрей Викулов · <a href="https://viku-lov.ru">viku-lov.ru</a></p>
+    </footer>
+</main>
+
+<script>
+    // Тема
+    const btn = document.getElementById('themeToggle');
+    btn.addEventListener('click', () => {
+        document.body.classList.toggle('light');
+        localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+    // Typed эффект
+    const roles = [
+        "Разрабатываю Laravel + Vue FullStack проекты ⚙️",
+        "Собираю UI на Tailwind + SCSS 🎨",
+        "Пишу Django-сервисы с React 🌐",
+        "Работаю над калькулятором септиков 💧"
+    ];
+    let i = 0;
+    const el = document.getElementById("typing");
+    setInterval(() => { el.textContent = roles[i]; i = (i + 1) % roles.length; }, 3000);
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("fade-in");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll("section").forEach(sec => observer.observe(sec));
+    });
+</script>
+</body>
+</html>

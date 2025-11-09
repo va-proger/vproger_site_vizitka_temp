@@ -1,0 +1,232 @@
+:root {
+    --bg: #0e0f12;
+    --text: #eaeaea;
+    --accent: #00c6ff;
+    --card-bg: #16181d;
+    --border: rgba(255,255,255,0.08);
+    --shadow: 0 0 25px rgba(0,198,255,0.05);
+    --transition: 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    transition: background var(--transition), color var(--transition);
+}
+
+body.light {
+    --bg: #f9fafb;
+    --text: #111;
+    --accent: #0072ff;
+    --card-bg: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --shadow: 0 0 25px rgba(0,0,0,0.05);
+}
+
+.container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.hero {
+    text-align: center;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.avatar-wrapper {
+    display: inline-block;
+    background: radial-gradient(circle at 50% 50%, rgba(0,198,255,0.2), transparent 70%);
+    border-radius: 50%;
+    padding: 6px;
+}
+
+.avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 20px rgba(0,198,255,0.3);
+}
+
+h1 {
+    font-size: 2rem;
+    margin-top: 1rem;
+}
+
+.subtitle {
+    color: #999;
+    margin-top: 0.3rem;
+}
+
+.typing {
+    margin-top: 0.5rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+    opacity: 0.9;
+}
+
+.links {
+    margin-top: 1rem;
+}
+.links a {
+    color: var(--accent);
+    margin: 0 10px;
+    font-size: 1.3rem;
+    transition: var(--transition);
+}
+.links a:hover { color: #fff; transform: translateY(-2px); }
+
+section {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem 1.7rem;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+h2 {
+    color: var(--accent);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+ul { list-style: none; padding-left: 0; }
+ul li { padding: 0.3rem 0; }
+
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+.projects-list li {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1rem 1.2rem;
+    transition: var(--transition);
+}
+.projects-list li:hover {
+    background: rgba(0,198,255,0.08);
+    transform: translateY(-2px);
+}
+.projects-list a {
+    color: var(--accent);
+    font-weight: 500;
+}
+.tech {
+    display: block;
+    color: #aaa;
+    font-size: 0.8rem;
+    font-family: monospace;
+    margin-bottom: 0.3rem;
+}
+
+.footer {
+    text-align: center;
+    color: #777;
+    font-size: 0.9rem;
+    margin: 3rem 0 1rem;
+}
+.footer a { color: var(--accent); }
+
+/* Тема */
+.theme-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: var(--accent);
+    cursor: pointer;
+    transition: transform .3s;
+    z-index: 10;
+}
+.theme-btn:hover { transform: rotate(15deg); }
+
+/* Адаптив */
+@media (max-width: 600px) {
+    .container { padding: 1.2rem; }
+    .avatar { width: 100px; height: 100px; }
+    h1 { font-size: 1.5rem; }
+    section { padding: 1rem 1.2rem; }
+}
+/* === 🔮 Градиентный фон и эффект свечения === */
+
+/* Анимированный фон */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(ellipse at top, rgba(0,198,255,0.25), transparent 70%),
+    radial-gradient(ellipse at bottom, rgba(138,43,226,0.2), transparent 70%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    animation: gradientShift 20s ease-in-out infinite alternate;
+    filter: blur(40px);
+    opacity: 0.4;
+}
+@keyframes gradientShift {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        transform: scale(1.05) translateY(-20px);
+    }
+}
+
+/* Аватар с голографическим свечением */
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(0,198,255,0.25), rgba(138,43,226,0.25));
+    animation: avatarPulse 4s ease-in-out infinite;
+}
+
+.avatar {
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+    box-shadow:
+            0 0 15px rgba(0,198,255,0.4),
+            0 0 40px rgba(138,43,226,0.2);
+    transition: transform .5s ease, box-shadow .5s ease;
+}
+
+.avatar-wrapper:hover .avatar {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow:
+            0 0 25px rgba(0,198,255,0.6),
+            0 0 60px rgba(138,43,226,0.4);
+}
+
+@keyframes avatarPulse {
+    0%, 100% { box-shadow: 0 0 25px rgba(0,198,255,0.2), 0 0 50px rgba(138,43,226,0.2); }
+    50% { box-shadow: 0 0 35px rgba(0,198,255,0.4), 0 0 60px rgba(138,43,226,0.3); }
+}
+
+/* Эффект плавного появления секций */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .8s ease, transform .8s ease;
+}
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Анимация появления секций при скролле */
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
