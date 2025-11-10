@@ -391,3 +391,131 @@ section {
         display: none; /* только иконки на маленьких экранах */
     }
 }
+
+/* === 🎓 Сертификаты === */
+.certificates {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.8rem;
+    box-shadow: var(--shadow);
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.cert-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+.cert-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px rgba(0,198,255,0.2);
+}
+
+.cert-thumb {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    transition: opacity 0.2s;
+}
+.cert-item:hover .cert-thumb {
+    opacity: 0.9;
+}
+
+.cert-item p {
+    margin: 0.8rem 0 0.3rem;
+    color: var(--text);
+    font-weight: 500;
+}
+.cert-date {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* === 🪟 Модалка === */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 198, 255, 0.3);
+    background: var(--card-bg);
+    animation: modalZoom 0.25s ease;
+}
+
+.modal-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 90vh;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* кнопка закрытия */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-close svg {
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.modal-close:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.1) rotate(90deg);
+}
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalZoom {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
