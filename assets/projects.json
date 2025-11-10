@@ -1,0 +1,23 @@
+[
+  {
+    "name": "VProger Password Generator",
+    "url": "https://github.com/va-proger/vproger-password-generator",
+    "demo_url": "https://generator.vproger.ru/",
+    "description": "Генератор безопасных паролей с настройкой длины, символов и мгновенным копированием. (README готовится)",
+    "tags": ["🔐 Security", "⚡ Web Tool", "🎨 UI"]
+  },
+  {
+    "name": "Telegram Channel Parser",
+    "url": "https://github.com/va-proger/vproger_parce_php",
+    "demo_url": "",
+    "description": "📡 Парсер Telegram-каналов на PHP (MadelineProto v8). Загружает посты, фото и генерирует HTML-страницу просмотра. Подходит для архивирования, контент-витрин и аналитики.",
+    "tags": ["🐘 PHP 8.1+", "📡 MadelineProto", "📰 HTML Generator", "⚡ Automation", "💾 NDJSON"]
+  },
+  {
+    "name": "Sitemap State Checker Bot",
+    "url": "https://github.com/va-proger/sitemap-checker",
+    "demo_url": "",
+    "description": "🕵️‍♂️ Python-утилита для автоматической проверки состояния страниц через sitemap.xml. Проверяет статусы (200, 301, 404, 500), экспортирует отчёты в CSV и логи. Подходит для SEO, DevOps и мониторинга.",
+    "tags": ["🐍 Python 3.8+", "🗺️ Sitemap", "📊 Monitoring", "⚙️ Multithread", "📦 CLI Tool"]
+  }
+]

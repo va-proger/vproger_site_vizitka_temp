@@ -111,7 +111,18 @@
             </div>
         </div>
     </section>
+    <section class="github fade-in" id="github-projects">
+        <div class="github-header">
+            <h2>💻 GitHub проекты</h2>
+            <a href="https://github.com/vproger" target="_blank" class="github-link">
+                Все проекты →
+            </a>
+        </div>
 
+        <div id="repoList" class="repo-grid pretty">
+            <p class="loading">Загружаю проекты...</p>
+        </div>
+    </section>
 
 
     <footer class="footer">
@@ -167,57 +178,14 @@
         <img id="modalImg" src="" alt="Просмотр сертификата">
     </div>
 </div>
-<script>
-    // Тема
-    const btn = document.getElementById('themeToggle');
-
-    // Функция обновления иконки
-    function updateThemeIcon() {
-        const isLight = document.body.classList.contains('light');
-        btn.textContent = isLight ? '☀️' : '🌙';
-        btn.title = isLight ? 'Включить тёмную тему' : 'Включить светлую тему';
-    }
-
-    // При клике переключаем тему
-    btn.addEventListener('click', () => {
-        document.body.classList.toggle('light');
-        const current = document.body.classList.contains('light') ? 'light' : 'dark';
-        localStorage.setItem('theme', current);
-        updateThemeIcon();
-    });
-
-    // Восстанавливаем тему при загрузке
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') document.body.classList.add('light');
-
-    // Сразу обновляем иконку
-    updateThemeIcon();
-
-    // Typed эффект
-    const roles = [
-        "Разрабатываю Laravel + Vue FullStack проекты ⚙️",
-        "Собираю UI на Tailwind + SCSS 🎨",
-        "Пишу Django-сервисы с React 🌐",
-        "Работаю над калькулятором септиков 💧"
-    ];
-    let i = 0;
-    const el = document.getElementById("typing");
-    setInterval(() => { el.textContent = roles[i]; i = (i + 1) % roles.length; }, 3000);
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("fade-in");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        document.querySelectorAll("section").forEach(sec => observer.observe(sec));
-    });
-</script>
+<div id="cookieModal" class="cookie-modal">
+    <div class="cookie-content">
+        <p>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank">Политикой конфиденциальности</a>.</p>
+        <div class="cookie-actions">
+            <button id="acceptCookies" class="cookie-btn">Принять</button>
+        </div>
+    </div>
+</div>
 <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -235,40 +203,8 @@
         "knowsAbout": ["PHP", "Laravel", "Bitrix", "Django", "React", "Tailwind", "DevOps"]
     }
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const modal = document.getElementById("certModal");
-        const modalImg = document.getElementById("modalImg");
-        const closeBtn = document.querySelector(".modal-close");
 
-        document.querySelectorAll(".cert-thumb").forEach(img => {
-            img.addEventListener("click", () => {
-                modalImg.src = img.dataset.full;
-                modal.style.display = "flex";
-                document.body.style.overflow = "hidden"; // блокируем скролл
-            });
-        });
-
-        const closeModal = () => {
-            modal.style.opacity = "0";
-            setTimeout(() => {
-                modal.style.display = "none";
-                modal.style.opacity = "1";
-                document.body.style.overflow = ""; // возвращаем скролл
-            }, 200);
-        };
-
-        closeBtn.addEventListener("click", closeModal);
-        modal.addEventListener("click", e => {
-            if (e.target === modal) closeModal();
-        });
-        document.addEventListener("keydown", e => {
-            if (e.key === "Escape" && modal.style.display === "flex") closeModal();
-        });
-    });
-</script>
-
-
+<script src="assets/main.js" defer></script>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLC4B4B7"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
