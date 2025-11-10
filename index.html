@@ -170,11 +170,28 @@
 <script>
     // Тема
     const btn = document.getElementById('themeToggle');
+
+    // Функция обновления иконки
+    function updateThemeIcon() {
+        const isLight = document.body.classList.contains('light');
+        btn.textContent = isLight ? '☀️' : '🌙';
+        btn.title = isLight ? 'Включить тёмную тему' : 'Включить светлую тему';
+    }
+
+    // При клике переключаем тему
     btn.addEventListener('click', () => {
         document.body.classList.toggle('light');
-        localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+        const current = document.body.classList.contains('light') ? 'light' : 'dark';
+        localStorage.setItem('theme', current);
+        updateThemeIcon();
     });
-    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+    // Восстанавливаем тему при загрузке
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') document.body.classList.add('light');
+
+    // Сразу обновляем иконку
+    updateThemeIcon();
 
     // Typed эффект
     const roles = [
