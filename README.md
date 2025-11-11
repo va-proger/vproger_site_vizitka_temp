@@ -10,7 +10,7 @@
 ![preview](assets/preview-dark.png)
 
 <p align="center">
-  <a href="https://viku-lov.ru"><img src="https://img.shields.io/badge/Site-online-brightgreen?style=flat-square"></a>
+  <a href="https://vproger.ru"><img src="https://img.shields.io/badge/Site-online-brightgreen?style=flat-square"></a>
   <a href="https://github.com/va-proger/vproger_site_vizitka_temp"><img src="https://img.shields.io/github.com/va-proger/vproger_site_vizitka_temp?style=flat-square"></a>
   <a href="https://github.com/va-proger/vproger_site_vizitka_temp"><img src="https://img.shields.io/github.com/va-proger/vproger_site_vizitka_temp?style=flat-square&color=blueviolet"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square"></a>
