@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!modal) return;
 
     const acceptBtn = document.getElementById("acceptCookies");
-    const declineBtn = document.getElementById("declineCookies");
 
     const consent = localStorage.getItem("cookieConsent");
 

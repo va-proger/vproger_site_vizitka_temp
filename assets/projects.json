@@ -1,7 +1,7 @@
 [
   {
     "name": "VProger Password Generator",
-    "url": "https://github.com/va-proger/vproger-password-generator",
+    "url": "https://github.com/va-proger/vp-password-generator",
     "demo_url": "https://generator.vproger.ru/",
     "description": "Генератор безопасных паролей с настройкой длины, символов и мгновенным копированием. (README готовится)",
     "tags": ["🔐 Security", "⚡ Web Tool", "🎨 UI"]
