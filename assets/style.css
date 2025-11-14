@@ -65,6 +65,10 @@ h1 {
 }
 
 .typing {
+    display: inline-block;
+    white-space: nowrap;
+    height: 26px;
+    max-width: 100%;
     margin-top: 0.5rem;
     font-family: monospace;
     font-size: 0.9rem;
@@ -672,4 +676,112 @@ section {
 .cookie-btn.secondary:hover {
     background: var(--accent);
     color: #fff;
+}
+/* SHARE WIDGET */
+.share-widget {
+    position: fixed;
+    bottom: 26px;
+    right: 26px;
+    z-index: 9999;
+}
+
+.share-btn {
+    width: 50px;
+    height: 50px;
+    background: #0e0f12;
+    border: none;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    color: #fff;
+    transition: .25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+
+.share-btn:hover {
+    opacity: 0.85;
+}
+
+/* Панель */
+.share-panel {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background: #1a1b1f;
+    padding: 10px 12px;
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: .25s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+
+.share-panel.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.share-panel .sh {
+    font-size: 22px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.share-panel .sh:hover {
+    transform: scale(1.18);
+}
+
+/* Цвета соцсетей */
+.share-panel .vk   { color: #4c75a3; }
+.share-panel .tg   { color: #2aabee; }
+.share-panel .wa   { color: #25d366; }
+.share-panel .fb   { color: #1877f2; }
+.share-panel .tw   { color: #fff; }
+.share-panel .em   { color: #f1c40f; }
+
+
+/* Bounce + spring hand wave */
+.wave {
+    display: inline-block;
+    transform-origin: 70% 70%;
+    margin-right: 4px;
+    animation: waveBounce 1.8s cubic-bezier(.22, .61, .36, 1) infinite;
+}
+
+/* Плавное мягкое появление заголовка */
+.hello-title {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: fadeHello 0.8s ease forwards;
+}
+
+@keyframes fadeHello {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* БОНУС — физический bounce с ослаблением */
+@keyframes waveBounce {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(18deg); }
+    22%  { transform: rotate(-12deg); }
+    34%  { transform: rotate(14deg); }
+    46%  { transform: rotate(-8deg); }
+    58%  { transform: rotate(10deg); }
+    70%  { transform: rotate(-4deg); }
+    82%  { transform: rotate(4deg); }
+    100% { transform: rotate(0deg); }
 }

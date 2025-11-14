@@ -30,11 +30,30 @@ const roles = [
 ];
 
 const el = document.getElementById("typing");
+
+function fitTyping() {
+    if (!el) return;
+
+    let size = 18;
+    el.style.fontSize = size + "px";
+
+    while (el.scrollWidth > el.clientWidth && size > 12) {
+        size--;
+        el.style.fontSize = size + "px";
+    }
+}
+
 if (el) {
     let i = 0;
+
+    // первоначальная настройка
+    el.textContent = roles[0];
+    fitTyping();
+
     setInterval(() => {
         el.textContent = roles[i];
         i = (i + 1) % roles.length;
+        fitTyping();
     }, 3000);
 }
 
@@ -139,4 +158,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
+});
+// SHARE WIDGET
+document.addEventListener("DOMContentLoaded", () => {
+
+    const toggle = document.getElementById("shareToggle");
+    const panel  = document.getElementById("sharePanel");
+
+    toggle.addEventListener("click", () => {
+        panel.classList.toggle("active");
+    });
+
+    const SHARE_DATA = {
+        title:  document.querySelector("meta[property='og:title']")?.content || document.title,
+        desc:   document.querySelector("meta[name='description']")?.content || "",
+        url:    document.querySelector("link[rel='canonical']")?.href || window.location.href
+    };
+
+    const shareLinks = {
+        vk:      `https://vk.com/share.php?url=${SHARE_DATA.url}&title=${SHARE_DATA.title}`,
+        telegram:`https://t.me/share/url?url=${SHARE_DATA.url}&text=${SHARE_DATA.title}%0A${SHARE_DATA.desc}`,
+        whatsapp:`https://wa.me/?text=${SHARE_DATA.title}%20${SHARE_DATA.url}`,
+        facebook:`https://www.facebook.com/sharer/sharer.php?u=${SHARE_DATA.url}`,
+        twitter: `https://twitter.com/intent/tweet?url=${SHARE_DATA.url}&text=${SHARE_DATA.title}`,
+        email:   `mailto:?subject=${SHARE_DATA.title}&body=${SHARE_DATA.url}`
+    };
+
+    panel.querySelectorAll("[data-share]").forEach(el => {
+        el.addEventListener("click", () => {
+            const type = el.dataset.share;
+            const link = shareLinks[type];
+            window.open(link, "_blank", "width=600,height=500");
+        });
+    });
 });
