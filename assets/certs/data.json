@@ -1,0 +1,100 @@
+[
+  {
+    "title": "1С-Битрикс: Интеграция дизайна",
+    "date": "2022-07-10",
+    "category": "bitrix",
+    "file": "bitrix-design.png"
+  },
+  {
+    "title": "1С-Битрикс: Основные технологии",
+    "date": "2025-02-15",
+    "category": "bitrix",
+    "file": "bitrix-tech.png"
+  },
+
+  {
+    "title": "CSS — продвинутый уровень",
+    "date": "2025-08-02",
+    "category": "Минцифры",
+    "file": "sert-css-mincifra.png"
+  },
+  {
+    "title": "JavaScript — средний уровень",
+    "date": "2025-08-11",
+    "category": "Минцифры",
+    "file": "sert-css-mincifra.png"
+  },
+  {
+    "title": "ООП — средний уровень",
+    "date": "2025-08-01",
+    "category": "Минцифры",
+    "file": "sert-css-mincifra.png"
+  },
+  {
+    "title": "Git — продвинутый уровень",
+    "date": "2025-11-15",
+    "category": "Минцифры",
+    "file": "sert-css-mincifra.png"
+  },
+
+  {
+    "title": "HTML & CSS Начальный уровень",
+    "date": "2023-01-02",
+    "category": "frontend",
+    "file": "gb-html-basic.png"
+  },
+  {
+    "title": "HTML/CSS — интерактивный курс",
+    "date": "2023-01-02",
+    "category": "frontend",
+    "file": "gb-html-interactive.png"
+  },
+  {
+    "title": "Основы программирования (начальный уровень)",
+    "date": "2023-01-02",
+    "category": "frontend",
+    "file": "gb-programming-basic.png"
+  },
+  {
+    "title": "JavaScript — начальный уровень",
+    "date": "2023-01-02",
+    "category": "frontend",
+    "file": "gb-js-basic.png"
+  },
+  {
+    "title": "Sololearn: CSS",
+    "date": "2019-01-20",
+    "category": "sololearn",
+    "file": "sololearn-css.png"
+  },
+  {
+    "title": "Sololearn: HTML",
+    "date": "2019-01-23",
+    "category": "sololearn",
+    "file": "sololearn-html.png"
+  },
+  {
+    "title": "Sololearn: PHP",
+    "date": "2023-01-01",
+    "category": "php",
+    "file": "sololearn-php.png"
+  },
+  {
+    "title": "PHP — начальный уровень",
+    "date": "2023-01-02",
+    "category": "php",
+    "file": "gb-php-basic.png"
+  },
+  {
+    "title": "PHP — средний уровень",
+    "date": "2023-01-03",
+    "category": "php",
+    "file": "gb-php-middle.png"
+  },
+  {
+    "title": "PHP — продвинутый уровень",
+    "date": "2024-06-19",
+    "category": "php",
+    "file": "gb-php-advanced.png"
+  }
+]

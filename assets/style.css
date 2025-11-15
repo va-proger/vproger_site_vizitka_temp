@@ -412,6 +412,7 @@ section {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .cert-item {
@@ -785,3 +786,138 @@ section {
     82%  { transform: rotate(4deg); }
     100% { transform: rotate(0deg); }
 }
+
+
+.cert-item {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 0 20px #0003;
+    transition: .3s;
+    cursor: pointer;
+}
+
+.cert-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 30px #0005;
+}
+
+.cert-item img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.cert-item p {
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.cert-date {
+    font-size: 13px;
+    opacity: .7;
+}
+
+/* Фильтр */
+.cert-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.cert-filter button {
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1px solid #ffffff18;
+    cursor: pointer;
+}
+
+.cert-filter button.active {
+    background: var(--accent);
+    color: white;
+}
+
+/* Модалка */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+
+    /* затемнение */
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(10px);
+
+    padding: 2rem;
+    overflow: hidden;
+
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,198,255,0.3);
+
+    animation: modalZoom 0.25s ease;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    display: block;
+}
+
+/* Close */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+
+    cursor: pointer;
+    transition: all .25s ease;
+}
+
+.modal-close:hover {
+    transform: scale(1.15) rotate(90deg);
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Анимация появления */
+@keyframes modalZoom {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-content img {
+    max-width: 100%;
+    border-radius: 12px;
+}
+

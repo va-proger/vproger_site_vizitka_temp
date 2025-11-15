@@ -100,41 +100,6 @@ async function loadLocalProjects() {
 
 document.addEventListener('DOMContentLoaded', loadLocalProjects);
 
-
-// === 🖼️ Модалка сертификатов ===
-document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("certModal");
-    if (!modal) return;
-
-    const modalImg = document.getElementById("modalImg");
-    const closeBtn = modal.querySelector(".modal-close");
-
-    document.querySelectorAll(".cert-thumb").forEach(img => {
-        img.addEventListener("click", () => {
-            modalImg.src = img.dataset.full;
-            modal.style.display = "flex";
-            document.body.style.overflow = "hidden"; // блокируем скролл
-        });
-    });
-
-    const closeModal = () => {
-        modal.style.opacity = "0";
-        setTimeout(() => {
-            modal.style.display = "none";
-            modal.style.opacity = "1";
-            document.body.style.overflow = ""; // возвращаем скролл
-        }, 200);
-    };
-
-    closeBtn?.addEventListener("click", closeModal);
-    modal.addEventListener("click", e => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener("keydown", e => {
-        if (e.key === "Escape" && modal.style.display === "flex") closeModal();
-    });
-
-});
 // === 🍪 Cookie Consent ===
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("cookieModal");
@@ -192,3 +157,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
