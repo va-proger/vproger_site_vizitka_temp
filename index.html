@@ -36,16 +36,10 @@
 
     <!-- Цвет вкладки браузера -->
     <meta name="theme-color" content="#0e0f12">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="assets/reset.css">
     <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script>
-
-    <!-- ====== Schema.org ====== -->
-
-    <!-- 1. Основная сущность: Person -->
     <script type="application/ld+json">
         {
             "@context": "https://schema.org/",
@@ -72,7 +66,6 @@
             }
         }
     </script>
-
     <script type="application/ld+json">
         {
             "@context": "https://schema.org/",
@@ -86,7 +79,6 @@
             }
         }
     </script>
-
     <script type="application/ld+json">
         {
             "@context": "https://schema.org/",
@@ -126,10 +118,31 @@
     })(window,document,'script','dataLayer','GTM-TLC4B4B7');</script>
     <!-- End Google Tag Manager -->
 </head>
-<body>
+<body data-page="index">
 <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button>
 
-<main class="container">
+<main class="container" >
+    <nav class="navbar">
+        <div class="nav-inner">
+
+            <a href="index.html" class="nav-logo">
+                <img src="assets/avatar.png" alt="Андрей Викулов" />
+                <span>VProger</span>
+            </a>
+
+            <button id="navToggle" class="nav-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <ul class="nav-links">
+                <li><a href="index.html" data-page="index">Главная</a></li>
+                <li><a href="certificates.html" data-page="certificates">Сертификаты</a></li>
+                <li><a href="contacts.html" data-page="contacts">Контакты</a></li>
+            </ul>
+
+        </div>
+    </nav>
+
     <header class="hero">
         <div class="avatar-wrapper">
             <img src="assets/avatar.png" alt="Аватар Андрей Викулов" class="avatar">
@@ -187,8 +200,6 @@
     </section>
     <section class="certificates fade-in">
         <h2>🎓 Сертификаты</h2>
-
-        <!-- Фильтр по категориям -->
         <div class="cert-filter">
             <button data-category="all" class="active">Все</button>
             <button data-category="bitrix">Bitrix</button>
@@ -197,8 +208,6 @@
             <button data-category="sololearn">Sololearn</button>
             <button data-category="Минцифры">Минцифры</button>
         </div>
-
-        <!-- Сетка сертификатов -->
         <div id="certGrid" class="cert-grid"></div>
         <div class="center mt-3">
             <a href="certificates.html" class="github-link">
@@ -220,14 +229,12 @@
     </section>
 
 
-    <footer class="footer">
-
-
+    <footer class="footer fade-in">
         <div class="contact-links">
             <h3>💬 Написать мне:</h3>
             <ul>
                 <li>
-                    <a href="https://vk.ru/vproger_club" target="_blank" class="active">
+                    <a href="https://vk.com/vproger_club" target="_blank" class="active">
                         <i class="fa-brands fa-vk"></i> ВКонтакте
                     </a>
                 </li>
@@ -258,11 +265,11 @@
                 </li>
             </ul>
         </div>
-        <p>© 2025 Андрей Викулов · <a href="https://viku-lov.ru">viku-lov.ru</a></p>
+        <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p>
     </footer>
 
+
 </main>
-<!-- Модалка -->
 <div class="modal" id="certModal">
     <div class="modal-content">
         <button class="modal-close" aria-label="Закрыть">
@@ -300,7 +307,6 @@
         "knowsAbout": ["PHP", "Laravel", "Bitrix", "Django", "React", "Tailwind", "DevOps"]
     }
 </script>
-<!-- Share Widget -->
 <div class="share-widget">
     <button class="share-btn" id="shareToggle">
         <i class="fa-solid fa-share-nodes"></i>
@@ -316,8 +322,7 @@
     </div>
 </div>
 
-<script src="assets/main.js" defer></script>
-<script src="assets/certificates.js" defer></script>
+<script type="module" src="assets/js/main.js"></script>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLC4B4B7"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
