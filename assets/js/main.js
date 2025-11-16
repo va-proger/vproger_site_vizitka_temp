@@ -1,0 +1,20 @@
+import {initTheme} from "./modules/theme.js";
+import {initTyping} from "./modules/typing.js";
+import {initScrollAnimations} from "./modules/scroll-animations.js";
+import {initGithubProjects} from "./modules/github-projects.js";
+import {initCookies} from "./modules/cookies.js";
+import {initShare} from "./modules/share.js";
+import {initActivePage} from "./modules/active-page.js";
+import {initNav} from "./modules/nav.js";
+import { initCertificates } from "./modules/certificates.js";
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    initTyping();
+    initScrollAnimations();
+    initGithubProjects();
+    initCookies();
+    initShare();
+    initActivePage();
+    initNav();
+    initCertificates();
+});
