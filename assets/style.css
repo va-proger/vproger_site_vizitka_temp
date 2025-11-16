@@ -79,13 +79,14 @@ h1 {
 .typing {
     display: inline-block;
     white-space: nowrap;
-    height: 26px;
+    min-height: 26px;;
     max-width: 100%;
     margin-top: 0.5rem;
     font-family: monospace;
     font-size: 0.9rem;
     color: var(--accent);
     opacity: 0.9;
+    line-height: 26px;
 }
 
 .links {
@@ -201,16 +202,21 @@ body::before {
 
 /* === Тема === */
 .theme-btn {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
+    position: static;
+
     background: none;
     border: none;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
     color: var(--accent);
     cursor: pointer;
     transition: transform .3s;
     z-index: 10;
+}
+.nav-right {
+    order: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .theme-btn:hover {
@@ -360,62 +366,70 @@ body::before {
     font-size: 0.85rem;
     color: #999;
 }
+/* ────────────────────────────────────────
+   Фильтр сертификатов (мобильный скролл + тень)
+   ──────────────────────────────────────── */
 .cert-filter {
     display: flex;
-    gap: 0.8rem;
-    margin-bottom: 1.8rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0.4rem 0;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: nowrap;               /* горизонтальная строка */
+    justify-content: flex-start;
+    overflow-x: auto;                /* скролл */
+    overflow-y: visible;             /* тень может выходить вверх/вниз */
+    padding: 0.6rem 0.4rem;          /* ← отступы, где живёт тень */
+    scrollbar-width: none;           /* Firefox */
 }
+.cert-filter::-webkit-scrollbar { display: none; }   /* Chrome/Safari */
 
 .cert-filter button {
-    padding: 0.55rem 1.3rem;
-    border-radius: 12px; /* ← в стиле карточек и навигации */
-    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
     border: 1px solid var(--border);
     color: var(--text);
     font-size: 0.92rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all .25s ease;
     backdrop-filter: blur(10px);
-    min-width: 90px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
 }
 
-/* Подсветка при наведении */
+/* hover */
 .cert-filter button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     border-color: var(--accent);
     color: var(--accent);
-    transform: translateY(-1.5px);
-    box-shadow: 0 4px 12px rgba(0, 198, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,198,255,.15);
 }
 
-/* Активное состояние — как в навигации */
+/* active */
 .cert-filter button.active {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
-    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.35);
+    box-shadow: 0 4px 10px rgba(0,198,255,.35);
     transform: translateY(-2px);
     font-weight: 600;
 }
 
-/* Лёгкий градиентный блик при активном */
+/* небольшой «шлейф» у активной кнопки */
 .cert-filter button.active::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: shimmer 2s infinite;
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:10px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+    animation:shimmer 2s infinite;
+    pointer-events:none;
+}
+@keyframes shimmer{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
 }
 
 @keyframes shimmer {
@@ -423,33 +437,22 @@ body::before {
     100% { transform: translateX(100%); }
 }
 
-/* Адаптив: на мобильных — вертикально */
+
 @media (max-width: 480px) {
     .cert-filter {
-        gap: 0.6rem;
-        flex-direction: row;
         overflow-x: auto;
-        padding: 0.5rem 0;
-        scrollbar-width: none;
+        overflow-y: visible;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 0.6rem;
+    }
+    .cert-filter button {
+        flex-shrink: 0;
+        white-space: nowrap;
     }
     .cert-filter::-webkit-scrollbar { display: none; }
-    .cert-filter button {
-        min-width: 100px;
-        flex-shrink: 0;
-    }
 }
 
-/* Адаптив: на маленьких экранах — вертикально */
-@media (max-width: 480px) {
-    .cert-filter {
-        flex-direction: column;
-        align-items: center;
-    }
-    .cert-filter button {
-        width: 100%;
-        max-width: 200px;
-    }
-}
 /* === Модальное окно === */
 .modal {
     display: none;
@@ -865,14 +868,10 @@ body::before {
     box-shadow: 0 3px 15px rgba(0,198,255,0.35);
 }
 
-.nav-toggle {
-    display: none;
-    font-size: 22px;
-    background: none;
-    border: none;
-    color: var(--accent);
-    cursor: pointer;
-}
+
+
+
+
 
 /* === Контакты === */
 .contact-cards {
@@ -918,9 +917,55 @@ body::before {
     color: #fff;
     text-decoration: underline;
 }
-
-/* === Адаптивность === */
+@media (min-width: 720px) {
+    .nav-toggle{
+        display: none;
+        overflow: hidden;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
+}
 @media (max-width: 720px) {
+    .nav-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 60;
+    }
+    .burger .line {
+        stroke: var(--accent, #00c6ff);
+        stroke-width: 2.4;
+        stroke-linecap: round;
+        transition: transform .35s ease, opacity .25s ease, stroke .25s ease;
+        transform-origin: center;
+        filter: drop-shadow(0 0 4px #00c6ff77);
+    }
+    .burger .line {
+        transform-origin: center;
+    }
+
+    /* Анимация крестика */
+    .nav-toggle.open .top {
+        transform: translate(-5px, 5px) rotate(45deg);
+    }
+
+    .nav-toggle.open .middle {
+        opacity: 0;
+    }
+
+    .nav-toggle.open .bottom {
+        transform: translate(-5px, -2px) rotate(-45deg);
+    }
+
     .nav-toggle { display: block; }
     .nav-links {
         position: absolute;
@@ -933,8 +978,9 @@ body::before {
         padding: 1rem 0;
         display: none;
     }
-    .nav-links.open { display: flex; }
+    .nav-links.open { display: flex; padding: 1rem; border-bottom-left-radius: 0.8rem;border-bottom-right-radius: 0.8rem; }
     .nav-links a { padding: 12px 20px; font-size: 1rem; }
+
 }
 
 @media (max-width: 640px) {
