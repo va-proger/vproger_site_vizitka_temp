@@ -27,8 +27,12 @@ export function initTyping() {
     fit();
 
     setInterval(() => {
-        i = (i + 1) % roles.length;
-        el.textContent = roles[i];
-        fit();
+        el.style.opacity = '0';
+
+        setTimeout(() => {
+            i = (i + 1) % roles.length;
+            el.textContent = roles[i];
+            el.style.opacity = '1';
+        }, 200);
     }, 3000);
 }
