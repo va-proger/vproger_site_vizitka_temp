@@ -40,5 +40,12 @@
       "💾 LocalStorage",
       "🖥 Web App"
     ]
+  },
+  {
+    "name": "Bitrix Delivery Fix Handler",
+    "url": "https://github.com/va-proger/vp-fix-delivery-service-calculate-bitrix",
+    "demo_url": "",
+    "description": "PHP-хендлер для подмены стоимости доставки в Bitrix через Highloadblock и событие onSaleDeliveryServiceCalculate. Чистое решение без костылей и модификации ядра.",
+    "tags": ["⚙️ PHP 8+", "🧩 Bitrix", "📦 HLBlock", "🚚 Delivery", "⚡ Event Handler"]
   }
 ]
