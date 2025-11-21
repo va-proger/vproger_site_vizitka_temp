@@ -47,5 +47,21 @@
     "demo_url": "",
     "description": "PHP-хендлер для подмены стоимости доставки в Bitrix через Highloadblock и событие onSaleDeliveryServiceCalculate. Чистое решение без костылей и модификации ядра.",
     "tags": ["⚙️ PHP 8+", "🧩 Bitrix", "📦 HLBlock", "🚚 Delivery", "⚡ Event Handler"]
+  },
+  {
+    "name": "Retro Pixel Gallery",
+    "url": "https://github.com/va-proger/retro-pixel-gallery",
+    "demo_url": "https://retro.vproger.ru/",
+    "description": "🎮 Онлайн-галерея в стиле старых CRT-мониторов: пикселизация, WebGL-шум, глитчи, искры от ламп и экспорт ZIP. Полностью автономный PWA-проект, работающий офлайн.",
+    "tags": [
+      "🖼 Pixel Art",
+      "💚 CRT Effect",
+      "⚡ JavaScript ES Modules",
+      "🕹 Canvas/WebGL",
+      "📦 PWA",
+      "💾 IndexedDB",
+      "🔧 JSZip",
+      "🎛 Drag & Drop"
+    ]
   }
 ]
