@@ -66,7 +66,7 @@
   },
   {
     "name": "FavGen Pro",
-    "url": "https://github.com/va-proger/favgen-pro",
+    "url": "https://github.com/va-proger/vp-generator-favicon-page",
     "demo_url": "https://generation-favicon.vproger.ru/",
     "description": "✨ Генератор фавиконов и PWA-иконок: загрузи логотип → получи все размеры PNG/ICO + manifest + ZIP за пару секунд. Поддержка drag & drop, предпросмотр, тёмная/светлая тема, полностью client-side.",
     "tags": [
