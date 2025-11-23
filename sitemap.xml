@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>https://vproger.ru/</loc>
-        <priority>1.0</priority>
-    </url>
-    <url>
-        <loc>https://vproger.ru/certificates.html</loc>
-        <priority>0.8</priority>
-    </url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Главный сайт -->
+    <sitemap>
+        <loc>https://vproger.ru/sitemap_main.xml</loc>
+    </sitemap>
+
+    <!-- Поддомены -->
+    <sitemap>
+        <loc>https://retro.vproger.ru/sitemap.xml</loc>
+    </sitemap>
+    <sitemap>
+        <loc>https://generator.vproger.ru/sitemap.xml</loc>
+    </sitemap>
+    <sitemap>
+        <loc>https://pomidoro.vproger.ru/sitemap.xml</loc>
+    </sitemap>
+    <sitemap>
+        <loc>https://generation-favicon.vproger.ru/sitemap.xml</loc>
+    </sitemap>
+
+</sitemapindex>
