@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
+# Главная карта сайта
 Sitemap: https://vproger.ru/sitemap.xml
+
+# Поддомены (рекомендуется указывать)
+Sitemap: https://retro.vproger.ru/sitemap.xml
+Sitemap: https://generator.vproger.ru/sitemap.xml
+Sitemap: https://pomidoro.vproger.ru/sitemap.xml
+Sitemap: https://generation-favicon.vproger.ru/sitemap.xml
+
+Host: vproger.ru

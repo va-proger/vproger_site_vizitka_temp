@@ -63,5 +63,20 @@
       "🔧 JSZip",
       "🎛 Drag & Drop"
     ]
+  },
+  {
+    "name": "FavGen Pro",
+    "url": "https://github.com/va-proger/favgen-pro",
+    "demo_url": "https://generation-favicon.vproger.ru/",
+    "description": "✨ Генератор фавиконов и PWA-иконок: загрузи логотип → получи все размеры PNG/ICO + manifest + ZIP за пару секунд. Поддержка drag & drop, предпросмотр, тёмная/светлая тема, полностью client-side.",
+    "tags": [
+      "🪄 Favicon Generator",
+      "📦 PNG/ICO Export",
+      "⚡ Instant ZIP Build",
+      "🌗 Dark/Light UI",
+      "🎨 Neon UI",
+      "🔧 JavaScript",
+      "🖥 Web App"
+    ]
   }
 ]
