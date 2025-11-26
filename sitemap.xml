@@ -19,5 +19,7 @@
     <sitemap>
         <loc>https://generation-favicon.vproger.ru/sitemap.xml</loc>
     </sitemap>
-
+    <sitemap>
+        <loc>https://image-optimize.vproger.ru/sitemap.xml</loc>
+    </sitemap>
 </sitemapindex>
