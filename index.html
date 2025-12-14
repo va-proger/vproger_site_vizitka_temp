@@ -13,8 +13,6 @@
 
     <!-- Canonical -->
     <link rel="canonical" href="https://vproger.ru/">
-
-    <!-- ====== Open Graph ====== -->
     <meta property="og:title" content="Андрей Викулов — Full-Stack Developer">
     <meta property="og:description"
           content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура.">
@@ -24,17 +22,11 @@
     <meta property="profile:first_name" content="Андрей">
     <meta property="profile:last_name" content="Викулов">
     <meta property="og:locale" content="ru_RU">
-
-    <!-- ====== Twitter Cards ====== -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer">
     <meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD">
     <meta name="twitter:image" content="https://vproger.ru/assets/avatar.png">
-
-    <!-- ====== Favicon ====== -->
     <link rel="icon" href="/assets/avatar.png" type="image/png">
-
-    <!-- Цвет вкладки браузера -->
     <meta name="theme-color" content="#0e0f12">
     <link rel="stylesheet" href="assets/reset.css">
     <link rel="stylesheet" href="assets/style.css">
@@ -117,6 +109,22 @@
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TLC4B4B7');</script>
     <!-- End Google Tag Manager -->
+    <style>
+        :root { color-scheme: dark; }
+        body { margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#05070c; color:#e9eefc; }
+        dialog { inline-size:100%; block-size:100%; padding:0; border:0; background:transparent; }
+        dialog::backdrop { background: rgba(0,0,0,.75); }
+        .card { max-width:760px; margin:auto; padding:24px; border-radius:18px; background: rgba(15,18,28,.95); box-shadow: 0 20px 80px rgba(0,0,0,.45); }
+        h1 { margin:0 0 8px; font-size:28px; }
+        p { margin:10px 0; opacity:.9; }
+        a { color:#7db7ff; }
+        .row { display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
+        .btn { display:inline-flex; align-items:center; justify-content:center; padding:12px 16px; border-radius:12px; border:0; cursor:pointer; text-decoration:none; }
+        .btn-primary { background:#2d6cdf; color:#fff; }
+        .btn-ghost { background:transparent; color:#e9eefc; outline: 1px solid rgba(255,255,255,.18); }
+        .hint { margin-top:12px; font-size:14px; opacity:.7; }
+        code { background:rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; }
+    </style>
 </head>
 <body data-page="index">
 
@@ -333,6 +341,49 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLC4B4B7"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<dialog id="m" aria-label="Сайт переехал">
+    <div class="card">
+        <h1>vproger.ru переехал</h1>
+        <p>Новый адрес: <a id="newlink" href="https://viku-lov.ru/">viku-lov.ru</a></p>
+        <p>Сейчас перенаправлю на: <code id="target"></code></p>
+
+        <div class="row">
+            <a class="btn btn-primary" id="go" href="https://viku-lov.ru/">Перейти сейчас</a>
+            <button class="btn btn-ghost" id="stay" type="button">Остаться (не надо)</button>
+        </div>
+
+        <div class="hint">
+            Если редирект не сработал — нажми кнопку. А лучше — не спорь с прогрессом 😄
+        </div>
+    </div>
+</dialog>
+<script>
+    (function () {
+        const NEW = "https://viku-lov.ru";
+        const path = location.pathname.replace(/^\/+/, "/");
+        const target = NEW + path + location.search + location.hash;
+
+        const d = document.getElementById("m");
+        const t = document.getElementById("target");
+        const go = document.getElementById("go");
+        const link = document.getElementById("newlink");
+        const stay = document.getElementById("stay");
+
+        t.textContent = target;
+        go.href = target;
+        link.href = NEW + "/";
+
+        if (d && d.showModal) d.showModal();
+
+        // авто-редирект через 3.5 сек (можешь поставить 0 — будет мгновенно)
+        const timer = setTimeout(() => { location.replace(target); }, 3500);
+
+        stay.addEventListener("click", () => {
+            clearTimeout(timer);
+            if (d && d.close) d.close();
+        });
+    })();
+</script>
 </body>
 </html>
 
