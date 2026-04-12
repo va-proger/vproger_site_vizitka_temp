@@ -1,0 +1,26 @@
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding-inline: var(--container-padding-mobile);
+    padding-inline: calc(var(--container-padding-mobile) + env(safe-area-inset-left, 0px)) calc(var(--container-padding-mobile) + env(safe-area-inset-right, 0px));
+    max-width: var(--container-max-mobile);
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Планшет */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .container {
+        padding-inline: var(--container-padding-tablet);
+        padding-inline: calc(var(--container-padding-tablet) + env(safe-area-inset-left, 0px)) calc(var(--container-padding-tablet) + env(safe-area-inset-right, 0px));
+        max-width: var(--container-max-tablet);
+    }
+}
+
+/* Десктоп */
+@media (min-width: 1025px) {
+    .container {
+        padding-inline: var(--container-padding-desktop);
+        max-width: var(--container-max-desktop);
+    }
+}

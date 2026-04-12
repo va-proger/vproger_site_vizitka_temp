@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="viku-lov">
+  <defs>
+    <!-- скобки: холодный дев-градиент -->
+    <linearGradient id="br" x1="48" y1="48" x2="208" y2="208" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+
+    <!-- сердце: тёплый акцент -->
+    <linearGradient id="ht" x1="96" y1="92" x2="160" y2="184" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fb7185"/>
+      <stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+  </defs>
+
+  <g fill="none" stroke="url(#br)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M96 64 L56 128 L96 192" />
+    <path d="M160 64 L200 128 L160 192" />
+  </g>
+
+  <g transform="translate(0,-6) scale(0.92)" transform-origin="128 128">
+    <path fill="url(#ht)"
+      d="M128 182
+         C102 162 84 144 84 120
+         C84 103 97 90 114 90
+         C122 90 129 93 134 100
+         C139 93 146 90 154 90
+         C171 90 184 103 184 120
+         C184 144 166 162 128 182 Z" />
+  </g>
+</svg>

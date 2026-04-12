@@ -1,0 +1,44 @@
+.wave {
+    display: inline-block;
+    transform-origin: 70% 70%;
+    margin-right: 4px;
+    animation: waveBounce 1.8s cubic-bezier(.22, .61, .36, 1) infinite;
+}
+
+.hello-title {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: fadeHello 0.8s ease forwards;
+}
+
+@keyframes fadeHello {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes waveBounce {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(18deg); }
+    22%  { transform: rotate(-12deg); }
+    34%  { transform: rotate(14deg); }
+    46%  { transform: rotate(-8deg); }
+    58%  { transform: rotate(10deg); }
+    70%  { transform: rotate(-4deg); }
+    82%  { transform: rotate(4deg); }
+    100% { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+.fade-out{
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .8s ease, transform .8s ease;
+}
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}

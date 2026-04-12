@@ -1,0 +1,408 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Nginx + PHP-FPM: как работает связка и решаем ошибки 502 и 504</title><meta name="description" content="Подробное руководство по настройке Nginx с PHP-FPM: разбор архитектуры, типичные проблемы и их решения, настройка таймаутов, работа с ошибками 502 и 504. Практическое руководство для системных администраторов и веб-разработчиков."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> nginx </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Nginx + PHP-FPM: как работает связка и решаем ошибки 502 и 504 </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>28 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/nginx-php-fpm-2026.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="nginx--php-fpm-как-работает-связка-и-почему-возникают-ошибки-502-и-504">Nginx + PHP-FPM: как работает связка и почему возникают ошибки 502 и 504</h1>
+<blockquote>
+<p><strong>Часть 3 серии про Nginx</strong>
+В прошлой части мы разобрали virtual hosts и структуру сайтов.
+Теперь переходим к главному: <strong>как Nginx выполняет PHP-код и что такое PHP-FPM на самом деле</strong>.</p>
+</blockquote>
+<hr/>
+<h2 id="введение">Введение</h2>
+<p><strong>Nginx + PHP-FPM</strong> — это стандартная связка для обработки PHP-приложений в продакшене. Понимание принципов её работы критически важно для диагностики и решения проблем.</p>
+<p>В этой статье разберём:</p>
+<ul>
+<li>архитектуру взаимодействия Nginx и PHP-FPM;</li>
+<li>типичные ошибки 502 и 504 и их причины;</li>
+<li>практические методы диагностики;</li>
+<li>настройку таймаутов и пулов процессов;</li>
+<li>полные примеры конфигураций для реальных проектов.</li>
+</ul>
+<hr/>
+<h2 id="главная-мысль-которую-нужно-понять-сразу">Главная мысль, которую нужно понять сразу</h2>
+<p>👉 <strong>Nginx НЕ исполняет PHP. Вообще. Никогда.</strong></p>
+<p>Nginx — это веб-сервер, который:</p>
+<ul>
+<li>принимает HTTP-запросы;</li>
+<li>анализирует URL и заголовки;</li>
+<li><strong>передаёт PHP-файлы в PHP-FPM</strong> через протокол FastCGI;</li>
+<li>ждёт результат выполнения;</li>
+<li>отдаёт ответ клиенту.</li>
+</ul>
+<p>Если PHP-FPM не отвечает или работает некорректно — проблема не в Nginx, а в конфигурации или состоянии PHP-FPM.</p>
+<hr/>
+<h2 id="что-такое-php-fpm-простыми-словами">Что такое PHP-FPM простыми словами</h2>
+<p><strong>PHP-FPM (FastCGI Process Manager)</strong> — это менеджер процессов PHP, который:</p>
+<ul>
+<li>запускает и управляет PHP-процессами;</li>
+<li>поддерживает пул воркеров для параллельной обработки запросов;</li>
+<li>принимает запросы от Nginx через протокол FastCGI;</li>
+<li>выполняет PHP-код из <code>.php</code> файлов;</li>
+<li>возвращает результат выполнения (HTML, JSON и т.д.) обратно в Nginx.</li>
+</ul>
+<p>Схема взаимодействия выглядит так:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>Браузер</span></span>
+<span class="line"><span>  ↓ HTTP-запрос</span></span>
+<span class="line"><span>Nginx</span></span>
+<span class="line"><span>  ↓ FastCGI-протокол</span></span>
+<span class="line"><span>PHP-FPM</span></span>
+<span class="line"><span>  ↓ выполнение кода</span></span>
+<span class="line"><span>PHP-процесс</span></span>
+<span class="line"><span>  ↓ результат</span></span>
+<span class="line"><span>PHP-FPM → Nginx → Браузер</span></span></code></pre>
+<hr/>
+<h2 id="как-nginx-определяет-что-файл--php">Как Nginx определяет, что файл — PHP</h2>
+<p>Nginx использует директиву <code>location</code> с регулярным выражением для определения PHP-файлов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    # конфигурация обработки PHP</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Это означает:</p>
+<ul>
+<li>любой запрос, URL которого заканчивается на <code>.php</code>;</li>
+<li>будет обработан этим блоком <code>location</code>;</li>
+<li>и передан в PHP-FPM для выполнения.</li>
+</ul>
+<hr/>
+<h2 id="базовая-конфигурация-nginx-для-php">Базовая конфигурация Nginx для PHP</h2>
+<p>Минимально рабочая конфигурация для обработки PHP:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.2-fpm.sock;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_index </span><span style="color:#E1E4E8">index.php;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Разберём каждую директиву:</p>
+<ul>
+<li><code>include fastcgi_params;</code> — подключает стандартные параметры FastCGI;</li>
+<li><code>fastcgi_pass</code> — указывает, куда передавать запрос (сокет или TCP);</li>
+<li><code>fastcgi_index</code> — индексный файл по умолчанию;</li>
+<li><code>fastcgi_param SCRIPT_FILENAME</code> — <strong>самая важная строка</strong>, указывает PHP-FPM путь к файлу для выполнения.</li>
+</ul>
+<hr/>
+<h2 id="fastcgi_pass--способы-подключения-к-php-fpm">fastcgi_pass — способы подключения к PHP-FPM</h2>
+<p>Есть <strong>два варианта</strong> подключения Nginx к PHP-FPM.</p>
+<h3 id="вариант-1-unix-сокет-рекомендуется">Вариант 1. Unix-сокет (рекомендуется)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.2-fpm.sock;</span></span></code></pre>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li>быстрее (нет сетевых задержек);</li>
+<li>безопаснее (нет сетевого доступа);</li>
+<li>стандартный способ для одного сервера;</li>
+<li>меньше накладных расходов.</li>
+</ul>
+<p><strong>Недостатки:</strong></p>
+<ul>
+<li>работает только локально на том же сервере.</li>
+</ul>
+<h3 id="вариант-2-tcp-подключение">Вариант 2. TCP-подключение</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">fastcgi_pass </span><span style="color:#E1E4E8">127.0.0.1:9000;</span></span></code></pre>
+<p><strong>Используется, если:</strong></p>
+<ul>
+<li>PHP-FPM запущен в Docker-контейнере;</li>
+<li>PHP-FPM находится на другом сервере;</li>
+<li>нужна сетевая изоляция между процессами.</li>
+</ul>
+<hr/>
+<h2 id="где-узнать-путь-к-сокету-php-fpm">Где узнать путь к сокету PHP-FPM</h2>
+<p>Путь к сокету указывается в конфигурационном файле пула PHP-FPM.</p>
+<h3 id="ubuntu--debian">Ubuntu / Debian</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">/etc/php/8.2/fpm/pool.d/www.conf</span></span></code></pre>
+<p>Ищите строку:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">listen</span><span style="color:#E1E4E8"> = /run/php/php8.2-fpm.sock</span></span></code></pre>
+<h3 id="centos--rocky-linux">CentOS / Rocky Linux</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">/etc/php-fpm.d/www.conf</span></span></code></pre>
+<p>👉 <strong>Этот путь должен точно совпадать с <code>fastcgi_pass</code> в конфигурации Nginx.</strong></p>
+<hr/>
+<h2 id="script_filename--самая-важная-строка">SCRIPT_FILENAME — самая важная строка</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span></code></pre>
+<p>Если эта строка неправильная или отсутствует → <strong>502 Bad Gateway гарантирован</strong>.</p>
+<p>Что здесь происходит:</p>
+<ul>
+<li><code>$document_root</code> — значение директивы <code>root</code> из блока <code>server</code>;</li>
+<li><code>$fastcgi_script_name</code> — путь к PHP-файлу из URL запроса;</li>
+<li>результат — полный абсолютный путь к файлу на диске.</li>
+</ul>
+<p><strong>Пример:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>URL запроса: /index.php</span></span>
+<span class="line"><span>root: /var/www/site/public</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Итоговый SCRIPT_FILENAME:</span></span>
+<span class="line"><span>/var/www/site/public/index.php</span></span></code></pre>
+<p>PHP-FPM использует этот путь для загрузки и выполнения файла.</p>
+<hr/>
+<h2 id="indexphp-и-try_files--правильная-связка">index.php и try_files — правильная связка</h2>
+<p>Для современных PHP-фреймворков (Laravel, Symfony, Bitrix, WordPress) критически важно правильно настроить <code>try_files</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    try_files </span><span style="color:#E1E4E8">$uri $uri/ /index.php?$query_string;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Что это даёт:</p>
+<ul>
+<li>если файл существует — отдаём его напрямую;</li>
+<li>если это директория — пробуем найти индексный файл;</li>
+<li>если ничего не найдено — передаём запрос в <code>index.php</code> с сохранением query string;</li>
+<li>идеально для фреймворков с роутингом через <code>index.php</code>.</li>
+</ul>
+<hr/>
+<h2 id="полный-пример-server-block-для-php-проекта">Полный пример server block для PHP-проекта</h2>
+<p>Продакшен-адекватная конфигурация для PHP-приложения:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site.ru www.site.ru;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    root </span><span style="color:#E1E4E8">/var/www/site.ru/public;</span></span>
+<span class="line"><span style="color:#F97583">    index </span><span style="color:#E1E4E8">index.php index.html;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/www/site.ru/logs/access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/www/site.ru/logs/error.log;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        try_files </span><span style="color:#E1E4E8">$uri $uri/ /index.php?$query_string;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.2-fpm.sock;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_index </span><span style="color:#E1E4E8">index.php;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        # Таймауты (подробнее ниже)</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_read_timeout </span><span style="color:#79B8FF">60s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_connect_timeout </span><span style="color:#79B8FF">60s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Защита скрытых файлов</span></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> /\. </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        deny </span><span style="color:#79B8FF">all</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        access_log </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        log_not_found </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>👉 Это <strong>здоровый, продакшен-адекватный минимум</strong> для большинства PHP-проектов.</p>
+<hr/>
+<h2 id="готовые-конфигурации-для-популярных-фреймворков">Готовые конфигурации для популярных фреймворков</h2>
+<p>Для конкретных фреймворков и CMS могут потребоваться дополнительные настройки. Ниже приведены ссылки на готовые конфигурации, основанные на официальной документации:</p>
+<ul>
+<li>
+<p><strong><a href="/snippets/nginx-bitrix-php-fpm">Nginx для Bitrix CMS</a></strong> — конфигурация с поддержкой URL rewriting через <code>/bitrix/urlrewrite.php</code>, защитой директорий и увеличенными таймаутами для операций Bitrix.</p>
+</li>
+<li>
+<p><strong><a href="/snippets/nginx-wordpress-php-fpm">Nginx для WordPress</a></strong> — конфигурация с поддержкой pretty permalinks, защитой директории uploads и оптимизацией для WordPress.</p>
+</li>
+<li>
+<p><strong><a href="/snippets/nginx-laravel-php-fpm">Nginx для Laravel</a></strong> — конфигурация с правильной настройкой <code>root</code> на директорию <code>public</code>, обработкой только <code>index.php</code> и поддержкой Laravel роутинга.</p>
+</li>
+<li>
+<p><strong><a href="/snippets/nginx-astro-static">Nginx для Astro (статический сайт)</a></strong> — конфигурация для статических Astro сайтов с поддержкой SPA роутинга, кеширования и gzip сжатия.</p>
+</li>
+</ul>
+<p>Все конфигурации проверены и основаны на официальной документации соответствующих проектов.</p>
+<hr/>
+<h2 id="ошибка-502-bad-gateway--причины-и-диагностика">Ошибка 502 Bad Gateway — причины и диагностика</h2>
+<h3 id="что-означает-502">Что означает 502</h3>
+<p>Nginx <strong>не смог получить ответ от PHP-FPM</strong> или получил некорректный ответ.</p>
+<h3 id="частые-причины">Частые причины</h3>
+<ol>
+<li><strong>PHP-FPM не запущен</strong> — самая частая причина;</li>
+<li><strong>Неверный путь к сокету</strong> — сокет не существует или путь указан неправильно;</li>
+<li><strong>PHP упал с fatal error</strong> — критическая ошибка в PHP-коде;</li>
+<li><strong>Недостаточно памяти</strong> — сервер исчерпал доступную память;</li>
+<li><strong>Неверный <code>SCRIPT_FILENAME</code></strong> — PHP-FPM не может найти файл для выполнения;</li>
+<li><strong>Проблемы с правами доступа</strong> — Nginx не может прочитать сокет или файлы.</li>
+</ol>
+<h3 id="диагностика-по-шагам">Диагностика по шагам</h3>
+<p><strong>Шаг 1. Проверка статуса PHP-FPM:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> status</span><span style="color:#9ECBFF"> php8.2-fpm</span></span></code></pre>
+<p>Если сервис не запущен:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> start</span><span style="color:#9ECBFF"> php8.2-fpm</span></span>
+<span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#9ECBFF"> php8.2-fpm</span></span></code></pre>
+<p><strong>Шаг 2. Проверка существования сокета:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -l</span><span style="color:#9ECBFF"> /run/php/</span></span></code></pre>
+<p>Должен быть файл <code>php8.2-fpm.sock</code> (или другой, в зависимости от версии).</p>
+<p><strong>Шаг 3. Проверка логов PHP-FPM:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/php8.2-fpm.log</span></span></code></pre>
+<p>Или для конкретного пула:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/php8.2-fpm/www-error.log</span></span></code></pre>
+<p><strong>Шаг 4. Проверка логов Nginx:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/www/site.ru/logs/error.log</span></span></code></pre>
+<p>Или системный лог:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/nginx/error.log</span></span></code></pre>
+<p><strong>Шаг 5. Проверка конфигурации:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">nginx</span><span style="color:#79B8FF"> -t</span></span>
+<span class="line"><span style="color:#B392F0">php-fpm8.2</span><span style="color:#79B8FF"> -t</span></span></code></pre>
+<p>👉 <strong>Начинайте всегда с логов, не с конфигов.</strong> Логи покажут реальную причину проблемы.</p>
+<hr/>
+<h2 id="ошибка-504-gateway-timeout--причины-и-решения">Ошибка 504 Gateway Timeout — причины и решения</h2>
+<h3 id="что-означает-504">Что означает 504</h3>
+<p>PHP <strong>слишком долго выполняет запрос</strong>, Nginx устал ждать и закрыл соединение.</p>
+<h3 id="типовые-причины">Типовые причины</h3>
+<ul>
+<li><strong>Тяжёлые запросы к базе данных</strong> — медленные SQL-запросы без индексов;</li>
+<li><strong>Внешние API без таймаутов</strong> — зависание на запросах к внешним сервисам;</li>
+<li><strong>Зависший PHP-процесс</strong> — бесконечный цикл или блокирующая операция;</li>
+<li><strong>Маленькие лимиты пула FPM</strong> — все процессы заняты, новые запросы ждут;</li>
+<li><strong>Неправильные настройки таймаутов</strong> — несоответствие между Nginx, PHP-FPM и PHP.</li>
+</ul>
+<hr/>
+<h2 id="настройка-таймаутов-на-всех-уровнях">Настройка таймаутов на всех уровнях</h2>
+<p>Таймауты нужно настраивать на <strong>трёх уровнях</strong>, и они должны быть согласованы.</p>
+<h3 id="в-nginx">В Nginx</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.2-fpm.sock;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    # Время ожидания ответа от PHP-FPM</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_read_timeout </span><span style="color:#79B8FF">60s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    # Время на установку соединения с PHP-FPM</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_connect_timeout </span><span style="color:#79B8FF">60s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    # Время на отправку запроса в PHP-FPM</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_send_timeout </span><span style="color:#79B8FF">60s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="в-php-fpm-pooldwwwconf">В PHP-FPM (pool.d/<a href="http://www.conf">www.conf</a>)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; Максимальное время выполнения запроса (в секундах)</span></span>
+<span class="line"><span style="color:#6A737D">; 0 = без ограничений (не рекомендуется)</span></span>
+<span class="line"><span style="color:#F97583">request_terminate_timeout</span><span style="color:#E1E4E8"> = 60</span></span></code></pre>
+<h3 id="в-php-phpini">В PHP (php.ini)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; Максимальное время выполнения скрипта (в секундах)</span></span>
+<span class="line"><span style="color:#F97583">max_execution_time</span><span style="color:#E1E4E8"> = 60</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Максимальное время загрузки файла</span></span>
+<span class="line"><span style="color:#F97583">max_input_time</span><span style="color:#E1E4E8"> = 60</span></span></code></pre>
+<p>👉 <strong>Все три уровня должны быть согласованы.</strong> Рекомендуется устанавливать одинаковые значения или делать таймаут PHP-FPM немного больше, чем PHP.</p>
+<p><strong>Пример согласованной настройки:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>Nginx fastcgi_read_timeout: 60s</span></span>
+<span class="line"><span>PHP-FPM request_terminate_timeout: 65s</span></span>
+<span class="line"><span>PHP max_execution_time: 60s</span></span></code></pre>
+<p>Это даёт небольшой запас для завершения процесса после таймаута PHP.</p>
+<hr/>
+<h2 id="настройка-пула-php-fpm">Настройка пула PHP-FPM</h2>
+<p>Каждый pool — это отдельный набор PHP-процессов с собственными настройками. Правильная настройка пула критически важна для производительности.</p>
+<h3 id="базовые-параметры-пула">Базовые параметры пула</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; Режим управления процессами: static, dynamic, ondemand</span></span>
+<span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = dynamic</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Максимальное количество дочерних процессов</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 50</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Количество процессов, запускаемых при старте</span></span>
+<span class="line"><span style="color:#F97583">pm.start_servers</span><span style="color:#E1E4E8"> = 10</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Минимальное количество свободных процессов</span></span>
+<span class="line"><span style="color:#F97583">pm.min_spare_servers</span><span style="color:#E1E4E8"> = 5</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Максимальное количество свободных процессов</span></span>
+<span class="line"><span style="color:#F97583">pm.max_spare_servers</span><span style="color:#E1E4E8"> = 15</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Количество запросов, после которого процесс перезапускается</span></span>
+<span class="line"><span style="color:#F97583">pm.max_requests</span><span style="color:#E1E4E8"> = 500</span></span></code></pre>
+<h3 id="что-это-значит">Что это значит</h3>
+<ul>
+<li><code>pm.max_children</code> — <strong>максимум одновременных запросов</strong>. Если все процессы заняты → новые запросы ждут → возможен 504;</li>
+<li><code>pm.start_servers</code> — сколько процессов запускается при старте PHP-FPM;</li>
+<li><code>pm.min_spare_servers</code> — минимальное количество процессов в режиме ожидания;</li>
+<li><code>pm.max_spare_servers</code> — максимальное количество процессов в режиме ожидания;</li>
+<li><code>pm.max_requests</code> — после этого количества запросов процесс перезапускается (защита от утечек памяти).</li>
+</ul>
+<h3 id="расчёт-оптимального-количества-процессов">Расчёт оптимального количества процессов</h3>
+<p>Формула для <code>pm.max_children</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>max_children = (RAM доступная для PHP) / (RAM на один PHP-процесс)</span></span></code></pre>
+<p>Пример:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>Доступно RAM: 2 GB</span></span>
+<span class="line"><span>Один PHP-процесс: ~50 MB</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>max_children = 2048 MB / 50 MB ≈ 40 процессов</span></span></code></pre>
+<h3 id="режимы-управления-процессами">Режимы управления процессами</h3>
+<p><strong><code>pm = static</code></strong> — фиксированное количество процессов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = static</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 20</span></span></code></pre>
+<p>Подходит для стабильной нагрузки, предсказуемое потребление памяти.</p>
+<p><strong><code>pm = dynamic</code></strong> — динамическое управление (рекомендуется):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = dynamic</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 50</span></span>
+<span class="line"><span style="color:#F97583">pm.start_servers</span><span style="color:#E1E4E8"> = 10</span></span>
+<span class="line"><span style="color:#F97583">pm.min_spare_servers</span><span style="color:#E1E4E8"> = 5</span></span>
+<span class="line"><span style="color:#F97583">pm.max_spare_servers</span><span style="color:#E1E4E8"> = 15</span></span></code></pre>
+<p>Подходит для переменной нагрузки, оптимальное использование ресурсов.</p>
+<p><strong><code>pm = ondemand</code></strong> — процессы запускаются по требованию:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = ondemand</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 50</span></span>
+<span class="line"><span style="color:#F97583">pm.process_idle_timeout</span><span style="color:#E1E4E8"> = 10s</span></span></code></pre>
+<p>Подходит для серверов с низкой нагрузкой, экономия ресурсов.</p>
+<hr/>
+<h2 id="типовые-ошибки-новичков">Типовые ошибки новичков</h2>
+<p>❌ <strong>Путают Apache mod_php и PHP-FPM</strong> — думают, что PHP встроен в Nginx, как в Apache.</p>
+<p>❌ <strong>Думают, что PHP — часть Nginx</strong> — не понимают архитектуру FastCGI.</p>
+<p>❌ <strong>Правят php.ini, а проблема в FPM</strong> — не различают настройки PHP и PHP-FPM.</p>
+<p>❌ <strong>Игнорируют логи</strong> — начинают менять конфиги наугад вместо чтения логов.</p>
+<p>❌ <strong>Сразу крутят таймауты</strong> — увеличивают таймауты, не понимая реальную причину медленной работы.</p>
+<p>❌ <strong>Неправильный порядок location</strong> — блок <code>location ~ \.php$</code> должен быть после <code>location /</code>.</p>
+<p>❌ <strong>Забывают про try_files</strong> — без него фреймворки с роутингом не работают.</p>
+<hr/>
+<h2 id="чек-лист-диагностики-проблем-с-php">Чек-лист диагностики проблем с PHP</h2>
+<p>Если PHP не работает, проверьте по порядку:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>PHP-FPM запущен</strong> — <code>systemctl status php8.2-fpm</code></li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Путь к сокету совпадает</strong> — проверьте <code>fastcgi_pass</code> в Nginx и <code>listen</code> в pool.conf</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>SCRIPT_FILENAME корректный</strong> — должен содержать полный путь к файлу</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>try_files настроен</strong> — для фреймворков обязателен</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Логи читаются</strong> — начните с <code>tail -f</code> на error.log</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Нет fatal error</strong> — проверьте логи PHP-FPM</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Права доступа корректны</strong> — Nginx должен читать файлы и сокет</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Конфигурация синтаксически правильна</strong> — <code>nginx -t</code> и <code>php-fpm8.2 -t</code></li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Достаточно памяти</strong> — проверьте <code>free -h</code> и логи OOM killer</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <strong>Таймауты согласованы</strong> — проверьте на всех трёх уровнях</li>
+</ul>
+<hr/>
+<h2 id="рекомендации-по-настройке-и-безопасности">Рекомендации по настройке и безопасности</h2>
+<h3 id="производительность">Производительность</h3>
+<ul>
+<li>Используйте Unix-сокеты вместо TCP для локальных подключений.</li>
+<li>Настройте кэширование статических файлов в Nginx.</li>
+<li>Используйте OPcache для PHP (включён по умолчанию в современных версиях).</li>
+<li>Мониторьте использование памяти и CPU процессами PHP-FPM.</li>
+</ul>
+<h3 id="безопасность">Безопасность</h3>
+<ul>
+<li>Ограничьте выполнение PHP только в нужных директориях.</li>
+<li>Используйте отдельные пулы для разных сайтов с разными правами.</li>
+<li>Настройте <code>open_basedir</code> в PHP для ограничения доступа к файлам.</li>
+<li>Регулярно обновляйте PHP и PHP-FPM до актуальных версий.</li>
+</ul>
+<h3 id="мониторинг">Мониторинг</h3>
+<ul>
+<li>Настройте ротацию логов для предотвращения переполнения диска.</li>
+<li>Используйте мониторинг процессов PHP-FPM (например, через systemd или внешние системы).</li>
+<li>Отслеживайте метрики: количество активных процессов, время выполнения запросов, ошибки.</li>
+</ul>
+<hr/>
+<h2 id="что-будет-в-части-4">Что будет в части 4</h2>
+<p>Дальше логичное продолжение:</p>
+<p><strong>Часть 4 — Reverse Proxy и проксирование (API, Node.js, Python)</strong></p>
+<ul>
+<li><code>proxy_pass</code> и проксирование запросов;</li>
+<li>работа с заголовками;</li>
+<li>WebSocket через Nginx;</li>
+<li>настройка backend-сервисов за Nginx.</li>
+</ul>
+<hr/>
+<h2 id="заключение">Заключение</h2>
+<p>Связка <strong>Nginx + PHP-FPM</strong> — это не магия, а чёткий контракт между компонентами:</p>
+<ul>
+<li><strong>Nginx</strong> — маршрутизатор и точка входа, принимает HTTP-запросы;</li>
+<li><strong>PHP-FPM</strong> — исполнитель PHP-кода, управляет процессами;</li>
+<li><strong>FastCGI</strong> — протокол взаимодействия между ними;</li>
+<li><strong>Ошибки почти всегда читаются в логах</strong> — начинайте диагностику с них.</li>
+</ul>
+<p>Когда вы понимаете эту архитектуру, <strong>502 и 504 перестают пугать</strong> — они становятся понятными сигналами о конкретных проблемах, которые можно быстро диагностировать и исправить.</p>
+<p>Правильная настройка таймаутов, пулов процессов и мониторинг логов — это основа стабильной работы PHP-приложений в продакшене.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

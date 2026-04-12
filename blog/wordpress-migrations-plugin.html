@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Как внедрить систему миграций в WordPress без хаоса</title><meta name="description" content="Структура migrations/, версионирование, запись версии в option, Up/Down. Пример создания таблицы и добавления meta. Ошибка при повторном запуске и сравнение с Laravel."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> wordpress </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Как внедрить систему миграций в WordPress без хаоса </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>14 января 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/wordpress-migrations-plugin-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="как-внедрить-систему-миграций-в-wordpress-без-хаоса">Как внедрить систему миграций в WordPress без хаоса</h1>
+<p>В WordPress нет встроенных миграций, как в Laravel: изменения БД часто делают вручную или разовыми скриптами, и при обновлении плагина/темы непонятно, что уже применено. Ниже — как завести порядок: структура каталога <code>migrations/</code>, версионирование, хранение версии в option, методы Up/Down, примеры (создание таблицы и регистрация meta), что ломается при повторном запуске и чем такой подход похож на Laravel и чем отличается.</p>
+<hr/>
+<h2 id="структура-migrations">Структура migrations/</h2>
+<p>Миграции хранятся в одном каталоге, по одному файлу на изменение. Имя файла задаёт порядок выполнения.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>wp-content/plugins/my-plugin/</span></span>
+<span class="line"><span>├── migrations/</span></span>
+<span class="line"><span>│   ├── 001_create_orders_table.php</span></span>
+<span class="line"><span>│   ├── 002_add_meta_to_orders.php</span></span>
+<span class="line"><span>│   └── 003_register_order_status_meta.php</span></span>
+<span class="line"><span>├── includes/</span></span>
+<span class="line"><span>│   └── class-migration-runner.php</span></span>
+<span class="line"><span>└── my-plugin.php</span></span></code></pre>
+<p>Или в теме:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>wp-content/themes/my-theme/</span></span>
+<span class="line"><span>├── migrations/</span></span>
+<span class="line"><span>│   ├── 001_create_events_table.php</span></span>
+<span class="line"><span>│   └── 002_add_event_meta.php</span></span>
+<span class="line"><span>└── functions.php</span></span></code></pre>
+<p>Версионирование — по префиксу номера в имени файла (<code>001_</code>, <code>002_</code>, …). Можно использовать и timestamp (<code>20260114120000_create_orders_table.php</code>), тогда порядок по алфавиту совпадает с хронологией.</p>
+<hr/>
+<h2 id="версионирование-и-запись-версии-в-option">Версионирование и запись версии в option</h2>
+<p>Чтобы не запускать одну и ту же миграцию дважды, нужно хранить список уже выполненных версий. Удобно — в option.</p>
+<p>Пример ключа: <code>my_plugin_migrations_version</code> — массив имён выполненных миграций или одна строка «последняя версия» (если миграции выполняются строго по порядку).</p>
+<p>Вариант 1 — хранить последнюю версию (число или строка с номером):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// Получить текущую версию</span></span>
+<span class="line"><span style="color:#E1E4E8">$current </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">get_option</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;my_plugin_migrations_version&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8"> );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// После успешного выполнения миграции 003</span></span>
+<span class="line"><span style="color:#B392F0">update_option</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;my_plugin_migrations_version&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8"> );</span></span></code></pre>
+<p>Вариант 2 — хранить массив выполненных файлов (удобно при нелинейной истории):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E1E4E8">$executed </span><span style="color:#F97583">=</span><span style="color:#B392F0"> get_option</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;my_plugin_migrations_version&#39;</span><span style="color:#E1E4E8">, [] );</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ( </span><span style="color:#F97583">!</span><span style="color:#79B8FF"> is_array</span><span style="color:#E1E4E8">( $executed ) ) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $executed </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Проверка: миграция уже выполнялась?</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ( </span><span style="color:#79B8FF">in_array</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;002_add_meta_to_orders&#39;</span><span style="color:#E1E4E8">, $executed, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> ) ) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// После успешного up()</span></span>
+<span class="line"><span style="color:#E1E4E8">$executed[] </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;002_add_meta_to_orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">update_option</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;my_plugin_migrations_version&#39;</span><span style="color:#E1E4E8">, $executed );</span></span></code></pre>
+<p>Так runner при каждом запуске сравнивает список файлов в <code>migrations/</code> с записью в option и выполняет только новые миграции.</p>
+<hr/>
+<h2 id="up--down">Up / Down</h2>
+<p>У каждой миграции два метода:</p>
+<ul>
+<li><strong>up()</strong> — применить изменение (создать таблицу, добавить колонку, зарегистрировать meta).</li>
+<li><strong>down()</strong> — откатить изменение (удалить таблицу, колонку, убрать meta).</li>
+</ul>
+<p>Runner при «миграции вперёд» вызывает только <code>up()</code> у ещё не выполненных файлов; при откате — вызывает <code>down()</code> у выбранных миграций (обычно в обратном порядке).</p>
+<p>Пример каркаса файла миграции:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#6A737D">// migrations/001_create_orders_table.php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ( </span><span style="color:#F97583">!</span><span style="color:#79B8FF"> defined</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;ABSPATH&#39;</span><span style="color:#E1E4E8"> ) ) {</span></span>
+<span class="line"><span style="color:#F97583">    exit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Migration_001_Create_Orders_Table</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> up</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $wpdb;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">prefix </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $charset </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">get_charset_collate</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $sql </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;</span><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#F97583"> IF</span><span style="color:#F97583"> NOT</span><span style="color:#F97583"> EXISTS</span><span style="color:#E1E4E8"> $table</span><span style="color:#9ECBFF"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">            id </span><span style="color:#F97583">bigint</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">20</span><span style="color:#9ECBFF">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#9ECBFF"> AUTO_INCREMENT,</span></span>
+<span class="line"><span style="color:#9ECBFF">            user_id </span><span style="color:#F97583">bigint</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">20</span><span style="color:#9ECBFF">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#9ECBFF">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            total </span><span style="color:#F97583">decimal</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">10</span><span style="color:#9ECBFF">,</span><span style="color:#79B8FF">2</span><span style="color:#9ECBFF">) </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> DEFAULT</span><span style="color:#79B8FF"> 0</span><span style="color:#9ECBFF">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            created_at </span><span style="color:#F97583">datetime</span><span style="color:#F97583"> DEFAULT</span><span style="color:#9ECBFF"> CURRENT_TIMESTAMP,</span></span>
+<span class="line"><span style="color:#F97583">            PRIMARY KEY</span><span style="color:#9ECBFF"> (id),</span></span>
+<span class="line"><span style="color:#F97583">            KEY</span><span style="color:#79B8FF"> user_id</span><span style="color:#9ECBFF"> (user_id)</span></span>
+<span class="line"><span style="color:#9ECBFF">        ) </span><span style="color:#E1E4E8">$charset</span><span style="color:#9ECBFF">;&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        require_once</span><span style="color:#79B8FF"> ABSPATH</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;wp-admin/includes/upgrade.php&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">        dbDelta</span><span style="color:#E1E4E8">( $sql );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> down</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $wpdb;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">prefix </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">query</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&quot;DROP TABLE IF EXISTS `</span><span style="color:#E1E4E8">$table</span><span style="color:#9ECBFF">`&quot;</span><span style="color:#E1E4E8"> );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Runner подключает файл, создаёт экземпляр класса (или вызывает статические методы), перед вызовом <code>up()</code> проверяет по option, что эта миграция ещё не выполнялась; после успешного <code>up()</code> обновляет option.</p>
+<hr/>
+<h2 id="пример-создания-таблицы">Пример создания таблицы</h2>
+<p>Полный пример: создание таблицы с префиксом сайта и кодировкой.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#6A737D">// migrations/001_create_orders_table.php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ( </span><span style="color:#F97583">!</span><span style="color:#79B8FF"> defined</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;ABSPATH&#39;</span><span style="color:#E1E4E8"> ) ) {</span></span>
+<span class="line"><span style="color:#F97583">    exit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Migration_001_Create_Orders_Table</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> up</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $wpdb;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">prefix </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $charset_collate </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">get_charset_collate</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $sql </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;</span><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#F97583"> IF</span><span style="color:#F97583"> NOT</span><span style="color:#F97583"> EXISTS</span><span style="color:#9ECBFF"> `</span><span style="color:#E1E4E8">$table</span><span style="color:#9ECBFF">` (</span></span>
+<span class="line"><span style="color:#9ECBFF">            id </span><span style="color:#F97583">bigint</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">20</span><span style="color:#9ECBFF">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#9ECBFF"> AUTO_INCREMENT,</span></span>
+<span class="line"><span style="color:#9ECBFF">            user_id </span><span style="color:#F97583">bigint</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">20</span><span style="color:#9ECBFF">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#9ECBFF">,</span></span>
+<span class="line"><span style="color:#F97583">            status</span><span style="color:#F97583"> varchar</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">20</span><span style="color:#9ECBFF">) </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> DEFAULT</span><span style="color:#9ECBFF"> &#39;pending&#39;,</span></span>
+<span class="line"><span style="color:#9ECBFF">            total </span><span style="color:#F97583">decimal</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">10</span><span style="color:#9ECBFF">,</span><span style="color:#79B8FF">2</span><span style="color:#9ECBFF">) </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> DEFAULT</span><span style="color:#79B8FF"> 0</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">00</span><span style="color:#9ECBFF">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            created_at </span><span style="color:#F97583">datetime</span><span style="color:#F97583"> DEFAULT</span><span style="color:#9ECBFF"> CURRENT_TIMESTAMP,</span></span>
+<span class="line"><span style="color:#F97583">            PRIMARY KEY</span><span style="color:#9ECBFF"> (id),</span></span>
+<span class="line"><span style="color:#F97583">            KEY</span><span style="color:#79B8FF"> user_id</span><span style="color:#9ECBFF"> (user_id),</span></span>
+<span class="line"><span style="color:#F97583">            KEY</span><span style="color:#F97583"> status</span><span style="color:#9ECBFF"> (</span><span style="color:#F97583">status</span><span style="color:#9ECBFF">)</span></span>
+<span class="line"><span style="color:#9ECBFF">        ) </span><span style="color:#E1E4E8">$charset_collate</span><span style="color:#9ECBFF">;&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        require_once</span><span style="color:#79B8FF"> ABSPATH</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;wp-admin/includes/upgrade.php&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">        dbDelta</span><span style="color:#E1E4E8">( $sql );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> down</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $wpdb;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">prefix </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">query</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&quot;DROP TABLE IF EXISTS `</span><span style="color:#E1E4E8">$table</span><span style="color:#9ECBFF">`&quot;</span><span style="color:#E1E4E8"> );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Важно: <code>CREATE TABLE IF NOT EXISTS</code> и <code>dbDelta()</code> уменьшают риск падения при случайном повторном запуске (см. ниже). В <code>down()</code> таблицу можно смело дропать.</p>
+<hr/>
+<h2 id="пример-добавления-meta-field">Пример добавления meta field</h2>
+<p>Миграция, которая регистрирует post meta (или option) для типа поста.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#6A737D">// migrations/002_add_order_status_meta.php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ( </span><span style="color:#F97583">!</span><span style="color:#79B8FF"> defined</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;ABSPATH&#39;</span><span style="color:#E1E4E8"> ) ) {</span></span>
+<span class="line"><span style="color:#F97583">    exit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Migration_002_Add_Order_Status_Meta</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> up</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">        register_post_meta</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;shop_order&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;_order_source&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;type&#39;</span><span style="color:#F97583">         =&gt;</span><span style="color:#9ECBFF"> &#39;string&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;description&#39;</span><span style="color:#F97583">  =&gt;</span><span style="color:#9ECBFF"> &#39;Источник заказа&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;single&#39;</span><span style="color:#F97583">       =&gt;</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;show_in_rest&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;default&#39;</span><span style="color:#F97583">      =&gt;</span><span style="color:#9ECBFF"> &#39;site&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            ]</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> down</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">        unregister_post_meta</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&#39;shop_order&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;_order_source&#39;</span><span style="color:#E1E4E8"> );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Для кастомного типа поста замени <code>shop_order</code> на свой тип. Если meta уже зарегистрирована в коде темы/плагина, в миграции можно только добавлять данные или менять дефолты; повторная регистрация одного и того же meta при повторном запуске обычно не ломает WordPress, но учёт версии в option избавляет от лишних вызовов.</p>
+<hr/>
+<h2 id="ошибка-при-повторном-запуске">Ошибка при повторном запуске</h2>
+<p>Если не хранить выполненные миграции и каждый раз вызывать все файлы:</p>
+<ul>
+<li><strong>CREATE TABLE без IF NOT EXISTS</strong> — при втором запуске MySQL вернёт ошибку «Table already exists».</li>
+<li><strong>ALTER TABLE ADD COLUMN</strong> без проверки — «Duplicate column name».</li>
+<li>Регистрация meta или создание постов/терминов — дубликаты или лишние записи.</li>
+</ul>
+<p>Итог: либо миграции идемпотентны (проверка существования таблицы/колонки перед созданием/добавлением), либо выполняется только то, что ещё не записано в option.</p>
+<p>Рекомендация: всегда вести учёт в option и запускать только новые миграции; внутри миграции при необходимости делать проверки (например, существование колонки перед <code>ALTER TABLE ADD</code>).</p>
+<p>Пример идемпотентного добавления колонки:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> up</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    global</span><span style="color:#E1E4E8"> $wpdb;</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">prefix </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;orders&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    $col </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;phone&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $exists </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">get_results</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">prepare</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            &quot;</span><span style="color:#F97583">SELECT</span><span style="color:#9ECBFF"> COLUMN_NAME </span><span style="color:#F97583">FROM</span><span style="color:#79B8FF"> INFORMATION_SCHEMA</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">COLUMNS</span><span style="color:#9ECBFF"> </span></span>
+<span class="line"><span style="color:#F97583">             WHERE</span><span style="color:#9ECBFF"> TABLE_SCHEMA </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> %s </span><span style="color:#F97583">AND</span><span style="color:#9ECBFF"> TABLE_NAME </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> %s </span><span style="color:#F97583">AND</span><span style="color:#9ECBFF"> COLUMN_NAME </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> %s&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            DB_NAME</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $table,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $col</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> ( </span><span style="color:#F97583">!</span><span style="color:#79B8FF"> empty</span><span style="color:#E1E4E8">( $exists ) ) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $wpdb</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">query</span><span style="color:#E1E4E8">( </span><span style="color:#9ECBFF">&quot;</span><span style="color:#F97583">ALTER</span><span style="color:#F97583"> TABLE</span><span style="color:#9ECBFF"> `</span><span style="color:#E1E4E8">$table</span><span style="color:#9ECBFF">` </span><span style="color:#F97583">ADD</span><span style="color:#9ECBFF"> COLUMN `</span><span style="color:#E1E4E8">$col</span><span style="color:#9ECBFF">` </span><span style="color:#F97583">varchar</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">50</span><span style="color:#9ECBFF">) </span><span style="color:#F97583">DEFAULT</span><span style="color:#F97583"> NULL</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8"> );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Так повторный запуск одной и той же миграции не приведёт к ошибке.</p>
+<hr/>
+<h2 id="сравнение-с-laravel-migrations">Сравнение с Laravel migrations</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Аспект</th><th>Laravel</th><th>WordPress (своя система)</th></tr></thead><tbody><tr><td>Команда запуска</td><td><code>php artisan migrate</code></td><td>Свой код: по хуку (admin_init, активация плагина) или WP-CLI</td></tr><tr><td>Хранение версий</td><td>Таблица <code>migrations</code> (файл в строке)</td><td>Option: <code>get_option(&#39;my_plugin_migrations_version&#39;)</code></td></tr><tr><td>Формат файла</td><td>Класс с <code>up()</code> / <code>down()</code></td><td>То же: класс или функции <code>up()</code> / <code>down()</code> в файле</td></tr><tr><td>Имя файла</td><td>Timestamp + описание</td><td>Номер + описание или timestamp</td></tr><tr><td>Откат</td><td><code>php artisan migrate:rollback</code></td><td>Свой runner: вызов <code>down()</code> по списку из option</td></tr><tr><td>Создание таблиц</td><td>Schema::create()</td><td>$wpdb-&gt;query() + dbDelta()</td></tr><tr><td>Безопасность</td><td>Транзакции, миграции по одной</td><td>Нет встроенных транзакций в WP по умолчанию; можно оборачивать в START TRANSACTION / COMMIT вручную</td></tr></tbody></table>
+<p>Общая идея та же: версионированные файлы, применение только новых, возможность отката. В WordPress нет Artisan и своей таблицы миграций «из коробки», поэтому версию храним в option и runner пишем сами (или подключаем готовый плагин с такой логикой).</p>
+<hr/>
+<h2 id="минимальный-runner-идея">Минимальный runner (идея)</h2>
+<p>Чтобы не раздувать статью, ниже только идея вызова миграций.</p>
+<ol>
+<li>Сканировать каталог <code>migrations/</code> — получить список файлов, отсортировать по имени.</li>
+<li>Загрузить из option список выполненных (например, массив имён или последний номер).</li>
+<li>Для каждого файла, которого ещё нет в списке: подключить файл, вызвать <code>up()</code>, при успехе добавить в список и сохранить в option.</li>
+<li>При откате: взять последнюю выполненную миграцию из option, подключить файл, вызвать <code>down()</code>, убрать запись из option.</li>
+</ol>
+<p>Проверка синтаксиса и прав доступа (например, только для администратора при ручном запуске) — в самом runner. Так ты получаешь предсказуемое применение изменений БД без хаоса и без повторного выполнения одних и тех же миграций.</p>
+<hr/>
+<h2 id="кратко">Кратко</h2>
+<ul>
+<li><strong>migrations/</strong> — один каталог, файлы с номерами или timestamp в имени; порядок по имени.</li>
+<li><strong>Версионирование</strong> — номер или имя файла; <strong>запись в option</strong> — какие миграции уже выполнены; запускать только новые.</li>
+<li><strong>Up / Down</strong> — в каждом файле; up — применить, down — откатить.</li>
+<li><strong>Создание таблицы</strong> — <code>dbDelta()</code> и <code>CREATE TABLE IF NOT EXISTS</code>; в down — <code>DROP TABLE IF EXISTS</code>.</li>
+<li><strong>Meta field</strong> — <code>register_post_meta()</code> в up, <code>unregister_post_meta()</code> в down.</li>
+<li><strong>Повторный запуск</strong> — без учёта версии получишь ошибки «table/column already exists»; решается учётом в option и при необходимости проверками в самой миграции.</li>
+<li>По духу подход совпадает с Laravel: версионированные миграции, учёт выполненных, откат через down; отличия — нет Artisan и таблицы миграций, версия хранится в option.</li>
+</ul> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

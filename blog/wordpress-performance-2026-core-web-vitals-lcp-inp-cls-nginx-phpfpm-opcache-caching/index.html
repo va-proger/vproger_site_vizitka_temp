@@ -1,0 +1,464 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ускорение WordPress в 2026: Core Web Vitals без магии — сервер, кэш, медиа</title><meta name="description" content="Практический разбор ускорения WordPress под Core Web Vitals (LCP, INP, CLS): измерение, сервер (Nginx/PHP-FPM/OPcache), кэширование (page/object), оптимизация медиа (WebP/AVIF), диета плагинов и контроль деградации."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> wordpress </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Ускорение WordPress в 2026: Core Web Vitals без магии — сервер, кэш, медиа </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>11 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/wp-core-web-vitals-2026-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h2 id="о-чём-статья-и-зачем-это-всё">О чём статья и зачем это всё</h2>
+<p>WordPress в 2026 году всё ещё способен быть <strong>быстрым</strong>, но только если перестать “лечить” сайт очередным плагином “Speed Booster 9000”.</p>
+<p><strong>Цель:</strong> привести сайт к предсказуемым метрикам Core Web Vitals:</p>
+<ul>
+<li><strong>LCP</strong> — насколько быстро появляется главный контент (обычно hero-блок/картинка/заголовок).</li>
+<li><strong>INP</strong> — насколько быстро сайт отвечает на клики/ввод (главный фронтовый “больной” показатель).</li>
+<li><strong>CLS</strong> — насколько “прыгает” верстка при загрузке.</li>
+</ul>
+<p>Будем идти как инженеры: <strong>сначала измеряем → затем делаем узкие правки → фиксируем регрессии</strong>.</p>
+<hr/>
+<h2 id="1-сначала-измеряем-потом-оптимизируем">1) Сначала измеряем, потом “оптимизируем”</h2>
+<p>Если ты не зафиксировал baseline — ты не ускоряешь, ты <strong>надеешься</strong>.</p>
+<h3 id="инструменты-минимум">Инструменты (минимум)</h3>
+<ul>
+<li><strong>Lighthouse</strong> (лабораторные цифры, удобно сравнивать “до/после”).</li>
+<li><strong>PageSpeed Insights</strong> (подтягивает полевые данные, если они есть).</li>
+<li><strong>WebPageTest</strong> (waterfall, очень полезно для LCP/TTFB/third-party).</li>
+<li><strong>Chrome DevTools → Performance</strong> (ловить long tasks и причины плохого INP).</li>
+</ul>
+<h3 id="какие-страницы-мерить-обязательно">Какие страницы мерить (обязательно)</h3>
+<p>Не надо тестить только главную. Выбирай <strong>шаблоны</strong>, а не “странички”:</p>
+<ul>
+<li>Главная</li>
+<li>Категория / архив</li>
+<li>Пост / статья</li>
+<li>Карточка товара (Woo) / карточка услуги</li>
+<li>Корзина, оформление (если e-commerce)</li>
+<li>Страница с формой/калькулятором (если есть)</li>
+</ul>
+<h3 id="фиксируем-baseline-табличка">Фиксируем baseline (табличка)</h3>
+<p>Сделай табличку (хоть в Markdown, хоть в Notion):</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Шаблон</th><th>URL</th><th style="text-align:right">TTFB</th><th style="text-align:right">LCP</th><th style="text-align:right">INP</th><th style="text-align:right">CLS</th><th style="text-align:right">Вес страницы</th><th style="text-align:right">Запросов</th><th>Примечания</th></tr></thead><tbody><tr><td>Home</td><td>/</td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td></td></tr><tr><td>Post</td><td>/blog/…</td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td></td></tr><tr><td>Product</td><td>/product/…</td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td style="text-align:right"></td><td></td></tr></tbody></table>
+<p><strong>Пример заполнения:</strong></p>
+<ul>
+<li>TTFB: время ответа сервера (целевой показатель &lt; 200ms)</li>
+<li>LCP: время загрузки главного контента (целевой показатель &lt; 2.5s)</li>
+<li>INP: время отклика на взаимодействие (целевой показатель &lt; 200ms)</li>
+<li>CLS: стабильность вёрстки (целевой показатель &lt; 0.1)</li>
+</ul>
+<p><strong>Правило:</strong> любое изменение — повторяем замер в тех же условиях.</p>
+<hr/>
+<h2 id="2-быстрые-победы-за-3060-минут-без-переписать-тему">2) Быстрые победы за 30–60 минут (без “переписать тему”)</h2>
+<p>Это то, что часто даёт результат сразу.</p>
+<h3 id="21-включи-page-cache-если-его-нет">2.1 Включи page cache (если его нет)</h3>
+<p>Если сайт не кэшируется страницами — ты каждый раз “рендеришь” WP заново. Это дорого.</p>
+<p>Варианты:</p>
+<ul>
+<li><strong>Серверный fastcgi_cache (Nginx)</strong> — самый честный по скорости.</li>
+<li><strong>Плагинный page cache</strong> — быстрее внедрить, но иногда хуже контроль.</li>
+</ul>
+<p>Сразу правило: <strong>не кэшировать</strong> корзину/чекаут/личный кабинет, и страницы, зависящие от cookies.</p>
+<h3 id="22-поправь-hero-lcp--это-почти-всегда-причина-почему-медленно">2.2 Поправь hero (LCP) — это почти всегда причина “почему медленно”</h3>
+<ul>
+<li>У hero-картинки должны быть:
+<ul>
+<li>нормальные размеры (не 4000px шириной ради блока 1200px),</li>
+<li>современный формат (WebP/AVIF),</li>
+<li>корректный <code>srcset/sizes</code> (иначе мобилка грузит “как для кинотеатра”),</li>
+<li><strong>никакого lazy</strong> на LCP-элементе.</li>
+</ul>
+</li>
+</ul>
+<h3 id="23-убериотложи-маркетинговый-зоопарк">2.3 Убери/отложи “маркетинговый зоопарк”</h3>
+<p>Чаты, виджеты, трекеры, A/B, попапы — они убивают <strong>INP</strong> и иногда <strong>LCP</strong>.
+Сейчас это главный “тихий киллер” производительности.</p>
+<hr/>
+<h2 id="3-серверный-слой-ttfb-и-предсказуемость">3) Серверный слой: TTFB и предсказуемость</h2>
+<p>Если TTFB плавает как рыба в пакете — LCP ты не стабилизируешь.</p>
+<h3 id="31-минимальный-адекватный-стек">3.1 Минимальный адекватный стек</h3>
+<ul>
+<li>Nginx (reverse proxy)</li>
+<li>PHP-FPM (под нагрузку)</li>
+<li>OPcache (включён и настроен)</li>
+<li>Redis (опционально, но часто очень полезно)</li>
+<li>MariaDB/MySQL с нормальными параметрами и логами</li>
+</ul>
+<h3 id="32-php-fpm-базовая-настройка-чтобы-не-было-502-как-стиль-жизни">3.2 PHP-FPM: базовая настройка, чтобы не было “502 как стиль жизни”</h3>
+<p>Смотри конфиг пула (путь зависит от дистрибутива), обычно:</p>
+<ul>
+<li>Debian/Ubuntu: <code>/etc/php/8.x/fpm/pool.d/www.conf</code></li>
+<li>CentOS/RHEL: <code>/etc/php-fpm.d/www.conf</code></li>
+</ul>
+<p><strong>Пример расчёта параметров:</strong></p>
+<ul>
+<li>Если у тебя 2GB RAM: <code>pm.max_children = 10-15</code> (каждый процесс ~150MB)</li>
+<li>Если у тебя 4GB RAM: <code>pm.max_children = 20-25</code></li>
+<li>Если у тебя 8GB RAM: <code>pm.max_children = 40-50</code></li>
+</ul>
+<p>Пример здравых параметров (адаптируй под RAM/CPU):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; /etc/php/8.3/fpm/pool.d/www.conf</span></span>
+<span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = dynamic</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 20</span></span>
+<span class="line"><span style="color:#F97583">pm.start_servers</span><span style="color:#E1E4E8"> = 4</span></span>
+<span class="line"><span style="color:#F97583">pm.min_spare_servers</span><span style="color:#E1E4E8"> = 2</span></span>
+<span class="line"><span style="color:#F97583">pm.max_spare_servers</span><span style="color:#E1E4E8"> = 6</span></span>
+<span class="line"><span style="color:#F97583">pm.max_requests</span><span style="color:#E1E4E8"> = 500</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">request_terminate_timeout</span><span style="color:#E1E4E8"> = 60s</span></span></code></pre>
+<p>Логика:</p>
+<ul>
+<li><code>pm.max_children</code> = сколько PHP-процессов одновременно. Ставь по памяти: один процесс WP под нагрузкой может быть 80–200MB (и это не шутка).</li>
+<li><code>pm.max_requests</code> помогает “сбрасывать” утечки.</li>
+</ul>
+<h3 id="33-opcache-must-have-но-включить--недостаточно">3.3 OPcache: must-have, но “включить” — недостаточно</h3>
+<p>Файл: <code>/etc/php/8.x/fpm/conf.d/10-opcache.ini</code> (или аналог)</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">opcache.enable</span><span style="color:#E1E4E8">=1</span></span>
+<span class="line"><span style="color:#F97583">opcache.enable_cli</span><span style="color:#E1E4E8">=0</span></span>
+<span class="line"><span style="color:#F97583">opcache.memory_consumption</span><span style="color:#E1E4E8">=256</span></span>
+<span class="line"><span style="color:#F97583">opcache.interned_strings_buffer</span><span style="color:#E1E4E8">=16</span></span>
+<span class="line"><span style="color:#F97583">opcache.max_accelerated_files</span><span style="color:#E1E4E8">=20000</span></span>
+<span class="line"><span style="color:#F97583">opcache.validate_timestamps</span><span style="color:#E1E4E8">=1</span></span>
+<span class="line"><span style="color:#F97583">opcache.revalidate_freq</span><span style="color:#E1E4E8">=2</span></span></code></pre>
+<p>Если прод и деплоишь атомарно (релизы/ссылки), можно делать агрессивнее (меньше проверок), но тогда <strong>инвалидацию</strong> решай осознанно.</p>
+<hr/>
+<h2 id="4-кэш-3-уровня-которые-путают-почти-всех">4) Кэш: 3 уровня, которые путают почти всех</h2>
+<h3 id="41-page-cache-самый-жирный-профит">4.1 Page cache (самый жирный профит)</h3>
+<p>Это кэш HTML, чтобы не гонять WP на каждый запрос.</p>
+<h4 id="вариант-a-nginx-fastcgi_cache-рекомендую">Вариант A: Nginx <code>fastcgi_cache</code> (рекомендую)</h4>
+<p>Ниже примерный набросок. В проде обязательно оттюнь под свою схему cookies/URL.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#6A737D"># /etc/nginx/conf.d/wp-cache.conf</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">fastcgi_cache_path </span><span style="color:#E1E4E8">/var/cache/nginx/wp levels=1:2 keys_zone=WORDPRESS:100m inactive=60m max_size=2g;</span></span>
+<span class="line"><span style="color:#F97583">fastcgi_cache_key </span><span style="color:#9ECBFF">&quot;$</span><span style="color:#E1E4E8">scheme</span><span style="color:#9ECBFF">$</span><span style="color:#E1E4E8">request_method</span><span style="color:#9ECBFF">$</span><span style="color:#E1E4E8">host</span><span style="color:#9ECBFF">$</span><span style="color:#E1E4E8">request_uri</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">map</span><span style="color:#E1E4E8"> $</span><span style="color:#FFAB70">http_cookie</span><span style="color:#E1E4E8"> $skip_cache {</span></span>
+<span class="line"><span style="color:#79B8FF">  default</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">wordpress_logged_in </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">comment_author </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">woocommerce_items_in_cart </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">wp_woocommerce_session_ </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">map</span><span style="color:#E1E4E8"> $</span><span style="color:#FFAB70">request_uri</span><span style="color:#E1E4E8"> $skip_cache_uri {</span></span>
+<span class="line"><span style="color:#79B8FF">  default</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">^/wp-admin/ </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">^/wp-login.php </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">^/cart </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">^/checkout </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  ~*</span><span style="color:#E1E4E8">^/my-account </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  # ...</span></span>
+<span class="line"><span style="color:#F97583">  set </span><span style="color:#E1E4E8">$no_cache </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> ($skip_cache </span><span style="color:#F97583">= </span><span style="color:#E1E4E8">1) {</span><span style="color:#F97583"> set </span><span style="color:#E1E4E8">$no_cache </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> ($skip_cache_uri </span><span style="color:#F97583">= </span><span style="color:#E1E4E8">1) {</span><span style="color:#F97583"> set </span><span style="color:#E1E4E8">$no_cache </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.3-fpm.sock;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    fastcgi_cache </span><span style="color:#E1E4E8">WORDPRESS;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_cache_bypass </span><span style="color:#E1E4E8">$no_cache;</span></span>
+<span class="line"><span style="color:#F97583">    fastcgi_no_cache </span><span style="color:#E1E4E8">$no_cache;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    fastcgi_cache_valid </span><span style="color:#79B8FF">200</span><span style="color:#79B8FF"> 301</span><span style="color:#79B8FF"> 302</span><span style="color:#79B8FF"> 10m</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    add_header </span><span style="color:#E1E4E8">X-Cache $upstream_cache_status always;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Смысл:</p>
+<ul>
+<li>Гости получают HTML из кэша.</li>
+<li>Авторизованные/корзина/чекаут — мимо.</li>
+</ul>
+<h4 id="вариант-b-плагин-кэширования">Вариант B: Плагин кэширования</h4>
+<p>Если нет доступа к Nginx или хочется быстро:</p>
+<ul>
+<li>WP Rocket / LiteSpeed Cache (если LS) / W3TC / Cache Enabler — вариантов много.
+Главное: <strong>проверяй</strong>, что реально отдаётся статика, а не “кэш включен в настройках”.</li>
+</ul>
+<h3 id="42-object-cache-redismemcached">4.2 Object cache (Redis/Memcached)</h3>
+<p>Это не “ускоритель всего”, это ускоритель повторяющихся запросов к базе/объектам.</p>
+<p>Когда заметно помогает:</p>
+<ul>
+<li>WooCommerce</li>
+<li>Сайты с большим количеством опций, мета, сложными запросами</li>
+<li>Высокая посещаемость</li>
+</ul>
+<p><strong>Самый типовой путь:</strong></p>
+<ul>
+<li>поднять Redis,</li>
+<li>поставить плагин <code>Redis Object Cache</code>,</li>
+<li>включить object cache,</li>
+<li>посмотреть, что hit rate нормальный.</li>
+</ul>
+<h3 id="43-opcache-кэш-байткода-php">4.3 OPCache (кэш байткода PHP)</h3>
+<p>Если OPcache выключен — ты реально компилируешь PHP каждый запрос. В 2026 это выглядит как “зачем ты так с собой”.</p>
+<hr/>
+<h2 id="5-база-данных-и-запросы-меньше-боли--больше-эффекта">5) База данных и запросы: меньше боли — больше эффекта</h2>
+<h3 id="51-сначала-найди-что-реально-тормозит">5.1 Сначала найди, что реально тормозит</h3>
+<p>Подключи:</p>
+<ul>
+<li>Query Monitor (на время диагностики)</li>
+<li>MySQL/MariaDB slow query log (на сервере)</li>
+</ul>
+<h4 id="включение-slow-log-очень-грубо-идея">Включение slow log (очень грубо, идея)</h4>
+<p>В <code>my.cnf</code> (путь зависит от системы):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">slow_query_log</span><span style="color:#E1E4E8">=1</span></span>
+<span class="line"><span style="color:#F97583">long_query_time</span><span style="color:#E1E4E8">=0.5</span></span>
+<span class="line"><span style="color:#F97583">slow_query_log_file</span><span style="color:#E1E4E8">=/var/log/mysql/slow.log</span></span></code></pre>
+<p>Дальше анализируй: какие запросы долгие, какие повторяются, кто их вызывает (плагин/тема).</p>
+<h3 id="52-типовые-минные-поля-wp">5.2 Типовые “минные поля” WP</h3>
+<ul>
+<li><code>autoload</code> опции раздуты (ты грузишь половину сайта в память при каждом хите).</li>
+<li>транзиенты растут как дрожжи.</li>
+<li>ревизии и мусор.</li>
+<li>отсутствие индексов на кастомных таблицах (если делали “как получится”).</li>
+</ul>
+<p>Минимальная гигиена:</p>
+<ul>
+<li>чистка ревизий/транзиентов (аккуратно, не на проде “с плеча”).</li>
+<li>аудит <code>wp_options</code> на autoload.</li>
+</ul>
+<hr/>
+<h2 id="6-тема-и-фронт-лечим-lcpclsinp-без-шаманства">6) Тема и фронт: лечим LCP/CLS/INP без шаманства</h2>
+<h3 id="61-lcp-главный-кадр">6.1 LCP: главный кадр</h3>
+<p>Что чаще всего делает LCP плохим:</p>
+<ul>
+<li>“герой” — огромная картинка,</li>
+<li>рендер-блокирующие CSS,</li>
+<li>шрифты, которые блокируют рендер,</li>
+<li>TTFB (сервер не успевает).</li>
+</ul>
+<p><strong>Практика:</strong></p>
+<ul>
+<li>hero-картинку: правильный размер + WebP/AVIF + <code>preload</code>.</li>
+<li>критические стили — минимизировать, остальное грузить позже (если используешь решения вроде “critical CSS”, делай осознанно).</li>
+</ul>
+<h3 id="62-cls-прыгающая-вёрстка">6.2 CLS: прыгающая вёрстка</h3>
+<p>CLS обычно ломают:</p>
+<ul>
+<li>изображения без размеров,</li>
+<li>вставки баннеров/виджетов “позже”,</li>
+<li>webfonts без нормальных фоллбеков.</li>
+</ul>
+<p><strong>Фиксы:</strong></p>
+<ul>
+<li>всегда резервируй место под медиа (ширина/высота/соотношение).</li>
+<li>под виджеты — контейнер фиксированной высоты + скелетон (хоть простой).</li>
+<li>шрифты — <code>font-display: swap;</code> и в идеале preload критичных.</li>
+</ul>
+<p><strong>Пример резервирования места под изображение:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#6A737D">&lt;!-- Плохо: CLS будет прыгать --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;image.jpg&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">&lt;!-- Хорошо: место зарезервировано --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;aspect-ratio: 16/9; background: #f0f0f0;&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;image.jpg&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#B392F0"> width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;1200&quot;</span><span style="color:#B392F0"> height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;675&quot;</span><span style="color:#B392F0"> loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;lazy&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">&lt;!-- Или через CSS --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">.image-wrapper { aspect-ratio: 16 / 9; width: 100%; }</span></span></code></pre>
+<p><strong>Пример скелетона для виджета:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">div</span></span>
+<span class="line"><span style="color:#B392F0">  class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;widget-skeleton&quot;</span></span>
+<span class="line"><span style="color:#B392F0">  style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;height: 300px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite;&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#6A737D">  &lt;!-- Виджет загрузится сюда --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="63-inp-сайт-должен-отвечать-на-клики-а-не-подумать">6.3 INP: сайт должен отвечать на клики, а не “подумать”</h3>
+<p>INP в WP чаще всего портят:</p>
+<ul>
+<li>тяжёлые темы/конструкторы,</li>
+<li>слайдеры/анимации,</li>
+<li>third-party скрипты,</li>
+<li>куча обработчиков событий и long tasks.</li>
+</ul>
+<p><strong>Как чинить по шагам:</strong></p>
+<ol>
+<li>
+<p>В DevTools → Performance запиши профиль при клике по меню/кнопке.</p>
+</li>
+<li>
+<p>Найди long task (обычно 100–500+ ms).</p>
+</li>
+<li>
+<p>Определи источник: файл темы/плагина/виджета.</p>
+</li>
+<li>
+<p>Убери лишнее или отложи:</p>
+<ul>
+<li><code>defer</code>/<code>delay</code> для неважных скриптов,</li>
+<li>загрузка по взаимодействию (клик/скролл),</li>
+<li>отключение скрипта на страницах, где он не нужен.</li>
+</ul>
+</li>
+</ol>
+<p>Если “всё на Elementor и жить хотим красиво” — жить можно, но INP будет дороже в починке. Тут или дисциплина, или боль.</p>
+<hr/>
+<h2 id="7-медиа-webpavif-lazy-cdn--по-взрослому">7) Медиа: WebP/AVIF, lazy, CDN — по-взрослому</h2>
+<h3 id="71-форматы">7.1 Форматы</h3>
+<ul>
+<li>WebP — стабильная база.</li>
+<li>AVIF — часто лучше по размеру, но тяжелее по энкодингу (генерировать на сервере аккуратно).</li>
+</ul>
+<h3 id="72-lazy-loading-где-можно-где-нельзя">7.2 Lazy loading: где можно, где нельзя</h3>
+<ul>
+<li><strong>Нельзя</strong> делать lazy для элемента, который является LCP (обычно hero).</li>
+<li>Можно для всего, что ниже первого экрана.</li>
+</ul>
+<p><strong>Пример правильного использования:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#6A737D">&lt;!-- Hero - НЕ lazy, это LCP элемент --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;hero.webp&quot;</span><span style="color:#B392F0"> loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;eager&quot;</span><span style="color:#B392F0"> fetchpriority</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;high&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">&lt;!-- Изображения ниже fold - можно lazy --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;content-1.webp&quot;</span><span style="color:#B392F0"> loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;lazy&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;content-2.webp&quot;</span><span style="color:#B392F0"> loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;lazy&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">&lt;!-- Или через нативный lazy (браузер сам решит) --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">img</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;content-3.webp&quot;</span><span style="color:#B392F0"> loading</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;lazy&quot;</span><span style="color:#B392F0"> alt</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span></code></pre>
+<h3 id="73-cdn">7.3 CDN</h3>
+<p>CDN оправдан, если:</p>
+<ul>
+<li>много трафика,</li>
+<li>много тяжелых медиа,</li>
+<li>география широкая,</li>
+<li>сервер “на коленке” и ты не хочешь его раздувать.</li>
+</ul>
+<hr/>
+<h2 id="8-плагин-диета-как-выжить-без-ещё-одного-оптимизатора">8) Плагин-диета: как выжить без “ещё одного оптимизатора”</h2>
+<p>Правило простое: <strong>каждый плагин должен платить аренду</strong>.</p>
+<h3 id="81-как-понять-кто-жирный">8.1 Как понять, кто жирный</h3>
+<ul>
+<li>открой DevTools → Network,</li>
+<li>смотри, кто добавляет CSS/JS,</li>
+<li>проверь, грузится ли это <strong>на всех страницах</strong>.</li>
+</ul>
+<p>Типовой ад:</p>
+<ul>
+<li>плагин формы грузит свои скрипты даже на странице “О компании”.</li>
+<li>плагин галереи тянет 300KB JS ради одного блока.</li>
+</ul>
+<h3 id="82-нормальная-стратегия">8.2 Нормальная стратегия</h3>
+<ul>
+<li>отключать ассеты на ненужных страницах (через настройки плагина или специализированные инструменты),</li>
+<li>не ставить “комбайны”, которые делают всё и конфликтуют со всем,</li>
+<li>лучше один качественный кеш/оптимизатор, чем три “ускорителя”, которые дерутся за одно и то же.</li>
+</ul>
+<hr/>
+<h2 id="9-third-party-скрипты-маркетинг-любит-тормоза-но-это-лечится">9) Third-party скрипты: маркетинг любит тормоза, но это лечится</h2>
+<p>Тут компромисс, не война.</p>
+<h3 id="что-делать">Что делать:</h3>
+<ul>
+<li>загружать по взаимодействию (первый клик/скролл),</li>
+<li>откладывать чаты до 10–15 секунд или до просмотра 2–3 страниц,</li>
+<li>резать дубликаты аналитики (да, такое бывает).</li>
+</ul>
+<p>Если у тебя 6 счётчиков, 2 пикселя, чат, виджет “мы перезвоним” и ещё “тепловая карта” — INP будет не просто плохим, он будет <strong>оскорблённым</strong>.</p>
+<hr/>
+<h2 id="10-контроль-качества-чтобы-не-деградировать-через-неделю">10) Контроль качества: чтобы не деградировать через неделю</h2>
+<p>Самая частая проблема: “мы ускорили” → поставили новый плагин → вернулись в болото.</p>
+<h3 id="101-мини-регрессия">10.1 Мини-регрессия</h3>
+<p>Список контрольных URL (шаблоны) + замер после каждого релиза.</p>
+<h3 id="102-мониторинг">10.2 Мониторинг</h3>
+<p>Минимум:</p>
+<ul>
+<li>uptime,</li>
+<li>TTFB,</li>
+<li>размер страницы,</li>
+<li>количество запросов.</li>
+</ul>
+<p>Если хочешь совсем по-взрослому:</p>
+<ul>
+<li>RUM (полевые метрики от реальных пользователей) — но это отдельная тема.</li>
+</ul>
+<hr/>
+<h2 id="итоговый-чек-лист-коротко">Итоговый чек-лист (коротко)</h2>
+<h3 id="сервер">Сервер</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> PHP-FPM настроен под нагрузку</li>
+<li class="task-list-item"><input type="checkbox" disabled/> OPcache включён и адекватно настроен</li>
+<li class="task-list-item"><input type="checkbox" disabled/> TTFB стабилен</li>
+</ul>
+<h3 id="кэш">Кэш</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Page cache работает для гостей</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Исключения настроены (admin/cart/checkout/account)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Object cache (Redis) включён там, где нужен</li>
+</ul>
+<h3 id="медиа">Медиа</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> LCP-элемент не lazy</li>
+<li class="task-list-item"><input type="checkbox" disabled/> WebP/AVIF, нормальные размеры, srcset/sizes</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Ненужные тяжелые медиа убраны/заменены</li>
+</ul>
+<h3 id="темафронт">Тема/фронт</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> CLS не прыгает (резервирование размеров)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> INP контролируем (нет long tasks из “мусорного” JS)</li>
+</ul>
+<h3 id="плагиныthird-party">Плагины/third-party</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Плагинов минимум, ассеты точечно</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Чаты/виджеты/метрики отложены и дисциплинированы</li>
+</ul>
+<hr/>
+<h2 id="что-делать-прямо-сегодня-план-на-23-часа">Что делать прямо сегодня (план на 2–3 часа)</h2>
+<ol>
+<li>Замерь baseline на 5–7 ключевых шаблонах (таблица).</li>
+<li>Почини LCP (hero без lazy + форматы + размер).</li>
+<li>Включи page cache (Nginx или плагин).</li>
+<li>Сними Performance профиль и найди причину плохого INP.</li>
+<li>Отложи third-party и выкинь лишнее.</li>
+<li>Повтори замер, зафиксируй улучшения.</li>
+</ol> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

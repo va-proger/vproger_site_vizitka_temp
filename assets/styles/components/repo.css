@@ -1,0 +1,260 @@
+/* === GitHub репозитории === */
+.github {}
+
+.repo-grid.pretty {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.repo-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    padding: 1.3rem 1.4rem;
+    text-align: left;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.repo-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(0, 198, 255, 0.08), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.repo-card:hover::before {
+    opacity: 1;
+}
+
+.repo-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 0 25px rgba(0, 198, 255, 0.15);
+}
+
+.repo-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.repo-card h3 a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.repo-card h3 a:hover {
+    text-decoration: underline;
+}
+
+.repo-card p {
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.github-all {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.github-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.github-link:hover {
+    color: #fff;
+    text-shadow: 0 0 12px var(--accent);
+}
+
+.repo-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.badge-new {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    background: linear-gradient(90deg,
+            var(--accent),
+            var(--accent));
+    color: #fff;
+
+    box-shadow: 0 0 16px rgba(0, 198, 255, 0.7);
+    white-space: nowrap;
+}
+
+.section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+
+
+@media (max-width: 640px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .repo-card {
+        padding: 1.1rem;
+    }
+
+    .repo-card p {
+        font-size: 0.85rem;
+    }
+}
+
+.page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0 1.2rem;
+}
+
+.page-title {
+    margin: 1rem 0 .25rem;
+}
+
+.page-subtitle {
+    margin: 0;
+}
+
+.page-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+.page-stat {
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .6rem .8rem;
+    min-width: 130px;
+}
+
+.page-stat__label {
+    display: block;
+    font-size: 12px;
+    opacity: .7;
+}
+
+.page-stat__value {
+    display: block;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.repo-card {
+    text-decoration: none;
+    color: inherit;
+}
+
+.repo-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .8rem;
+    margin-bottom: .35rem;
+}
+
+.repo-title {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.2;
+}
+
+.repo-desc {
+    margin: 0;
+}
+
+.badge-new {
+    font-size: 11px;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--accent), var(--border) 55%);
+    background: rgba(0, 198, 255, .12);
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.info-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: .35rem;
+}
+
+.info-list li {
+    padding: 0;
+}
+
+@media (max-width: 900px) {
+    .page-head {
+        flex-direction: column;
+    }
+
+    .page-stat {
+        min-width: 0;
+    }
+}
+
+.repo-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.repo-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .8rem;
+    margin-bottom: .35rem;
+}
+
+.repo-title {
+    margin: 0;
+    color: var(--accent);
+}
+
+.repo-desc {
+    margin: 0;
+}
+
+.badge-new {
+    font-size: 11px;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--accent), var(--border) 55%);
+    background: rgba(0, 198, 255, .12);
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: .06em;
+}

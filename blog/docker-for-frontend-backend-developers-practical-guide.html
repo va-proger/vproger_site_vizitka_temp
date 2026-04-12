@@ -1,0 +1,532 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Docker для фронтенд- и бэк-разработчиков: практический гайд без DevOps-магии</title><meta name="description" content="Практический гайд по Docker: контейнеры, Dockerfile, Docker Compose, деплой и типовые ошибки. Примеры для Node.js, PHP, WordPress, PostgreSQL. Без оверинженеринга — для разработчиков."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> docker </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Docker для фронтенд- и бэк-разработчиков: практический гайд без DevOps-магии </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>4 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/docker-for-developers-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="docker-для-фронтенд--и-бэк-разработчиков-практический-гайд-без-devops-магии">Docker для фронтенд- и бэк-разработчиков: практический гайд без DevOps-магии</h1>
+<p><strong>Docker</strong> — это не «магия для DevOps», а нормальный инженерный инструмент, который решает очень приземлённую проблему:
+<strong>один и тот же проект должен одинаково запускаться локально, у коллеги и на сервере</strong>.</p>
+<p>Если ты фронтендер, бэкендер, PHP- или Node-разработчик — Docker нужен тебе ровно для этого.
+Не для Kubernetes, не для резюме, не для пафоса.</p>
+<p>Ниже — честный и практический гайд. Строго по документации, с примерами из реальной разработки.</p>
+<hr/>
+<h2 id="что-такое-контейнер-и-почему-он-лучше-vm">Что такое контейнер и почему он лучше VM</h2>
+<h3 id="контейнер-простыми-словами">Контейнер простыми словами</h3>
+<p>Контейнер — это <strong>изолированный процесс</strong> в Linux с:</p>
+<ul>
+<li>собственным файловым пространством,</li>
+<li>своей сетью,</li>
+<li>своими зависимостями.</li>
+</ul>
+<p>Контейнер <strong>не содержит своей операционной системы</strong> — только процесс(ы) и файлы из образа.</p>
+<hr/>
+<h3 id="контейнер-vs-virtualbox--kvm--на-одном-примере">Контейнер vs VirtualBox / KVM — на одном примере</h3>
+<p><strong>Задача:</strong> запустить Node.js + PostgreSQL для проекта.</p>
+<h4 id="виртуальная-машина-virtualbox--kvm">Виртуальная машина (VirtualBox / KVM)</h4>
+<ol>
+<li>Создаёшь VM с Ubuntu</li>
+<li>Ставишь Node.js</li>
+<li>Ставишь PostgreSQL</li>
+<li>Ловишь конфликт версий</li>
+<li>Настраиваешь systemd</li>
+<li>VM весит 2–4 ГБ</li>
+<li>Запускается минутами</li>
+</ol>
+<h4 id="docker">Docker</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span></span></code></pre>
+<ul>
+<li>Node и Postgres — в контейнерах</li>
+<li>Вес — сотни мегабайт</li>
+<li>Запуск — секунды</li>
+<li>У всех разработчиков одинаковое окружение</li>
+</ul>
+<p><strong>Ключевая разница:</strong>
+VM виртуализирует <strong>железо</strong>, Docker изолирует <strong>процессы</strong>.</p>
+<hr/>
+<h2 id="основы-docker">Основы Docker</h2>
+<h3 id="установка-docker">Установка Docker</h3>
+<h4 id="ubuntu">Ubuntu</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> update</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> docker.io</span><span style="color:#9ECBFF"> docker-compose-plugin</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> usermod</span><span style="color:#79B8FF"> -aG</span><span style="color:#9ECBFF"> docker</span><span style="color:#E1E4E8"> $USER</span></span></code></pre>
+<p>Перелогинься, иначе Docker будет требовать <code>sudo</code>.</p>
+<hr/>
+<h4 id="centos--rocky--almalinux">CentOS / Rocky / AlmaLinux</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> dnf</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> docker</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#79B8FF"> --now</span><span style="color:#9ECBFF"> docker</span></span></code></pre>
+<hr/>
+<h4 id="windows-через-wsl2">Windows (через WSL2)</h4>
+<ol>
+<li>Установить Docker Desktop</li>
+<li>Включить WSL2</li>
+<li>Docker работает <strong>в Linux</strong>, а не в Windows</li>
+</ol>
+<blockquote>
+<p>Docker без WSL2 на Windows — плохая идея. Не надо так.</p>
+</blockquote>
+<hr/>
+<h3 id="основные-понятия-docker">Основные понятия Docker</h3>
+<ul>
+<li><strong>Image (образ)</strong> — шаблон (read-only)</li>
+<li><strong>Container (контейнер)</strong> — запущенный образ</li>
+<li><strong>Layer (слой)</strong> — шаг сборки образа</li>
+<li><strong>Registry</strong> — хранилище образов (Docker Hub, private registry)</li>
+</ul>
+<hr/>
+<h3 id="базовые-команды-docker">Базовые команды Docker</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> nginx</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> ps</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> ps</span><span style="color:#79B8FF"> -a</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> logs</span><span style="color:#9ECBFF"> container_name</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> exec</span><span style="color:#79B8FF"> -it</span><span style="color:#9ECBFF"> container_name</span><span style="color:#9ECBFF"> sh</span></span></code></pre>
+<hr/>
+<h3 id="docker-run-vs-docker-exec">docker run vs docker exec</h3>
+<ul>
+<li><code>docker run</code> — <strong>создаёт и запускает новый контейнер</strong></li>
+<li><code>docker exec</code> — <strong>входит в уже запущенный контейнер</strong></li>
+</ul>
+<p>Типичная ошибка новичков — пытаться <code>exec</code> в контейнер, который не запущен.</p>
+<hr/>
+<h3 id="типичные-ошибки-новичков">Типичные ошибки новичков</h3>
+<ul>
+<li>Хранить данные внутри контейнера</li>
+<li>Использовать тег <code>latest</code></li>
+<li>Запускать сервисы через <code>service nginx start</code></li>
+<li>Не читать <code>docker logs</code></li>
+<li>Копировать весь проект без <code>.dockerignore</code></li>
+</ul>
+<hr/>
+<h2 id="dockerfile-собираем-образ">Dockerfile: собираем образ</h2>
+<h3 id="базовая-структура-dockerfile">Базовая структура Dockerfile</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> node:20-alpine</span></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /app</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> package*.json ./</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> npm ci</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> . .</span></span>
+<span class="line"><span style="color:#F97583">EXPOSE</span><span style="color:#E1E4E8"> 3000</span></span>
+<span class="line"><span style="color:#F97583">CMD</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&quot;npm&quot;</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">&quot;run&quot;</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">&quot;start&quot;</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<hr/>
+<h3 id="основные-инструкции">Основные инструкции</h3>
+<ul>
+<li><code>FROM</code> — базовый образ</li>
+<li><code>RUN</code> — команда при сборке</li>
+<li><code>COPY</code> — копирование файлов</li>
+<li><code>ENV</code> — переменные окружения</li>
+<li><code>EXPOSE</code> — документируем порт</li>
+<li><code>CMD</code> — команда запуска контейнера</li>
+<li><code>ENTRYPOINT</code> — точка входа</li>
+</ul>
+<hr/>
+<h3 id="пример-1-dockerfile-для-nodejs-astro--express">Пример 1: Dockerfile для Node.js (Astro / Express)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> node:20-alpine </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> build</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /app</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> package*.json ./</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> npm ci</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> . .</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> npm run build</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> node:20-alpine</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /app</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> --from=build /app/dist ./dist</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> package*.json ./</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> npm ci --omit=dev</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">EXPOSE</span><span style="color:#E1E4E8"> 3000</span></span>
+<span class="line"><span style="color:#F97583">CMD</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&quot;node&quot;</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">&quot;dist/server.js&quot;</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<p><strong>Почему так правильно:</strong></p>
+<ul>
+<li>multistage-сборка</li>
+<li>dev-зависимости не попадают в production</li>
+<li>минимальный размер образа</li>
+</ul>
+<hr/>
+<h3 id="пример-2-dockerfile-для-php-wordpress--bitrix">Пример 2: Dockerfile для PHP (WordPress / Bitrix)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> php:8.4-fpm-alpine</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> apk add --no-cache \</span></span>
+<span class="line"><span style="color:#E1E4E8">    bash git icu-dev libzip-dev oniguruma-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &amp;&amp; docker-php-ext-install intl zip mysqli opcache</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /var/www/html</span></span></code></pre>
+<blockquote>
+<p>WordPress и Bitrix <strong>официально используют php-fpm</strong>.
+Apache внутри контейнера почти всегда лишний.</p>
+</blockquote>
+<hr/>
+<h3 id="dockerignore--обязательно">.dockerignore — обязательно</h3>
+<p>Минимальный набор (скопируй в корень проекта):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>node_modules</span></span>
+<span class="line"><span>vendor</span></span>
+<span class="line"><span>.git</span></span>
+<span class="line"><span>.gitignore</span></span>
+<span class="line"><span>.env</span></span>
+<span class="line"><span>.env.local</span></span>
+<span class="line"><span>.env.*.local</span></span>
+<span class="line"><span>*.log</span></span>
+<span class="line"><span>npm-debug.log*</span></span>
+<span class="line"><span>.DS_Store</span></span>
+<span class="line"><span>coverage</span></span>
+<span class="line"><span>.nyc_output</span></span>
+<span class="line"><span>dist</span></span>
+<span class="line"><span>.next</span></span></code></pre>
+<p>Расширенный вариант для Node.js (ещё меньше контекста — быстрее сборка):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>node_modules</span></span>
+<span class="line"><span>vendor</span></span>
+<span class="line"><span>.git</span></span>
+<span class="line"><span>.gitignore</span></span>
+<span class="line"><span>.env*</span></span>
+<span class="line"><span>*.log</span></span>
+<span class="line"><span>.DS_Store</span></span>
+<span class="line"><span>coverage</span></span>
+<span class="line"><span>dist</span></span>
+<span class="line"><span>.next</span></span>
+<span class="line"><span>.nuxt</span></span>
+<span class="line"><span>.cache</span></span>
+<span class="line"><span>*.md</span></span>
+<span class="line"><span>!README.md</span></span></code></pre>
+<p>Без <code>.dockerignore</code>:</p>
+<ul>
+<li>образы раздуваются,</li>
+<li>ломается кеш,</li>
+<li>сборка становится медленной.</li>
+</ul>
+<hr/>
+<h3 id="рекомендации-по-dockerfile">Рекомендации по Dockerfile</h3>
+<ul>
+<li>Используй <code>alpine</code></li>
+<li>Объединяй <code>RUN</code> в один слой</li>
+<li>COPY <code>package.json</code> до копирования кода</li>
+<li>Всегда используй multistage, если есть сборка</li>
+</ul>
+<p>Проверка размера образа:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> image</span><span style="color:#9ECBFF"> ls</span></span></code></pre>
+<p>Пример вывода (образ без alpine и с лишними слоями будет в разы больше):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>REPOSITORY    TAG       IMAGE ID       CREATED         SIZE</span></span>
+<span class="line"><span>myapp         latest    a1b2c3d4e5f6   2 minutes ago   180MB</span></span></code></pre>
+<p>Сборка с тегом и без кеша (если что-то пошло не так):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> build</span><span style="color:#79B8FF"> --no-cache</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> myapp:1.0</span><span style="color:#9ECBFF"> .</span></span></code></pre>
+<hr/>
+<h2 id="минимальный-рабочий-пример-copy-paste">Минимальный рабочий пример (copy-paste)</h2>
+<p>Ниже — полный набор файлов, чтобы поднять Node.js + PostgreSQL за минуту.</p>
+<p><strong>Dockerfile</strong> в корне проекта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> node:20-alpine</span></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /app</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> package*.json ./</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> npm ci --omit=dev</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> . .</span></span>
+<span class="line"><span style="color:#F97583">EXPOSE</span><span style="color:#E1E4E8"> 3000</span></span>
+<span class="line"><span style="color:#F97583">CMD</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&quot;node&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;server.js&quot;</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<p><strong>docker-compose.yml</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  app</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">&quot;3000:3000&quot;</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      DATABASE_URL</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">postgresql://postgres:postgres@db:5432/app</span></span>
+<span class="line"><span style="color:#85E89D">    depends_on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      db</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">        condition</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">service_healthy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  db</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">postgres:16-alpine</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      POSTGRES_USER</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">postgres</span></span>
+<span class="line"><span style="color:#85E89D">      POSTGRES_PASSWORD</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">postgres</span></span>
+<span class="line"><span style="color:#85E89D">      POSTGRES_DB</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">pgdata:/var/lib/postgresql/data</span></span>
+<span class="line"><span style="color:#85E89D">    healthcheck</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      test</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">&quot;CMD-SHELL&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;pg_isready -U postgres&quot;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">      interval</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">2s</span></span>
+<span class="line"><span style="color:#85E89D">      timeout</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">5s</span></span>
+<span class="line"><span style="color:#85E89D">      retries</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  pgdata</span><span style="color:#E1E4E8">:</span></span></code></pre>
+<p>Запуск и проверка:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span><span style="color:#79B8FF"> -d</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> ps</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> http://localhost:3000</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> logs</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> app</span></span></code></pre>
+<hr/>
+<h2 id="docker-compose-для-разработки">Docker Compose для разработки</h2>
+<h3 id="docker-composeyml-версия-3x">docker-compose.yml (версия 3.x)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;3.9&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  app</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">&quot;3000:3000&quot;</span></span>
+<span class="line"><span style="color:#85E89D">    env_file</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">.env</span></span></code></pre>
+<hr/>
+<h3 id="типовые-сервисы">Типовые сервисы</h3>
+<ul>
+<li>nginx</li>
+<li>php-fpm</li>
+<li>mysql / postgres</li>
+<li>redis</li>
+</ul>
+<p>Один сервис — один контейнер. Всегда.</p>
+<hr/>
+<h3 id="networks-и-volumes">Networks и volumes</h3>
+<ul>
+<li><strong>network</strong> — контейнеры общаются по имени сервиса</li>
+<li><strong>volume</strong> — постоянные данные</li>
+<li><strong>bind mount</strong> — файлы проекта (локальная разработка)</li>
+</ul>
+<hr/>
+<h3 id="пример-1-wordpress-nginx--php-fpm--mysql--phpmyadmin">Пример 1: WordPress (nginx + php-fpm + mysql + phpMyAdmin)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  nginx</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">nginx:alpine</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./nginx.conf:/etc/nginx/conf.d/default.conf</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./wp:/var/www/html</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">&quot;8080:80&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  php</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./wp:/var/www/html</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      DB_HOST</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">db</span></span>
+<span class="line"><span style="color:#85E89D">    depends_on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">db</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  db</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">mysql:8</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      MYSQL_ROOT_PASSWORD</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">root</span></span>
+<span class="line"><span style="color:#85E89D">      MYSQL_DATABASE</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">wordpress</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  phpmyadmin</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">phpmyadmin/phpmyadmin</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      PMA_HOST</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">db</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">&quot;8081:80&quot;</span></span></code></pre>
+<hr/>
+<h3 id="пример-2-nodejs--postgresql--redis">Пример 2: Node.js + PostgreSQL + Redis</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  app</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">&quot;3000:3000&quot;</span></span>
+<span class="line"><span style="color:#85E89D">    depends_on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">db</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">redis</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  db</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">postgres:16</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">pgdata:/var/lib/postgresql/data</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  redis</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">redis:7</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  pgdata</span><span style="color:#E1E4E8">:</span></span></code></pre>
+<hr/>
+<h3 id="env-файлы">Env-файлы</h3>
+<ul>
+<li><code>.env</code> — локальная разработка</li>
+<li><code>.env.production</code> — продакшен</li>
+<li>Секреты <strong>не коммить</strong></li>
+</ul>
+<hr/>
+<h3 id="команды-docker-compose">Команды Docker Compose</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span><span style="color:#79B8FF"> -d</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> down</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> ps</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> logs</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> app</span></span></code></pre>
+<hr/>
+<h3 id="как-дебажить-контейнер-в-compose">Как дебажить контейнер в Compose</h3>
+<p>Войти в оболочку запущенного сервиса:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> app</span><span style="color:#9ECBFF"> sh</span></span></code></pre>
+<p>Внутри контейнера можно проверить переменные, установленные пакеты и сеть:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Переменные окружения</span></span>
+<span class="line"><span style="color:#B392F0">env</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#9ECBFF"> DATABASE</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Есть ли сеть до базы</span></span>
+<span class="line"><span style="color:#B392F0">nc</span><span style="color:#79B8FF"> -zv</span><span style="color:#9ECBFF"> db</span><span style="color:#79B8FF"> 5432</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Альпийский образ: вместо curl часто есть wget</span></span>
+<span class="line"><span style="color:#B392F0">wget</span><span style="color:#79B8FF"> -qO-</span><span style="color:#9ECBFF"> http://localhost:3000</span></span></code></pre>
+<p>Выйти из контейнера: <code>exit</code>.</p>
+<hr/>
+<h2 id="логирование-и-отладка">Логирование и отладка</h2>
+<h3 id="docker-logs">docker logs</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> logs</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> container_name</span></span></code></pre>
+<p>Если контейнер упал — причина почти всегда в логах.</p>
+<hr/>
+<h3 id="docker-inspect">docker inspect</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> inspect</span><span style="color:#9ECBFF"> container_name</span></span></code></pre>
+<p>Там:</p>
+<ul>
+<li>IP,</li>
+<li>volumes,</li>
+<li>env,</li>
+<li>команды запуска.</li>
+</ul>
+<hr/>
+<h3 id="проброс-портов">Проброс портов</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>localhost:3000 → container:3000</span></span></code></pre>
+<p>Если порт не проброшен — с хоста до приложения в контейнере не достучаться.</p>
+<hr/>
+<h3 id="localhost-и-ip-адреса-внутри-контейнера">localhost и IP-адреса внутри контейнера</h3>
+<p>Внутри Docker:</p>
+<ul>
+<li>❌ <code>127.0.0.1</code></li>
+<li>❌ <code>localhost</code></li>
+<li>✅ имя сервиса (<code>db</code>, <code>redis</code>)</li>
+</ul>
+<p>Docker DNS работает по имени сервиса.</p>
+<hr/>
+<h2 id="деплой-контейнера-на-сервер">Деплой контейнера на сервер</h2>
+<h3 id="production-сборка">Production-сборка</h3>
+<ul>
+<li>без dev-зависимостей</li>
+<li>без hot-reload</li>
+<li>без bind-mount</li>
+</ul>
+<hr/>
+<h3 id="публикация-образа-в-registry">Публикация образа в registry</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> build</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> username/app:1.0</span><span style="color:#9ECBFF"> .</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> push</span><span style="color:#9ECBFF"> username/app:1.0</span></span></code></pre>
+<p>Можно использовать Docker Hub или приватный registry.</p>
+<hr/>
+<h3 id="запуск-на-сервере-через-docker-run">Запуск на сервере через docker run</h3>
+<p>На сервере (после <code>docker pull</code> или если образ уже в registry):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -d</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --name</span><span style="color:#9ECBFF"> app</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -p</span><span style="color:#9ECBFF"> 80:3000</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --restart=always</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -e</span><span style="color:#9ECBFF"> NODE_ENV=production</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  username/app:1.0</span></span></code></pre>
+<p>Проверка, что контейнер работает:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> ps</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> /dev/null</span><span style="color:#79B8FF"> -w</span><span style="color:#9ECBFF"> &quot;%{http_code}&quot;</span><span style="color:#9ECBFF"> http://localhost:80</span></span></code></pre>
+<hr/>
+<h3 id="systemd-unit-файл">systemd unit-файл</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#B392F0">[Unit]</span></span>
+<span class="line"><span style="color:#F97583">Description</span><span style="color:#E1E4E8">=Docker App</span></span>
+<span class="line"><span style="color:#F97583">After</span><span style="color:#E1E4E8">=docker.service</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">[Service]</span></span>
+<span class="line"><span style="color:#F97583">Restart</span><span style="color:#E1E4E8">=always</span></span>
+<span class="line"><span style="color:#F97583">ExecStart</span><span style="color:#E1E4E8">=/usr/bin/docker run --rm -p 80:3000 username/app:1.0</span></span>
+<span class="line"><span style="color:#F97583">ExecStop</span><span style="color:#E1E4E8">=/usr/bin/docker stop app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">[Install]</span></span>
+<span class="line"><span style="color:#F97583">WantedBy</span><span style="color:#E1E4E8">=multi-user.target</span></span></code></pre>
+<hr/>
+<h3 id="данные-в-production">Данные в production</h3>
+<ul>
+<li><strong>volumes</strong> — базы данных</li>
+<li><strong>bind mounts</strong> — конфиги</li>
+</ul>
+<p>Контейнеры можно удалять, данные — нет.</p>
+<hr/>
+<h3 id="обновление-без-простоя">Обновление без простоя</h3>
+<ol>
+<li>Поднять новый контейнер</li>
+<li>Переключить трафик (nginx)</li>
+<li>Остановить старый</li>
+</ol>
+<p>Для небольших проектов этого достаточно.</p>
+<hr/>
+<h2 id="про-kubernetes--честно">Про Kubernetes — честно</h2>
+<h3 id="когда-нужен-kubernetes">Когда нужен Kubernetes</h3>
+<ul>
+<li>десятки сервисов</li>
+<li>автоскейлинг</li>
+<li>отказоустойчивость</li>
+<li>несколько окружений</li>
+</ul>
+<hr/>
+<h3 id="базовые-сущности-k8s">Базовые сущности K8s</h3>
+<ul>
+<li><strong>Pod</strong> — один или несколько контейнеров</li>
+<li><strong>Deployment</strong> — управление версиями</li>
+<li><strong>Service</strong> — доступ к подам</li>
+</ul>
+<hr/>
+<h3 id="когда-kubernetes-не-нужен">Когда Kubernetes не нужен</h3>
+<ul>
+<li>один сервер</li>
+<li>один проект</li>
+<li>небольшая команда</li>
+</ul>
+<p>В этом случае Docker Compose — лучше.</p>
+<hr/>
+<h3 id="альтернативы-kubernetes">Альтернативы Kubernetes</h3>
+<ul>
+<li>Docker Swarm</li>
+<li>AWS ECS</li>
+<li>HashiCorp Nomad</li>
+</ul>
+<hr/>
+<h2 id="типичные-ошибки-и-решения">Типичные ошибки и решения</h2>
+<h3 id="контейнер-стартует-и-сразу-падает">Контейнер стартует и сразу падает</h3>
+<p>Причина — ошибка в <code>CMD</code> или <code>ENTRYPOINT</code>. Сначала смотри логи:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> logs</span><span style="color:#9ECBFF"> container_name</span></span></code></pre>
+<p>Если контейнер сразу падает и логи пустые — запусти образ <strong>без флага <code>-d</code></strong>, чтобы увидеть вывод в консоли:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> --rm</span><span style="color:#79B8FF"> --name</span><span style="color:#9ECBFF"> debug-app</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> 3000:3000</span><span style="color:#9ECBFF"> myapp:latest</span></span></code></pre>
+<p>Ошибка (например, «Cannot find module») появится сразу в терминале. После исправления кода пересобери образ и снова запусти контейнер.</p>
+<hr/>
+<h3 id="port-already-in-use">Port already in use</h3>
+<p>Узнай, какой процесс занял порт, и заверши его:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Linux / macOS</span></span>
+<span class="line"><span style="color:#B392F0">lsof</span><span style="color:#79B8FF"> -i</span><span style="color:#9ECBFF"> :3000</span></span>
+<span class="line"><span style="color:#6A737D"># или</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> ss</span><span style="color:#79B8FF"> -tlnp</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#79B8FF"> 3000</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Убить процесс по PID (подставь реальный PID из вывода)</span></span>
+<span class="line"><span style="color:#79B8FF">kill</span><span style="color:#79B8FF"> -9</span><span style="color:#9ECBFF"> PID</span></span></code></pre>
+<p>На Windows (WSL2) порт может держать другой контейнер — проверь <code>docker ps</code> и останови старый контейнер: <code>docker stop container_name</code>.</p>
+<hr/>
+<h3 id="localhost-внутри-контейнера--это-не-хост">localhost внутри контейнера — это не хост</h3>
+<p>Для контейнера <code>localhost</code> и <code>127.0.0.1</code> указывают <strong>на сам контейнер</strong>, а не на твою машину. Это нормально: контейнер изолирован, у него свой сетевой namespace. Чтобы достучаться до сервиса на хосте с Windows/Mac, используй <code>host.docker.internal</code> (Docker Desktop) или <code>--add-host=host.docker.internal:host-gateway</code> при запуске.</p>
+<hr/>
+<h3 id="медленная-сборка-образа">Медленная сборка образа</h3>
+<ul>
+<li>Неправильный порядок <code>COPY</code></li>
+<li>Нет <code>.dockerignore</code></li>
+<li>Не используется кеш слоёв</li>
+</ul>
+<hr/>
+<h2 id="практические-сниппеты-по-теме">Практические сниппеты по теме</h2>
+<p>На сайте есть готовые сниппеты с разбором команд, сетей и хранения данных:</p>
+<ul>
+<li><a href="/snippets/docker-run-start-exec-difference">Docker: разница между run, start и exec</a> — когда создавать контейнер, когда запускать остановленный, как войти в уже работающий</li>
+<li><a href="/snippets/docker-localhost-between-containers-networking">Docker networking: почему localhost не работает между контейнерами</a> — embedded DNS, имя сервиса вместо 127.0.0.1, пример docker-compose</li>
+<li><a href="/snippets/docker-image-size-alpine-cache-copy-order">Как уменьшить размер Docker-образа: alpine, кеш и порядок инструкций</a> — Alpine vs Debian, кеширование слоёв, правильный порядок COPY в Dockerfile</li>
+<li><a href="/snippets/docker-compose-volumes-vs-bind-mounts">Docker Compose: volumes vs bind mounts</a> — когда bind mount (разработка), когда volume (production), пример для обоих вариантов</li>
+<li><a href="/snippets/docker-system-prune">Docker system prune</a> — очистка неиспользуемых образов, контейнеров и томов</li>
+</ul>
+<hr/>
+<h2 id="итог">Итог</h2>
+<p>Docker — это:</p>
+<ul>
+<li>не DevOps-магия,</li>
+<li>не Kubernetes,</li>
+<li>не оверинженерия.</li>
+</ul>
+<p>Это <strong>инструмент разработчика</strong>, который:</p>
+<ul>
+<li>упрощает локальную разработку,</li>
+<li>убирает «у меня работает»,</li>
+<li>делает деплой предсказуемым.</li>
+</ul>
+<p>Если раньше ты делал VM — Docker станет логичным следующим шагом.
+Не сразу идеально, но <strong>один раз правильно</strong>.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Aspro SmartSEO падает после обновления Битрикс: фикс getRowById одной командой</title><meta name="description" content="Aspro SmartSEO падает с fatal после обновления Битрикс: причина getRowById, патч в 3 шага (perl + кеш). Правки в bitrix/modules временны — обновить модуль или перенести в /local по документации."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> bitrix </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Aspro SmartSEO падает после обновления Битрикс: фикс getRowById одной командой </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>22 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/aspro-smartseo-getrowbyid-fix-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="падение-aspro-smartseo-после-обновления-битрикс-разбор-причины-и-корректный-фикс-сигнатуры-getrowbyid">Падение Aspro SmartSEO после обновления Битрикс: разбор причины и корректный фикс сигнатуры <code>getRowById</code></h1>
+<p>Обновления ядра <strong>1С-Битрикс</strong> нередко выявляют слабые места сторонних модулей. Летом–осенью 2025 года на ряде проектов проявилась критическая ошибка в модуле <strong>Aspro SmartSEO</strong>, из-за которой сайты начинали отдавать 500-е ошибки, переставал работать каталог, переставали работать SEO-фильтры и связанные страницы.</p>
+<p>На первый взгляд проблема выглядит как «очередной баг обновления». На практике — это классический пример <strong>нарушения контракта наследования в PHP</strong>, который долгое время оставался незаметным и «взорвался» после очередных изменений ORM ядра.</p>
+<p>В материале:</p>
+<ul>
+<li>разберём реальную причину ошибки, а не симптомы;</li>
+<li>покажем, почему она проявилась именно сейчас;</li>
+<li>приведём <strong>корректное и воспроизводимое решение</strong>, применённое на рабочем проекте;</li>
+<li>объясним, что именно чинит каждая правка и почему она безопасна.</li>
+</ul>
+<hr/>
+<h2 id="симптомы-проблемы">Симптомы проблемы</h2>
+<p>После обновления ядра Битрикс сайт начинает падать с фатальной ошибкой PHP. Типичный текст ошибки выглядит так:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>Fatal error: Declaration of Aspro\Smartseo\Models\SmartseoFilterRuleTable::getRowById($id)</span></span>
+<span class="line"><span>must be compatible with Bitrix\Main\ORM\Data\DataManager::getRowById($id, array $parameters = [])</span></span></code></pre>
+<p>Проявления на проекте:</p>
+<ul>
+<li>страницы каталога и умного фильтра возвращают HTTP 500;</li>
+<li>SEO-страницы, сгенерированные SmartSEO, не открываются;</li>
+<li>в логах <code>php_error.log</code> — фатал без возможности graceful fallback;</li>
+<li>кеш не спасает, потому что выполнение падает <strong>до логики модуля</strong>.</li>
+</ul>
+<p>Важно: ошибка возникает <strong>не в пользовательском коде</strong>, а внутри модуля SmartSEO, поэтому «поправить компонент» или «переустановить шаблон» не помогает.</p>
+<hr/>
+<h2 id="почему-это-происходит-на-самом-деле">Почему это происходит на самом деле</h2>
+<h3 id="ключевой-момент--orm-и-наследование">Ключевой момент — ORM и наследование</h3>
+<p>В основе проблемы лежит метод:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#79B8FF">Bitrix\Main\ORM\Data\DataManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">getRowById</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>В актуальных версиях ядра его сигнатура выглядит так:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getRowById</span><span style="color:#E1E4E8">($id, </span><span style="color:#F97583">array</span><span style="color:#E1E4E8"> $parameters </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [])</span></span></code></pre>
+<p>Параметр <code>$parameters</code> используется ORM для передачи дополнительных условий выборки, runtime-полей, select и других параметров запроса.</p>
+<h3 id="что-делает-aspro-smartseo">Что делает Aspro SmartSEO</h3>
+<p>Модуль SmartSEO содержит собственные ORM-таблицы в пространстве имён:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#79B8FF">Aspro</span><span style="color:#E1E4E8">\</span><span style="color:#79B8FF">Smartseo</span><span style="color:#E1E4E8">\</span><span style="color:#79B8FF">Models</span><span style="color:#E1E4E8">\</span><span style="color:#F97583">*</span></span></code></pre>
+<p>Эти классы <strong>наследуются от <code>DataManager</code></strong>, но в ряде файлов метод <code>getRowById</code> был переопределён <strong>с устаревшей сигнатурой</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getRowById</span><span style="color:#E1E4E8">($id)</span></span></code></pre>
+<p>Это прямое нарушение правил совместимости методов в PHP:</p>
+<blockquote>
+<p>Если метод переопределяется в дочернем классе, его сигнатура должна быть <strong>совместима</strong> с родительской.</p>
+</blockquote>
+<p>Ранее это не вызывало ошибок либо из-за более мягких проверок, либо из-за того, что код не исполнялся в критических сценариях. После обновления ядра проверка стала строгой — и PHP закономерно завершает выполнение с fatal error.</p>
+<hr/>
+<h2 id="почему-это-не-мелкий-баг-а-архитектурная-ошибка">Почему это не «мелкий баг», а архитектурная ошибка</h2>
+<p>Здесь важно зафиксировать:
+<strong>проблема не в обновлении Битрикс</strong>.</p>
+<p>Ядро действует корректно:</p>
+<ul>
+<li>метод <code>getRowById</code> расширен;</li>
+<li>обратная совместимость соблюдена;</li>
+<li>сигнатура официальная и используется ORM.</li>
+</ul>
+<p>Ошибка — в модуле, который:</p>
+<ul>
+<li>наследуется от <code>DataManager</code>;</li>
+<li>переопределяет метод;</li>
+<li><strong>не обновляет сигнатуру под родителя</strong>.</li>
+</ul>
+<p>Это означает, что ошибка <strong>гарантированно будет всплывать и дальше</strong>, при любых последующих изменениях ORM.</p>
+<hr/>
+<h2 id="корректное-решение-патч-сигнатуры-и-вызова-родителя">Корректное решение: патч сигнатуры и вызова родителя</h2>
+<h3 id="️-важно-правки-в-bitrixmodules--только-временная-мера">⚠️ Важно: правки в <code>bitrix/modules</code> — только временная мера</h3>
+<p>Патч ниже меняет файлы <strong>внутри</strong> <code>bitrix/modules/aspro.smartseo/</code>. По документации 1С-Битрикс файлы в <code>bitrix/modules</code> считаются ядром и сторонними модулями: при обновлении модуля через маркетплейс или установщик ваши правки <strong>будут перезаписаны</strong>. Поэтому:</p>
+<ul>
+<li><strong>Рекомендуется:</strong> как только Aspro выпустит обновление с исправлением сигнатуры <code>getRowById</code> — обновите модуль и уберите ручной патч.</li>
+<li><strong>Альтернатива:</strong> если обновления нет и правки нужно сохранить надолго — вынесите изменённые классы в <code>/local</code> (переопределение классов через автозагрузку из <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2705">папки /local</a>), чтобы не трогать код в <code>bitrix/modules</code> и не терять изменения при обновлении.</li>
+</ul>
+<p>Официальная рекомендация: не изменять файлы в <code>bitrix/modules</code>, а переносить кастомизацию в <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2705">папку /local</a>.</p>
+<p>Решение должно делать две вещи:</p>
+<ol>
+<li>Привести сигнатуру метода в дочерних классах к совместимой.</li>
+<li>Корректно прокинуть <code>$parameters</code> в вызов родительского метода.</li>
+</ol>
+<h3 id="важный-принцип">Важный принцип</h3>
+<p>Мы <strong>не ломаем API</strong>, не меняем логику выборки, не добавляем костылей.
+Мы всего лишь приводим код модуля в соответствие с контрактом родительского класса.</p>
+<hr/>
+<h2 id="шаг-1-исправление-сигнатуры-getrowbyid">Шаг 1. Исправление сигнатуры <code>getRowById</code></h2>
+<p>Необходимо во всех моделях SmartSEO заменить:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> getRowById</span><span style="color:#E1E4E8">($id)</span></span></code></pre>
+<p>на:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> getRowById</span><span style="color:#E1E4E8">($id, </span><span style="color:#F97583">array</span><span style="color:#E1E4E8"> $parameters </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [])</span></span></code></pre>
+<p>Практически и безопасно это делается <strong>одной командой</strong>, без ручного редактирования файлов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">perl</span><span style="color:#79B8FF"> -0777</span><span style="color:#79B8FF"> -i</span><span style="color:#79B8FF"> -pe</span><span style="color:#9ECBFF"> &#39;s/function\s+getRowById\s*\(\s*\$id\s*\)/function getRowById(\$id, array \$parameters = [])/g&#39;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#E1E4E8">bitrix/modules/aspro.smartseo/lib/models/*.php</span></span></code></pre>
+<h3 id="проверка-результата">Проверка результата</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -R</span><span style="color:#9ECBFF"> &quot;function getRowById&quot;</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> bitrix/modules/aspro.smartseo/lib/models/</span></span></code></pre>
+<p>Ожидаемый вид:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getRowById</span><span style="color:#E1E4E8">($id, </span><span style="color:#F97583">array</span><span style="color:#E1E4E8"> $parameters </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []) {</span></span></code></pre>
+<hr/>
+<h2 id="шаг-2-исправление-вызова-parentgetrowbyid">Шаг 2. Исправление вызова <code>parent::getRowById</code></h2>
+<p>В ряде моделей внутри метода используется вызов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">parent::</span><span style="color:#B392F0">getRowById</span><span style="color:#E1E4E8">($id)</span></span></code></pre>
+<p>После изменения сигнатуры это <strong>уже некорректно</strong>, так как <code>$parameters</code> теряются.</p>
+<h3 id="поиск-проблемных-мест">Поиск проблемных мест</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -R</span><span style="color:#9ECBFF"> &quot;parent::getRowById\s*(&quot;</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> bitrix/modules/aspro.smartseo/lib/models/</span></span></code></pre>
+<h3 id="массовый-патч">Массовый патч</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">perl</span><span style="color:#79B8FF"> -0777</span><span style="color:#79B8FF"> -i</span><span style="color:#79B8FF"> -pe</span><span style="color:#9ECBFF"> &#39;s/parent::getRowById\s*\(\s*\$id\s*\)/parent::getRowById(\$id, \$parameters)/g&#39;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#E1E4E8">bitrix/modules/aspro.smartseo/lib/models/*.php</span></span></code></pre>
+<h3 id="ожидаемый-результат">Ожидаемый результат</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E1E4E8">$data </span><span style="color:#F97583">=</span><span style="color:#F97583"> parent::</span><span style="color:#B392F0">getRowById</span><span style="color:#E1E4E8">($id, $parameters);</span></span></code></pre>
+<p>Это полностью соответствует контракту ORM и не меняет бизнес-логику модуля.</p>
+<hr/>
+<h2 id="шаг-3-очистка-кеша-битрикс">Шаг 3. Очистка кеша Битрикс</h2>
+<p>Даже корректный код не заработает, если Битрикс продолжает использовать старые кешированные данные.</p>
+<p>Обязательный шаг:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rm</span><span style="color:#79B8FF"> -rf</span><span style="color:#9ECBFF"> bitrix/cache/</span><span style="color:#79B8FF">*</span><span style="color:#9ECBFF"> bitrix/managed_cache/</span><span style="color:#79B8FF">*</span></span></code></pre>
+<p>После этого фатальные ошибки исчезают, а SmartSEO начинает работать штатно.</p>
+<hr/>
+<h2 id="что-именно-исправляет-этот-патч">Что именно исправляет этот патч</h2>
+<ul>
+<li>устраняет фатальную ошибку PHP;</li>
+<li>восстанавливает работу каталога и SEO-страниц;</li>
+<li>делает модуль <strong>совместимым с текущей и будущими версиями ORM</strong>;</li>
+<li>не влияет на данные, структуру БД и настройки проекта.</li>
+</ul>
+<p>Это не временный «костыль», а <strong>приведение модуля в корректное состояние</strong>.</p>
+<hr/>
+<h2 id="почему-именно-такое-решение--правильное">Почему именно такое решение — правильное</h2>
+<ol>
+<li>
+<p><strong>Соответствует ООП-контракту</strong>
+Мы не подавляем ошибку, а устраняем её причину.</p>
+</li>
+<li>
+<p><strong>Минимальное вмешательство</strong>
+Меняется только сигнатура и прокидывание параметров.</p>
+</li>
+<li>
+<p><strong>Воспроизводимость</strong>
+Решение можно повторить на любом сервере и проекте.</p>
+</li>
+<li>
+<p><strong>Безопасность</strong>
+Нет влияния на данные, миграции, кеш-ключи, SEO-логику.</p>
+</li>
+</ol>
+<hr/>
+<h2 id="типичные-ошибки">Типичные ошибки</h2>
+<h3 id="1--после-патча-сайт-по-прежнему-падает-с-тем-же-fatal">1) ❌ После патча сайт по-прежнему падает с тем же fatal</h3>
+<p><strong>Причина:</strong> не очищен кеш Битрикс (managed_cache, bitrix/cache) или правки применены не во всех файлах с <code>getRowById</code>.
+<strong>Как исправить:</strong> выполните Шаг 3 (<code>rm -rf bitrix/cache/* bitrix/managed_cache/*</code>). Проверьте через <code>grep -R &quot;function getRowById&quot;</code> что везде сигнатура с <code>array $parameters = []</code> и вызовы <code>parent::getRowById($id, $parameters)</code>.</p>
+<h3 id="2--после-обновления-модуля-aspro-smartseo-ошибка-вернулась">2) ❌ После обновления модуля Aspro SmartSEO ошибка вернулась</h3>
+<p><strong>Причина:</strong> обновление перезаписало файлы в <code>bitrix/modules/aspro.smartseo/</code> — правки в ядре модуля потерялись.
+<strong>Как исправить:</strong> накатите патч заново или обновитесь до версии, в которой вендор уже исправил сигнатуру. Либо перенесите переопределения классов в <code>/local</code>, чтобы не зависеть от обновлений в <code>bitrix/modules</code>.</p>
+<h3 id="3--команда-perl-выдаёт-ошибку-или-ничего-не-меняет">3) ❌ Команда perl выдаёт ошибку или ничего не меняет</h3>
+<p><strong>Причина:</strong> путь к модулю другой (например, модуль в <code>/local</code>), нет прав на запись или синтаксис perl отличается (другая ОС/оболочка).
+<strong>Как исправить:</strong> убедитесь, что находитесь в корне сайта и путь <code>bitrix/modules/aspro.smartseo/lib/models/</code> существует. При необходимости примените замену вручную в каждом файле из вывода <code>grep -Rl &quot;function getRowById&quot; bitrix/modules/aspro.smartseo/lib/models/</code>.</p>
+<hr/>
+<h2 id="где-применять">Где применять</h2>
+<ul>
+<li><strong>BitrixVM / обычный сервер:</strong> команды рассчитаны на Linux (grep, perl). Выполняйте из корня сайта по SSH.</li>
+<li><strong>Prod:</strong> перед патчем сделайте бэкап папки <code>bitrix/modules/aspro.smartseo/</code>. После правок очистите кеш и проверьте каталог и SEO-страницы.</li>
+<li><strong>Обновления:</strong> после любого обновления модуля Aspro SmartSEO проверяйте, не вернулась ли старая сигнатура; при необходимости накатывайте патч снова или переходите на версию с официальным фиксом / на вынос в <code>/local</code>.</li>
+</ul>
+<hr/>
+<h2 id="вывод">Вывод</h2>
+<p>Ошибка SmartSEO после обновления Битрикс — не «случайный баг», а результат устаревшего кода модуля, который долгое время нарушал контракт ORM.</p>
+<p>Обновление ядра лишь сделало проблему видимой.</p>
+<p>Правильный подход в таких ситуациях:</p>
+<ul>
+<li>не откатывать ядро;</li>
+<li>не править код вручную «на глаз»;</li>
+<li>не маскировать ошибку.</li>
+</ul>
+<p>А <strong>приводить сигнатуры методов в соответствие с родительскими классами</strong>.</p>
+<p>Именно это и делает описанный патч.</p>
+<hr/>
+<p>Если нужно — дальше можно разобрать, как автоматизировать такие проверки для модулей или как отслеживать подобные несовместимости до выхода в прод. Но это уже отдельная инженерная тема.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

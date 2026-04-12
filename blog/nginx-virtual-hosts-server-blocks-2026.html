@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Настройка Nginx server blocks для нескольких проектов на одном VPS</title><meta name="description" content="Практический гайд: структура sites-available, один конфиг с SSL, HTTP→HTTPS, HSTS, OCSP stapling, отдельные логи на сайт. Типичная 404, reload vs restart, готовый конфиг с комментариями."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> nginx </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Настройка Nginx server blocks для нескольких проектов на одном VPS </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>27 января 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/nginx-virtual-hosts-server-blocks-2026.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="настройка-nginx-server-blocks-для-нескольких-проектов-на-одном-vps">Настройка Nginx server blocks для нескольких проектов на одном VPS</h1>
+<p>Один VPS, несколько доменов — каждый проект в своём server block: отдельный <code>root</code>, свои логи, HTTPS с редиректом, HSTS и OCSP stapling. Ниже — структура каталогов конфигов, полный пример конфига с комментариями, типичная ошибка 404 и когда использовать <code>reload</code>, а когда <code>restart</code>.</p>
+<hr/>
+<h2 id="структура-etcnginxsites-available">Структура /etc/nginx/sites-available</h2>
+<p>На Ubuntu/Debian конфиги сайтов хранят в <code>sites-available</code>, активные — симлинки в <code>sites-enabled</code>. Так удобно включать и отключать сайты без удаления файлов.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>/etc/nginx/</span></span>
+<span class="line"><span>├── nginx.conf</span></span>
+<span class="line"><span>├── sites-available/</span></span>
+<span class="line"><span>│   ├── default          # default_server, редирект или 444</span></span>
+<span class="line"><span>│   ├── site1.example.com.conf</span></span>
+<span class="line"><span>│   ├── site2.example.com.conf</span></span>
+<span class="line"><span>│   └── api.site3.com.conf</span></span>
+<span class="line"><span>└── sites-enabled/</span></span>
+<span class="line"><span>    ├── default -&gt; ../sites-available/default</span></span>
+<span class="line"><span>    ├── site1.example.com.conf -&gt; ../sites-available/site1.example.com.conf</span></span>
+<span class="line"><span>    └── site2.example.com.conf -&gt; ../sites-available/site2.example.com.conf</span></span></code></pre>
+<p>В <code>nginx.conf</code> в блоке <code>http</code> должен быть:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">include </span><span style="color:#E1E4E8">/etc/nginx/sites-enabled/*;</span></span></code></pre>
+<p>Включение и отключение сайта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Включить</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> ln</span><span style="color:#79B8FF"> -sf</span><span style="color:#9ECBFF"> /etc/nginx/sites-available/site1.example.com.conf</span><span style="color:#9ECBFF"> /etc/nginx/sites-enabled/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Отключить</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> rm</span><span style="color:#9ECBFF"> /etc/nginx/sites-enabled/site1.example.com.conf</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверка и применение</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> nginx</span><span style="color:#79B8FF"> -t</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> reload</span><span style="color:#9ECBFF"> nginx</span></span></code></pre>
+<p>На CentOS/Rocky обычно используют <code>/etc/nginx/conf.d/</code>: один файл — один сайт, отключение через переименование (например, <code>.conf.disabled</code>) или удаление файла.</p>
+<hr/>
+<h2 id="реальный-конфиг-с-комментариями-один-сайт-ssl-редирект-hsts-ocsp-логи">Реальный конфиг с комментариями (один сайт, SSL, редирект, HSTS, OCSP, логи)</h2>
+<p>Один файл на сайт, например <code>/etc/nginx/sites-available/site1.example.com.conf</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#6A737D"># Редирект HTTP -&gt; HTTPS</span></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#E1E4E8">[::]:80;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site1.example.com www.site1.example.com;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Отдельные логи для этого виртуального хоста</span></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/log/nginx/site1.example.com.access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/log/nginx/site1.example.com.error.log;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> 301</span><span style="color:#E1E4E8"> https://$host$request_uri;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># HTTPS</span></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">443</span><span style="color:#E1E4E8"> ssl http2;</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#E1E4E8">[::]:443 ssl http2;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site1.example.com www.site1.example.com;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # SSL: сертификаты (Let&#39;s Encrypt или свои)</span></span>
+<span class="line"><span style="color:#F97583">    ssl_certificate </span><span style="color:#E1E4E8">    /etc/letsencrypt/live/site1.example.com/fullchain.pem;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_certificate_key </span><span style="color:#E1E4E8">/etc/letsencrypt/live/site1.example.com/privkey.pem;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Современные протоколы и шифры</span></span>
+<span class="line"><span style="color:#F97583">    ssl_protocols </span><span style="color:#E1E4E8">TLSv1.2 TLSv1.3;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_prefer_server_ciphers </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_ciphers </span><span style="color:#E1E4E8">ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # OCSP stapling — браузер не ходит к CA за статусом сертификата</span></span>
+<span class="line"><span style="color:#F97583">    ssl_stapling </span><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_stapling_verify </span><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_trusted_certificate </span><span style="color:#E1E4E8">/etc/letsencrypt/live/site1.example.com/chain.pem;</span></span>
+<span class="line"><span style="color:#F97583">    resolver </span><span style="color:#79B8FF">8.8.8.8</span><span style="color:#79B8FF"> 8.8.4.4</span><span style="color:#E1E4E8"> valid=300s;</span></span>
+<span class="line"><span style="color:#F97583">    resolver_timeout </span><span style="color:#79B8FF">5s</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # HSTS — браузер год ходит только по HTTPS</span></span>
+<span class="line"><span style="color:#F97583">    add_header </span><span style="color:#E1E4E8">Strict-Transport-Security </span><span style="color:#9ECBFF">&quot;max-age=31536000; includeSubDomains; preload&quot;</span><span style="color:#E1E4E8"> always;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Логи только для этого сайта</span></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/log/nginx/site1.example.com.access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/log/nginx/site1.example.com.error.log;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    root </span><span style="color:#E1E4E8">/var/www/site1.example.com/public;</span></span>
+<span class="line"><span style="color:#F97583">    index </span><span style="color:#E1E4E8">index.html index.php;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        try_files </span><span style="color:#E1E4E8">$uri $uri/ /index.php?$query_string;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        include </span><span style="color:#E1E4E8">snippets/fastcgi-php.conf;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_pass </span><span style="color:#E1E4E8">unix:/run/php/php8.2-fpm.sock;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $realpath_root$fastcgi_script_name;</span></span>
+<span class="line"><span style="color:#F97583">        include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~*</span><span style="color:#DBEDFF"> \.(jpg|jpeg|png|gif|ico|css|js|svg|woff2)$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        expires </span><span style="color:#79B8FF">30d</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        access_log </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Кратко по блокам:</p>
+<ul>
+<li><strong>Первый server (80)</strong> — редирект всего HTTP на HTTPS с сохранением хоста и URI; логи пишутся в отдельные файлы по домену.</li>
+<li><strong>Второй server (443)</strong> — SSL-ключ и сертификат, протоколы TLS 1.2/1.3, OCSP stapling и HSTS; те же отдельные логи; <code>root</code> на <code>public</code>, PHP через FPM (если не нужен PHP — убери блок <code>location ~ \.php$</code> и поправь <code>try_files</code>).</li>
+</ul>
+<p>Пути к сертификатам замени на свои (Let’s Encrypt: <code>fullchain.pem</code>, <code>privkey.pem</code>, <code>chain.pem</code>). Для второго и третьего сайта копируй этот файл, меняй <code>server_name</code>, пути к SSL и <code>root</code>, и имена логов.</p>
+<hr/>
+<h2 id="http--https-редирект">HTTP → HTTPS редирект</h2>
+<p>Отдельный server block на порту 80 только редиректит:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#E1E4E8">[::]:80;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site1.example.com www.site1.example.com;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/log/nginx/site1.example.com.access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/log/nginx/site1.example.com.error.log;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> 301</span><span style="color:#E1E4E8"> https://$host$request_uri;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>$host</code> — значение заголовка Host, <code>$request_uri</code> — URI с query string. Итог: любой запрос по HTTP уходит на тот же путь по HTTPS.</p>
+<hr/>
+<h2 id="hsts">HSTS</h2>
+<p>Заголовок говорит браузеру «год ходить на этот домен только по HTTPS»:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">add_header </span><span style="color:#E1E4E8">Strict-Transport-Security </span><span style="color:#9ECBFF">&quot;max-age=31536000; includeSubDomains; preload&quot;</span><span style="color:#E1E4E8"> always;</span></span></code></pre>
+<ul>
+<li><code>max-age=31536000</code> — 1 год.</li>
+<li><code>includeSubDomains</code> — правило для поддоменов.</li>
+<li><code>preload</code> — можно подать сайт в список preload браузеров.</li>
+<li><code>always</code> — добавлять заголовок и в ответах с кодом 4xx/5xx (по умолчанию в таких ответах Nginx его не ставит).</li>
+</ul>
+<p>Добавляй только когда уверен, что HTTPS везде и надолго.</p>
+<hr/>
+<h2 id="ocsp-stapling">OCSP stapling</h2>
+<p>Браузер проверяет валидность сертификата по OCSP. Без stapling он сам ходит к серверу CA; со stapling Nginx сам получает ответ OCSP и отдаёт его в handshake — быстрее и меньше утечек по посещениям.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">ssl_stapling </span><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">ssl_stapling_verify </span><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">ssl_trusted_certificate </span><span style="color:#E1E4E8">/etc/letsencrypt/live/site1.example.com/chain.pem;</span></span>
+<span class="line"><span style="color:#F97583">resolver </span><span style="color:#79B8FF">8.8.8.8</span><span style="color:#79B8FF"> 8.8.4.4</span><span style="color:#E1E4E8"> valid=300s;</span></span>
+<span class="line"><span style="color:#F97583">resolver_timeout </span><span style="color:#79B8FF">5s</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p><code>ssl_trusted_certificate</code> — цепочка до корня (у Let’s Encrypt подойдёт <code>chain.pem</code>). <code>resolver</code> нужен Nginx для запроса OCSP по имени. После смены сертификата сделай <code>systemctl reload nginx</code>.</p>
+<hr/>
+<h2 id="отдельный-лог-для-каждого-сайта">Отдельный лог для каждого сайта</h2>
+<p>Не пиши все сайты в один <code>access.log</code>/<code>error.log</code>. В каждом server block задавай свои файлы:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">443</span><span style="color:#E1E4E8"> ssl http2;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site1.example.com;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/log/nginx/site1.example.com.access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/log/nginx/site1.example.com.error.log;</span></span>
+<span class="line"><span style="color:#6A737D">    # ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">443</span><span style="color:#E1E4E8"> ssl http2;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">site2.example.com;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#E1E4E8">/var/log/nginx/site2.example.com.access.log;</span></span>
+<span class="line"><span style="color:#F97583">    error_log </span><span style="color:#E1E4E8"> /var/log/nginx/site2.example.com.error.log;</span></span>
+<span class="line"><span style="color:#6A737D">    # ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Так проще искать ошибки и анализировать трафик по проекту. Права: Nginx должен иметь право создавать/писать в эти файлы (обычно пользователь <code>nginx</code> или <code>www-data</code>).</p>
+<hr/>
+<h2 id="типичная-ошибка-404">Типичная ошибка 404</h2>
+<p>Частая причина — несовпадение <code>root</code> и реального пути или неправильный <code>try_files</code>/<code>index</code>.</p>
+<p><strong>Пример 1: root без <code>public</code>, запрос к директории</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">root </span><span style="color:#E1E4E8">/var/www/site1.example.com;   </span><span style="color:#6A737D"># в каталоге лежит public/</span></span>
+<span class="line"><span style="color:#F97583">index </span><span style="color:#E1E4E8">index.html;</span></span>
+<span class="line"><span style="color:#F97583">location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    try_files </span><span style="color:#E1E4E8">$uri $uri/ </span><span style="color:#79B8FF">=404</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Запрос <code>/</code> → Nginx ищет <code>/var/www/site1.example.com/index.html</code>. Если <code>index.html</code> лежит в <code>public/</code>, его нет по этому пути — 404. Решение: указать <code>root</code> на каталог с <code>index.html</code>, например <code>root /var/www/site1.example.com/public;</code>.</p>
+<p><strong>Пример 2: SPA или Laravel — всё на index</strong></p>
+<p>Если один входной файл (например, <code>index.html</code> или <code>index.php</code>), нужно отдавать его для ненайденных путей:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">root </span><span style="color:#E1E4E8">/var/www/site1.example.com/public;</span></span>
+<span class="line"><span style="color:#F97583">index </span><span style="color:#E1E4E8">index.html;</span></span>
+<span class="line"><span style="color:#F97583">location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    try_files </span><span style="color:#E1E4E8">$uri $uri/ /index.html;   </span><span style="color:#6A737D"># SPA</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#6A737D"># или для Laravel/PHP:</span></span>
+<span class="line"><span style="color:#6A737D"># try_files $uri $uri/ /index.php?$query_string;</span></span></code></pre>
+<p>Иначе запрос к <code>/about</code> даёт 404, потому что файла <code>about</code> нет. Кратко: проверь, что <code>root</code> указывает туда, где реально лежат файлы, и что <code>try_files</code> в конце ведёт на нужный <code>index</code>.</p>
+<hr/>
+<h2 id="systemctl-reload-vs-restart">systemctl reload vs restart</h2>
+<p><strong>reload (<code>systemctl reload nginx</code>)</strong><br/>
+Nginx перечитывает конфиг и применяет его без обрыва соединений: новые worker’ы поднимаются с новой конфигурацией, старые дорабатывают текущие запросы и завершаются. Подходит после правки server blocks, добавления сайтов, смены SSL.</p>
+<p><strong>restart (<code>systemctl restart nginx</code>)</strong><br/>
+Процесс полностью перезапускается. Все активные соединения обрываются. Нужен только если reload не срабатывает или после смены глобальных настроек (например, в <code>nginx.conf</code> что-то, что не подхватывается при reload). Обычно достаточно:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> nginx</span><span style="color:#79B8FF"> -t</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> reload</span><span style="color:#9ECBFF"> nginx</span></span></code></pre>
+<p>После изменения конфигов всегда делай <code>nginx -t</code>; при ошибке Nginx не будет применять конфиг даже при reload.</p>
+<hr/>
+<h2 id="default-server-защита-от-запросов-по-ip-и-левых-host">Default server (защита от запросов по IP и левых Host)</h2>
+<p>Чтобы запросы по IP или с неизвестным <code>Host</code> не попадали в первый попавшийся сайт, задай явный default для портов 80 и 443. Например, в <code>sites-available/default</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#6A737D"># Порт 80 — редирект или закрытие</span></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#79B8FF"> default_server</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#E1E4E8">[::]:80 </span><span style="color:#79B8FF">default_server</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">_;</span></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 444</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Порт 443 — закрытие без сертификата</span></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">443</span><span style="color:#E1E4E8"> ssl </span><span style="color:#79B8FF">default_server</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#E1E4E8">[::]:443 ssl </span><span style="color:#79B8FF">default_server</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">_;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_certificate </span><span style="color:#E1E4E8">    /etc/nginx/ssl/default-dummy.crt;</span></span>
+<span class="line"><span style="color:#F97583">    ssl_certificate_key </span><span style="color:#E1E4E8">/etc/nginx/ssl/default-dummy.key;</span></span>
+<span class="line"><span style="color:#F97583">    access_log </span><span style="color:#79B8FF">off</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 444</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>return 444</code> — соединение закрывается без ответа. Для 443 нужен любой валидный сертификат (можно сгенерировать самоподписанный «заглушку»). Тогда только запросы с известными <code>server_name</code> обрабатываются твоими сайтами.</p>
+<hr/>
+<h2 id="чеклист-по-одному-сайту-на-vps">Чеклист по одному сайту на VPS</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Файл конфига в <code>sites-available/</code>, симлинк в <code>sites-enabled/</code> (Ubuntu/Debian).</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Отдельные <code>access_log</code> и <code>error_log</code> на сайт.</li>
+<li class="task-list-item"><input type="checkbox" disabled/> HTTP → HTTPS редирект (отдельный server на 80).</li>
+<li class="task-list-item"><input type="checkbox" disabled/> SSL: корректные пути к <code>fullchain.pem</code> и <code>privkey.pem</code>.</li>
+<li class="task-list-item"><input type="checkbox" disabled/> HSTS и OCSP stapling в HTTPS server block.</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>root</code> указывает на каталог, где лежит <code>index</code>; <code>try_files</code> ведёт на нужный index.</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>nginx -t</code> без ошибок, затем <code>systemctl reload nginx</code>.</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Default server настроен для 80 и 443.</li>
+</ul>
+<hr/>
+<h2 id="итог">Итог</h2>
+<p>На одном VPS несколько проектов разводятся по разным server blocks: свой <code>server_name</code>, свой <code>root</code>, свои логи. Для production добавь в каждый HTTPS-блок редирект с 80, SSL, HSTS и OCSP stapling. Храни конфиги в <code>sites-available</code>, включай через <code>sites-enabled</code>, после правок проверяй <code>nginx -t</code> и делай <code>reload</code>. Так структура остаётся понятной и безопасной при росте числа сайтов.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

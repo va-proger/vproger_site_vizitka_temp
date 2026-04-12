@@ -1,8 +1,12 @@
 import { $ } from "../core/dom.js";
-import { storage } from "../core/storage.js";
 import { debounce } from "../core/utils.js";
 
 export function initCertificates() {
+    // Не инициализируем на админке
+    if (window.location.pathname.startsWith("/admin")) {
+        return;
+    }
+
     const grid = $("#certGrid");
     const modal = $("#certModal");
     const modalImg = $("#modalImg");
@@ -17,7 +21,7 @@ export function initCertificates() {
     // === Load JSON safely ===
     async function loadJSON() {
         try {
-            const res = await fetch("assets/certs/data.json", { cache: "no-store" });
+            const res = await fetch("/assets/img/certs/data.json");
             if (!res.ok) throw new Error("Ошибка ответа сервера");
             return await res.json();
         } catch (e) {
@@ -41,7 +45,7 @@ export function initCertificates() {
 
                 item.innerHTML = `
                     <img 
-                        src="assets/certs/${cert.file}" 
+                        src="/assets/img/certs/${cert.file}" 
                         loading="lazy"
                         class="cert-thumb"
                         alt="${cert.title}"
@@ -63,7 +67,7 @@ export function initCertificates() {
     function openModal(cert) {
         lastFocused = document.activeElement;
 
-        modalImg.src = `assets/certs/${cert.file}`;
+        modalImg.src = `/assets/img/certs/${cert.file}`;
         modalTitle.textContent = cert.title;
         modalDate.textContent = formatDate(cert.date);
 

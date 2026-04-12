@@ -1,0 +1,14 @@
+.theme-btn {
+    position: static;
+
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--accent);
+    cursor: pointer;
+    transition: transform .3s;
+    z-index: 10;
+}
+.theme-btn:hover {
+    transform: rotate(15deg);
+}

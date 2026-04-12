@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Apache httpd и PHP-FPM: модули и расширения для продакшена (с учётом Bitrix)</title><meta name="description" content="Практический разбор модулей Apache и расширений PHP для продакшена: mod_rewrite, mpm_event, OPcache, intl, redis и другие. Что реально нужно для Bitrix."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> apache </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Apache httpd и PHP-FPM: модули и расширения для продакшена (с учётом Bitrix) </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>13 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/apache-php-fpm-modules-bitrix-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="apache-httpd-и-php-fpm-модули-и-расширения-для-продакшена-с-учётом-bitrix">Apache httpd и PHP-FPM: модули и расширения для продакшена (с учётом Bitrix)</h1>
+<p>Если вы работаете с Bitrix CMS, Laravel или чистым PHP — рано или поздно придётся разбираться, какие модули Apache и расширения PHP действительно нужны, а какие лишь мусор «на всякий случай».</p>
+<p>Разберём:</p>
+<ul>
+<li>полезные модули Apache httpd;</li>
+<li>критичные расширения PHP для PHP-FPM;</li>
+<li>что обязательно для Bitrix;</li>
+<li>что даёт прирост производительности;</li>
+<li>что лучше отключить.</li>
+</ul>
+<p>Без теории ради теории. Только то, что реально влияет на прод.</p>
+<hr/>
+<h1 id="часть-1-apache-httpd--что-реально-нужно">Часть 1. Apache httpd — что реально нужно</h1>
+<ul>
+<li><a href="https://upload.wikimedia.org/wikipedia/commons/1/10/Apache_HTTP_server_logo_%282019-present%29.svg">Логотип Apache HTTP Server</a> (Wikipedia)</li>
+<li><a href="https://www.researchgate.net/publication/229037429/figure/fig1/AS%3A300761419403271%401448718518723/Apache-worker-MPM-architecture.png">Архитектура Apache worker MPM</a> (ResearchGate)</li>
+<li><a href="https://httpd.apache.org/docs/trunk/images/rewrite_backreferences.png">mod_rewrite: обратные ссылки</a> (документация Apache)</li>
+<li><a href="https://httpd.apache.org/docs/trunk/images/syntax_rewriterule.png">Синтаксис RewriteRule</a> (документация Apache)</li>
+</ul>
+<h2 id="1-mpm-prefork-vs-event">1. MPM: prefork vs event</h2>
+<h3 id="-prefork-устаревший-подход">❌ Prefork (устаревший подход)</h3>
+<ul>
+<li>каждый запрос = отдельный процесс</li>
+<li>много памяти</li>
+<li>актуален только при использовании mod_php</li>
+</ul>
+<p>Если вы используете PHP-FPM (а так и стоит делать), prefork не нужен.</p>
+<h3 id="-mpm-event-рекомендуется">✅ MPM event (рекомендуется)</h3>
+<ul>
+<li>потоковая модель</li>
+<li>меньше памяти</li>
+<li>лучше под нагрузкой</li>
+</ul>
+<p>Включение:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">a2dismod</span><span style="color:#9ECBFF"> mpm_prefork</span></span>
+<span class="line"><span style="color:#B392F0">a2enmod</span><span style="color:#9ECBFF"> mpm_event</span></span>
+<span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> restart</span><span style="color:#9ECBFF"> apache2</span></span></code></pre>
+<p><strong>Для Bitrix:</strong>
+На нагруженных проектах event + PHP-FPM даёт ощутимо лучшую стабильность.</p>
+<hr/>
+<h2 id="2-mod_rewrite--без-него-никуда">2. mod_rewrite — без него никуда</h2>
+<p>Bitrix, Laravel, WordPress — все используют rewrite для ЧПУ и маршрутизации. Модуль использует PCRE-совместимые правила; описание директив — в <a href="https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html">официальной документации Apache mod_rewrite</a>.</p>
+<p><strong>Базовый пример</strong> (запросы к несуществующим файлам и каталогам уходят в <code>index.php</code>):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">IfModule</span><span style="color:#9ECBFF"> mod_rewrite.c</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    RewriteEngine</span><span style="color:#B392F0"> On</span></span>
+<span class="line"><span style="color:#F97583">    RewriteCond</span><span style="color:#DBEDFF"> %{REQUEST_FILENAME}</span><span style="color:#9ECBFF"> !-f</span></span>
+<span class="line"><span style="color:#F97583">    RewriteCond</span><span style="color:#DBEDFF"> %{REQUEST_FILENAME}</span><span style="color:#9ECBFF"> !-d</span></span>
+<span class="line"><span style="color:#F97583">    RewriteRule</span><span style="color:#DBEDFF"> ^(.*)$</span><span style="color:#9ECBFF"> /index.php</span><span style="color:#E1E4E8"> [L]</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">IfModule</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<ul>
+<li><code>!-f</code> и <code>!-d</code> — условие: «если нет такого файла и нет такой директории» (см. <a href="https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html#rewritecond">RewriteCond</a>).</li>
+<li>Флаг <code>[L]</code> (Last) — остановить обработку правил после срабатывания.</li>
+</ul>
+<p><strong>Если приложение в подкаталоге</strong> (например, <code>/bitrix-site/</code>), нужен <code>RewriteBase</code>, иначе подстановка может дать неверный путь:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#F97583">RewriteEngine</span><span style="color:#B392F0"> On</span></span>
+<span class="line"><span style="color:#F97583">RewriteBase</span><span style="color:#E1E4E8"> /bitrix-site/</span></span>
+<span class="line"><span style="color:#F97583">RewriteCond</span><span style="color:#DBEDFF"> %{REQUEST_FILENAME}</span><span style="color:#9ECBFF"> !-f</span></span>
+<span class="line"><span style="color:#F97583">RewriteCond</span><span style="color:#DBEDFF"> %{REQUEST_FILENAME}</span><span style="color:#9ECBFF"> !-d</span></span>
+<span class="line"><span style="color:#F97583">RewriteRule</span><span style="color:#DBEDFF"> ^(.*)$</span><span style="color:#9ECBFF"> index.php</span><span style="color:#E1E4E8"> [L]</span></span></code></pre>
+<p>Без mod_rewrite ЧПУ и «красивые» URL в Bitrix и других CMS не работают.</p>
+<hr/>
+<h2 id="3-mod_ssl--https-обязателен">3. mod_ssl — HTTPS обязателен</h2>
+<p>Шифрование по TLS обеспечивает <a href="https://httpd.apache.org/docs/2.4/mod/mod_ssl.html">mod_ssl</a> (опирается на OpenSSL). SSLv2 не поддерживается; для продакшена оставляют только современные протоколы.</p>
+<p>Проверка, что модуль загружен:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">apachectl</span><span style="color:#79B8FF"> -M</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#9ECBFF"> ssl</span></span></code></pre>
+<p>Минимальный фрагмент виртуального хоста с Let’s Encrypt (директивы <a href="https://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslcertificatefile">SSLCertificateFile</a>, <a href="https://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslcertificatekeyfile">SSLCertificateKeyFile</a>):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">VirtualHost</span><span style="color:#9ECBFF"> *:443</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    ServerName</span><span style="color:#E1E4E8"> example.com</span></span>
+<span class="line"><span style="color:#F97583">    DocumentRoot</span><span style="color:#E1E4E8"> /var/www/example.com</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    SSLEngine</span><span style="color:#B392F0"> on</span></span>
+<span class="line"><span style="color:#F97583">    SSLCertificateFile</span><span style="color:#E1E4E8"> /etc/letsencrypt/live/example.com/fullchain.pem</span></span>
+<span class="line"><span style="color:#F97583">    SSLCertificateKeyFile</span><span style="color:#E1E4E8"> /etc/letsencrypt/live/example.com/privkey.pem</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Только TLS 1.2 и 1.3 (SSLv3 отключён в современных сборках)</span></span>
+<span class="line"><span style="color:#F97583">    SSLProtocol</span><span style="color:#E1E4E8"> all -SSLv3 -TLSv1 -TLSv1.</span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">VirtualHost</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Рекомендуется также настроить <a href="https://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslciphersuite">SSLCipherSuite</a> под актуальные рекомендации по безопасности. Bitrix без HTTPS — минус для SEO и безопасности; поисковики и браузеры помечают такие сайты как небезопасные.</p>
+<hr/>
+<h2 id="4-mod_headers--контроль-кэша-и-безопасности">4. mod_headers — контроль кэша и безопасности</h2>
+<p><a href="https://httpd.apache.org/docs/2.4/mod/mod_headers.html">mod_headers</a> позволяет задавать и изменять HTTP-заголовки ответа. Для продакшена обычно выставляют заголовки безопасности и при необходимости — кэширование статики.</p>
+<p><strong>Безопасность (рекомендуемый минимум):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#F97583">Header</span><span style="color:#E1E4E8"> always </span><span style="color:#B392F0">set</span><span style="color:#E1E4E8"> X-Content-Type-</span><span style="color:#F97583">Options</span><span style="color:#E1E4E8"> &quot;nosniff&quot;</span></span>
+<span class="line"><span style="color:#F97583">Header</span><span style="color:#E1E4E8"> always </span><span style="color:#B392F0">set</span><span style="color:#E1E4E8"> X-Frame-</span><span style="color:#F97583">Options</span><span style="color:#E1E4E8"> &quot;SAMEORIGIN&quot;</span></span>
+<span class="line"><span style="color:#F97583">Header</span><span style="color:#E1E4E8"> always </span><span style="color:#B392F0">set</span><span style="color:#E1E4E8"> X-XSS-Protection &quot;</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">; mode=block&quot;</span></span></code></pre>
+<p><strong>Кэширование статики Bitrix</strong> (картинки, CSS/JS в <code>/upload/</code>, <code>/local/</code>): можно ограничить время кэша в браузере, чтобы не перегружать сервер повторными запросами к тем же файлам:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">IfModule</span><span style="color:#9ECBFF"> mod_headers.c</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#B392F0">FilesMatch</span><span style="color:#9ECBFF"> &quot;\.(ico|webp|jpe?g|png|gif|css|js|woff2?)$&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">        Header</span><span style="color:#B392F0"> set</span><span style="color:#E1E4E8"> Cache-Control &quot;public, max-age=</span><span style="color:#79B8FF">2592000</span><span style="color:#E1E4E8">&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#B392F0">FilesMatch</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">IfModule</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p><code>max-age=2592000</code> — 30 дней; для часто меняющихся ресурсов значение уменьшают.</p>
+<hr/>
+<h2 id="5-mod_deflate--mod_brotli--сжатие">5. mod_deflate / mod_brotli — сжатие</h2>
+<p><a href="https://httpd.apache.org/docs/2.4/mod/mod_deflate.html">mod_deflate</a> сжимает ответы по алгоритму DEFLATE (gzip). Поддерживается только gzip-кодирование для совместимости со старыми клиентами. Рекомендуемая конфигурация из документации Apache — сжимать только указанные MIME-типы:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">IfModule</span><span style="color:#9ECBFF"> mod_deflate.c</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    AddOutputFilterByType</span><span style="color:#E1E4E8"> DEFLATE </span><span style="color:#B392F0">text/html</span><span style="color:#B392F0"> text/plain</span><span style="color:#B392F0"> text/xml</span><span style="color:#B392F0"> text/css</span><span style="color:#B392F0"> text/javascript</span><span style="color:#B392F0"> application/javascript</span><span style="color:#B392F0"> application/json</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">IfModule</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Не сжимайте уже сжатое (например, изображения в форматах с сжатием). На TLS-соединениях учитывайте риски класса атак <a href="https://httpd.apache.org/docs/2.4/mod/mod_deflate.html">BREACH</a> при сжатии конфиденциального контента — для статики и типовых HTML/CSS/JS такая настройка безопасна.</p>
+<p>Brotli (лучшая степень сжатия при сопоставимой скорости) — если в системе есть mod_brotli:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">a2enmod</span><span style="color:#9ECBFF"> brotli</span></span></code></pre>
+<p>Сжатие даёт заметное уменьшение трафика и ускорение загрузки страниц без изменения кода приложения.</p>
+<hr/>
+<h2 id="6-mod_expires--кэширование-статики">6. mod_expires — кэширование статики</h2>
+<p><a href="https://httpd.apache.org/docs/2.4/mod/mod_expires.html">mod_expires</a> выставляет заголовки <code>Expires</code> и <code>Cache-Control: max-age</code> по типу контента. Базовое время можно задать через <code>access</code> (от момента запроса) или <code>modification</code> (от даты изменения файла). Подробнее — в <a href="https://httpd.apache.org/docs/2.4/mod/mod_expires.html#expiresbytype">документации ExpiresByType</a>.</p>
+<p>Пример для типичной статики Bitrix (картинки, стили, скрипты):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">IfModule</span><span style="color:#9ECBFF"> mod_expires.c</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresActive</span><span style="color:#B392F0"> On</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresDefault</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> month&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> image/webp</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> year&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> image/jpeg</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> year&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> image/png</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> year&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> image/gif</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> year&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> text/css</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> month&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#B392F0"> application/javascript</span><span style="color:#E1E4E8"> &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> month&quot;</span></span>
+<span class="line"><span style="color:#F97583">    ExpiresByType</span><span style="color:#E1E4E8"> font/woff2 &quot;access plus </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8"> year&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">IfModule</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p><code>access plus 1 month</code> означает: браузер может хранить копию 1 месяц с момента последнего запроса. Bitrix отдаёт много статики из <code>/upload/</code> и шаблонов — корректные <code>Expires</code> снижают число запросов к серверу.</p>
+<hr/>
+<h1 id="часть-2-php-fpm--расширения-которые-реально-нужны">Часть 2. PHP-FPM — расширения, которые реально нужны</h1>
+<ul>
+<li><a href="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/3840px-PHP-logo.svg.png">Логотип PHP</a> (Wikipedia)</li>
+<li><a href="https://a.storyblok.com/f/294279/51f620ac36/wp-2.png">Схема работы PHP с веб-сервером</a> (Storyblok)</li>
+<li><a href="https://accesto.com/blog/static/6dec240d9b76e9dc270d1a5f32814bd7/5a190/importance-of-opcode-caching.png">Важность кэширования opcode</a> (Accesto)</li>
+<li><a href="https://media.licdn.com/dms/image/v2/D5612AQEz15QqVWFUag/article-inline_image-shrink_1000_1488/article-inline_image-shrink_1000_1488/0/1723271019081?e=2147483647&t=XiTApJaTfHTnMaXgv62qVFjJhDaOf2_922gZyQ4iGVk&v=beta">Производительность и кэширование</a> (LinkedIn)</li>
+</ul>
+<p>Переходим к PHP.</p>
+<h2 id="1-opcache--обязательно">1. OPcache — обязательно</h2>
+<p>OPcache кэширует скомпилированный PHP-код (opcode) в памяти и значительно снижает нагрузку на CPU. Без него продакшен запускать не рекомендуется; настройка описана в <a href="https://www.php.net/manual/en/book.opcache.php">официальной документации PHP</a> и в <a href="https://www.php.net/manual/en/opcache.configuration.php">Runtime Configuration</a>.</p>
+<p>Минимальная конфигурация для продакшена (в <code>php.ini</code> или в пуле PHP-FPM):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">opcache.enable</span><span style="color:#E1E4E8">=1</span></span>
+<span class="line"><span style="color:#F97583">opcache.memory_consumption</span><span style="color:#E1E4E8">=256</span></span>
+<span class="line"><span style="color:#F97583">opcache.max_accelerated_files</span><span style="color:#E1E4E8">=20000</span></span>
+<span class="line"><span style="color:#F97583">opcache.validate_timestamps</span><span style="color:#E1E4E8">=0</span></span></code></pre>
+<ul>
+<li><code>validate_timestamps=0</code> — не проверять изменение файлов на диске (максимальная производительность). После выката кода перезапускайте PHP-FPM или используйте скрипт сброса кэша.</li>
+<li>Если оставляете <code>validate_timestamps=1</code>, задайте <code>opcache.revalidate_freq=2</code> (проверка не чаще чем раз в 2 секунды), чтобы не дергать диск на каждый запрос.</li>
+</ul>
+<p><strong>Для Bitrix:</strong> OPcache ускоряет и публичную часть, и админку, снижает CPU; на проде он обязателен.</p>
+<hr/>
+<h2 id="2-intl--обязательно-для-bitrix">2. intl — обязательно для Bitrix</h2>
+<p>Расширение <a href="https://www.php.net/manual/en/book.intl.php">intl</a> (Internationalization) нужно для работы с локалью, форматированием дат, чисел и строк в Unicode. Bitrix активно использует его в ядре и при работе с мультиязычностью и датами.</p>
+<p>Проверка:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#79B8FF"> -m</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#9ECBFF"> intl</span></span></code></pre>
+<p>Установка (Debian/Ubuntu):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">apt</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> php8.2-intl</span></span></code></pre>
+<p>Без intl возможны ошибки при выводе дат, сортировке строк с кириллицей и в модулях, зависящих от ICU.</p>
+<hr/>
+<h2 id="3-mbstring--обязательно">3. mbstring — обязательно</h2>
+<p>Многобайтовые строки, русский язык — без mbstring никуда.</p>
+<hr/>
+<h2 id="4-mysqli--pdo_mysql">4. mysqli / pdo_mysql</h2>
+<p>Bitrix работает с MySQL/MariaDB через mysqli или PDO. Обычно одно из расширений уже включено в сборке PHP.</p>
+<p>Проверка:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#79B8FF"> -m</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#79B8FF"> -E</span><span style="color:#9ECBFF"> &#39;mysqli|pdo_mysql&#39;</span></span></code></pre>
+<p>Если оба отключены — установите пакет, например: <code>apt install php8.2-mysql</code>.</p>
+<hr/>
+<h2 id="5-redis--ускорение-кэша-bitrix">5. redis — ускорение кэша Bitrix</h2>
+<p>Bitrix поддерживает Redis в качестве managed cache (вместо файлового или memcached). Настройка описана в <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=02795&LESSON_ID=14034">документации Bitrix</a> (подключения к Redis, Memcache).</p>
+<p>Установка сервера и PHP-расширения:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">apt</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> redis-server</span></span>
+<span class="line"><span style="color:#B392F0">apt</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> php8.2-redis</span></span>
+<span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#9ECBFF"> redis-server</span></span></code></pre>
+<p>В <code>.settings.php</code> (или в старом варианте в <code>dbconn.php</code>) задаётся тип кэша и параметры подключения:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#9ECBFF">&#39;cache&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;value&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;type&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;redis&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;redis&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;host&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;127.0.0.1&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;port&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;6379&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ],</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span></code></pre>
+<p>После смены кэша в настройках ядра Bitrix нужно сбросить кэш (Настройки → Производительность → Очистить кэш). На нагруженных проектах Redis даёт заметное ускорение по сравнению с файловым кэшем.</p>
+<hr/>
+<h2 id="6-memcached--альтернатива-redis">6. memcached — альтернатива Redis</h2>
+<p>Работает, но Redis сейчас предпочтительнее.</p>
+<hr/>
+<h2 id="7-curl--обязателен">7. curl — обязателен</h2>
+<p>API, CRM, 1С, внешние сервисы.</p>
+<p>Без curl Bitrix-интеграции страдают.</p>
+<hr/>
+<h2 id="8-zip">8. zip</h2>
+<p>Bitrix обновления, архивы, маркетплейс.</p>
+<hr/>
+<h2 id="9-gd--imagick">9. gd / imagick</h2>
+<p>Обработка изображений.</p>
+<p>Если проект с каталогом — imagick лучше.</p>
+<hr/>
+<h1 id="что-лучше-отключить">Что лучше отключить</h1>
+<p>На продакшене отключают отладочные и избыточные опции.</p>
+<p><strong>В <code>php.ini</code> (или в конфиге пула FPM):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; Отладка — только в dev, на проде никогда</span></span>
+<span class="line"><span style="color:#F97583">xdebug.mode</span><span style="color:#E1E4E8"> = off</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Не выводить ошибки в ответ клиенту</span></span>
+<span class="line"><span style="color:#F97583">display_errors</span><span style="color:#E1E4E8"> = Off</span></span>
+<span class="line"><span style="color:#F97583">display_startup_errors</span><span style="color:#E1E4E8"> = Off</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Логировать ошибки в файл</span></span>
+<span class="line"><span style="color:#F97583">log_errors</span><span style="color:#E1E4E8"> = On</span></span>
+<span class="line"><span style="color:#F97583">error_log</span><span style="color:#E1E4E8"> = /var/log/php-fpm/error.log</span></span></code></pre>
+<ul>
+<li><strong>Xdebug</strong> на проде отключают: он сильно замедляет выполнение и может раскрывать внутреннюю информацию.</li>
+<li><strong>display_errors = On</strong> на проде недопустим: пользователь не должен видеть стек вызовов и пути к файлам.</li>
+<li><strong>allow_url_fopen</strong> — включать только если приложению нужен доступ к внешним URL через <code>fopen</code>; при использовании curl часто оставляют <code>Off</code> и ограничивают поверхность атак.</li>
+</ul>
+<p>Проверка отключённых функций (часто хостеры режут <code>shell_exec</code>, <code>exec</code> и т.п.):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> &quot;var_dump(ini_get(&#39;disable_functions&#39;));&quot;</span></span></code></pre>
+<p>Продакшен — это минимум включённого и максимум контроля над тем, что реально используется.</p>
+<hr/>
+<h1 id="связка-apache-и-php-fpm">Связка Apache и PHP-FPM</h1>
+<p>Чтобы Apache отдавал PHP-запросы в PHP-FPM, нужны модуль <code>proxy_fcgi</code> (и обычно <code>proxy</code>) и настройка проксирования. Пример для виртуального хоста (Unix-сокет):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">FilesMatch</span><span style="color:#9ECBFF"> \.php$</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    SetHandler</span><span style="color:#E1E4E8"> &quot;proxy:unix:/run/php/php8.</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">-fpm.sock|fcgi://localhost&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">FilesMatch</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Или через TCP (если FPM слушает порт):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="apache"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#B392F0">FilesMatch</span><span style="color:#9ECBFF"> \.php$</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">    SetHandler</span><span style="color:#E1E4E8"> &quot;proxy:fcgi://</span><span style="color:#79B8FF">127</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">9000</span><span style="color:#E1E4E8">&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#B392F0">FilesMatch</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Путь к сокету смотрите в конфиге пула FPM (например, в <code>/etc/php/8.2/fpm/pool.d/www.conf</code>: <code>listen = /run/php/php8.2-fpm.sock</code>). Подробнее — в <a href="https://httpd.apache.org/docs/2.4/howto/php_fpm.html">документации Apache</a> (PHP-FPM) и в описании <a href="https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html">mod_proxy_fcgi</a>.</p>
+<hr/>
+<h1 id="оптимальные-настройки-php-fpm-для-bitrix">Оптимальные настройки PHP-FPM для Bitrix</h1>
+<p>Параметры пула задаются в <code>/etc/php/8.2/fpm/pool.d/www.conf</code> (или отдельном файле пула). Рекомендуемый режим — <code>dynamic</code>: число воркеров меняется в заданных пределах. Документация: <a href="https://www.php.net/manual/en/install.fpm.configuration.php">php.net FPM configuration</a>.</p>
+<p>Пример:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#F97583">pm</span><span style="color:#E1E4E8"> = dynamic</span></span>
+<span class="line"><span style="color:#F97583">pm.max_children</span><span style="color:#E1E4E8"> = 30</span></span>
+<span class="line"><span style="color:#F97583">pm.start_servers</span><span style="color:#E1E4E8"> = 5</span></span>
+<span class="line"><span style="color:#F97583">pm.min_spare_servers</span><span style="color:#E1E4E8"> = 5</span></span>
+<span class="line"><span style="color:#F97583">pm.max_spare_servers</span><span style="color:#E1E4E8"> = 10</span></span>
+<span class="line"><span style="color:#F97583">pm.max_requests</span><span style="color:#E1E4E8"> = 500</span></span></code></pre>
+<p>Ориентир по памяти: если один PHP-процесс (Bitrix под нагрузкой) съедает около 100 МБ, то <code>max_children = 30</code> — это до ~3 ГБ только на FPM. Учитывайте также Apache, MySQL, Redis и запас под пики — считайте под доступную RAM.</p>
+<hr/>
+<h1 id="типовая-схема-продакшена">Типовая схема продакшена</h1>
+<ol>
+<li>Apache (mpm_event)</li>
+<li>mod_rewrite</li>
+<li>mod_ssl</li>
+<li>PHP-FPM</li>
+<li>OPcache</li>
+<li>Redis</li>
+<li>Правильные лимиты FPM</li>
+</ol>
+<p>И вот это уже прод, а не «работает на локалке».</p>
+<hr/>
+<h1 id="частые-проблемы">Частые проблемы</h1>
+<h2 id="1-502-bad-gateway">1. 502 Bad Gateway</h2>
+<p>Apache не получает ответ от PHP-FPM. Возможные причины: FPM не запущен, закончились воркеры (<code>max_children</code>), таймаут при тяжёлом скрипте, неверный путь к сокету.</p>
+<p>Проверка статуса и сокета:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">systemctl</span><span style="color:#9ECBFF"> status</span><span style="color:#9ECBFF"> php8.2-fpm</span></span>
+<span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -la</span><span style="color:#9ECBFF"> /run/php/php8.2-fpm.sock</span></span></code></pre>
+<p>Проверка логов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/apache2/error.log</span></span>
+<span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/php8.2-fpm.log</span></span></code></pre>
+<p>Если 502 появляется под нагрузкой — увеличьте <code>pm.max_children</code> и убедитесь, что памяти хватает. При долгих запросах проверьте <code>request_terminate_timeout</code> в пуле FPM и таймауты в Apache (например, <code>ProxyTimeout</code>).</p>
+<hr/>
+<h2 id="2-медленная-админка-bitrix">2. Медленная админка Bitrix</h2>
+<p>Типичные причины:</p>
+<ul>
+<li><strong>Нет OPcache</strong> — включите и перезапустите FPM.</li>
+<li><strong>Нет Redis</strong> — переведите managed cache на Redis в настройках ядра.</li>
+<li><strong>prefork вместо event</strong> — переключитесь на MPM event.</li>
+<li><strong>Маленький memory_limit</strong> — для тяжёлых страниц админки часто ставят 256M–512M.</li>
+<li><strong>Файловый кэш на медленном диске</strong> — замените на Redis.</li>
+</ul>
+<p>Проверка OPcache в работе:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> &quot;print_r(opcache_get_status(false));&quot;</span></span></code></pre>
+<hr/>
+<h2 id="3-обновления-bitrix-падают">3. Обновления Bitrix падают</h2>
+<p>При обновлении ядра или модулей проверьте:</p>
+<ul>
+<li><strong>Расширение zip</strong> — <code>php -m | grep zip</code>.</li>
+<li><strong>Расширение intl</strong> — обязательно для Bitrix.</li>
+<li><strong>Права на файлы</strong> — владелец и группа должны совпадать с пользователем веб-сервера; каталоги с записью для обновления.</li>
+<li><strong>disable_functions</strong> — в списке не должно быть <code>exec</code>, <code>shell_exec</code>, <code>proc_open</code> и т.п., если обновление их использует (официальная документация Bitrix уточняет требования к окружению).</li>
+</ul>
+<hr/>
+<h1 id="сниппеты-по-теме">Сниппеты по теме</h1>
+<ul>
+<li><a href="/snippets/apache-mod-rewrite-front-controller-bitrix/">Apache mod_rewrite: front controller для Bitrix и Laravel</a></li>
+<li><a href="/snippets/apache-php-fpm-set-handler/">Apache: привязка PHP к PHP-FPM через SetHandler</a></li>
+<li><a href="/snippets/opcache-production-php-ini/">OPcache: настройка для продакшена (php.ini)</a></li>
+<li><a href="/snippets/bitrix-redis-cache-settings/">Bitrix: настройка Redis для managed cache (.settings.php)</a></li>
+</ul>
+<hr/>
+<h1 id="полезные-ссылки-по-документации">Полезные ссылки по документации</h1>
+<ul>
+<li><a href="https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html">Apache mod_rewrite</a></li>
+<li><a href="https://httpd.apache.org/docs/2.4/mod/mod_ssl.html">Apache mod_ssl</a></li>
+<li><a href="https://httpd.apache.org/docs/2.4/mod/mod_deflate.html">Apache mod_deflate</a></li>
+<li><a href="https://httpd.apache.org/docs/2.4/mod/mod_expires.html">Apache mod_expires</a></li>
+<li><a href="https://httpd.apache.org/docs/2.4/howto/php_fpm.html">Apache + PHP-FPM</a></li>
+<li><a href="https://www.php.net/manual/en/book.opcache.php">PHP OPcache</a></li>
+<li><a href="https://www.php.net/manual/en/install.fpm.configuration.php">PHP-FPM configuration</a></li>
+<li><a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=02795&LESSON_ID=14034">Bitrix: Redis, Memcache</a></li>
+</ul>
+<hr/>
+<h1 id="связанные-статьи">Связанные статьи</h1>
+<ul>
+<li>
+<p>Backend-автоматизация:
+<a href="https://viku-lov.ru/blog/backend-cron-bitrix-agents-automation">https://viku-lov.ru/blog/backend-cron-bitrix-agents-automation</a></p>
+</li>
+<li>
+<p>CI/CD для PHP и Bitrix:
+<a href="https://viku-lov.ru/blog/cicd-php-bitrix-laravel-github-actions">https://viku-lov.ru/blog/cicd-php-bitrix-laravel-github-actions</a></p>
+</li>
+<li>
+<p>WordPress и OPcache (актуально и для Bitrix):
+<a href="https://viku-lov.ru/blog/wordpress-performance-2026-core-web-vitals-lcp-inp-cls-nginx-phpfpm-opcache-caching">https://viku-lov.ru/blog/wordpress-performance-2026-core-web-vitals-lcp-inp-cls-nginx-phpfpm-opcache-caching</a></p>
+</li>
+</ul>
+<hr/>
+<h1 id="итог">Итог</h1>
+<p>Если коротко:</p>
+<h3 id="apache">Apache:</h3>
+<ul>
+<li>mpm_event</li>
+<li>mod_rewrite</li>
+<li>mod_ssl</li>
+<li>mod_headers</li>
+<li>mod_expires</li>
+<li>mod_deflate / brotli</li>
+</ul>
+<h3 id="php">PHP:</h3>
+<ul>
+<li>opcache</li>
+<li>intl</li>
+<li>mbstring</li>
+<li>mysqli</li>
+<li>curl</li>
+<li>redis</li>
+<li>zip</li>
+<li>gd / imagick</li>
+</ul>
+<p>Остальное — по ситуации.</p>
+<p>Если сервер нагружен — сначала проверьте:</p>
+<ol>
+<li>OPcache</li>
+<li>FPM max_children</li>
+<li>Redis</li>
+<li>MPM event</li>
+</ol>
+<p>И только потом имеет смысл браться за «оптимизацию кода».</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

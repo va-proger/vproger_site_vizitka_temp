@@ -1,0 +1,436 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>curl, wget, rsync, dig и nslookup: практическое руководство для Linux-администраторов</title><meta name="description" content="Полное руководство по установке, настройке и использованию ключевых сетевых утилит в CentOS, Ubuntu и Debian. Примеры применения в Битрикс CMS, разбор популярных флагов и типовых сценариев."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> curl </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> curl, wget, rsync, dig и nslookup: практическое руководство для Linux-администраторов </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>11 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/linux-network-utilities-guide.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <p>Утилиты <code>curl</code>, <code>wget</code>, <code>rsync</code>, <code>dig</code> и <code>nslookup</code> — мощные инструменты командной строки для работы с сетью, файлами и DNS в Linux. Они широко используются в системном администрировании, разработке и автоматизации. В статье разобраны установка, основные сценарии использования, популярные флаги и примеры команд для дистрибутивов CentOS, Ubuntu и Debian, а также применение утилит в контексте CMS «Битрикс».</p>
+<h2 id="curl">Curl</h2>
+<p><strong>Curl</strong> — инструмент для передачи данных по различным протоколам (HTTP, HTTPS, FTP, SFTP и др.). Применяется для тестирования API, загрузки файлов, отладки веб-приложений и автоматизации задач. </p>
+<h3 id="установка">Установка</h3>
+<ul>
+<li><strong>Ubuntu/Debian</strong>: <code>sudo apt install curl</code></li>
+<li><strong>CentOS/RHEL</strong>: <code>sudo yum install curl</code> (или <code>sudo dnf install curl</code> на новых версиях)</li>
+</ul>
+<p>Проверка установки: <code>curl --version</code>. </p>
+<h3 id="основные-флаги-и-примеры">Основные флаги и примеры</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Флаг</th><th>Описание</th><th>Пример</th></tr></thead><tbody><tr><td><code>-O</code></td><td>Сохраняет файл с оригинальным именем</td><td><code>curl -O https://example.com/file.zip</code></td></tr><tr><td><code>-o</code></td><td>Сохраняет файл под указанным именем</td><td><code>curl -o myfile.zip https://example.com/file.zip</code></td></tr><tr><td><code>-I</code></td><td>Выводит только HTTP-заголовки</td><td><code>curl -I https://example.com</code></td></tr><tr><td><code>-L</code></td><td>Следует HTTP-редиректам</td><td><code>curl -L https://example.com</code></td></tr><tr><td><code>-u</code></td><td>Аутентификация</td><td><code>curl -u username:password https://example.com</code></td></tr><tr><td><code>-s</code></td><td>Тихий режим (без прогресса)</td><td><code>curl -s -o file.zip https://example.com/file.zip</code></td></tr></tbody></table>
+<p><strong>Пример использования в Битриксе</strong>: загрузка данных из 1С через API. Для обмена данными между 1С и Битриксом можно использовать curl для отправки запросов к специальным обработчикам Битрикса. Например, для загрузки файла с ценами:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -v</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> &quot;логин:пароль&quot;</span><span style="color:#79B8FF"> -X</span><span style="color:#9ECBFF"> POST</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#E1E4E8">-F </span><span style="color:#9ECBFF">&quot;filename=prices.xml&quot;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#E1E4E8">-F </span><span style="color:#9ECBFF">&quot;file=@/path/to/prices.xml&quot;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">&quot;https://example.com/bitrix/admin/1c_exchange.php?type=catalog&amp;mode=file&amp;sessid=&lt;sessid&gt;&quot;</span></span></code></pre>
+<p>Здесь <code>-u</code> задаёт аутентификацию, <code>-X POST</code> — метод запроса, <code>-F</code> — передачу файлов (multipart/form-data).</p>
+<p><strong>Дополнительные примеры curl:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Проверка доступности сайта и кода ответа</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> /dev/null</span><span style="color:#79B8FF"> -s</span><span style="color:#79B8FF"> -w</span><span style="color:#9ECBFF"> &quot;%{http_code}\n&quot;</span><span style="color:#9ECBFF"> https://example.com</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Запрос с кастомными заголовками (например, для API)</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -H</span><span style="color:#9ECBFF"> &quot;Authorization: Bearer TOKEN&quot;</span><span style="color:#79B8FF"> -H</span><span style="color:#9ECBFF"> &quot;Content-Type: application/json&quot;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  https://api.example.com/v1/data</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Ограничение скорости загрузки (100 КБ/с)</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> --limit-rate</span><span style="color:#9ECBFF"> 100K</span><span style="color:#79B8FF"> -O</span><span style="color:#9ECBFF"> https://example.com/largefile.iso</span></span></code></pre>
+<h2 id="wget">Wget</h2>
+<p><strong>Wget</strong> — утилита для загрузки файлов по HTTP, HTTPS и FTP. Поддерживает продолжение прерванных загрузок, рекурсивную загрузку сайтов и работу с REST API. </p>
+<h3 id="установка-1">Установка</h3>
+<ul>
+<li><strong>Ubuntu/Debian</strong>: <code>sudo apt install wget</code></li>
+<li><strong>CentOS/RHEL</strong>: <code>sudo yum install wget</code> (или <code>sudo dnf install wget</code>)</li>
+</ul>
+<p>Проверка установки: <code>wget --version</code>. </p>
+<h3 id="основные-флаги-и-примеры-1">Основные флаги и примеры</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Флаг</th><th>Описание</th><th>Пример</th></tr></thead><tbody><tr><td><code>-O</code></td><td>Сохраняет файл под указанным именем</td><td><code>wget -O myfile.zip https://example.com/file.zip</code></td></tr><tr><td><code>-c</code></td><td>Продолжает прерванную загрузку</td><td><code>wget -c https://example.com/largefile.iso</code></td></tr><tr><td><code>-b</code></td><td>Загружает в фоновом режиме</td><td><code>wget -b https://example.com/file.zip</code></td></tr><tr><td><code>--limit-rate</code></td><td>Ограничивает скорость загрузки</td><td><code>wget --limit-rate=200k https://example.com/file.zip</code></td></tr><tr><td><code>-r</code></td><td>Рекурсивная загрузка</td><td><code>wget -r -l 1 https://example.com/docs/</code></td></tr></tbody></table>
+<p><strong>Пример использования в Битриксе</strong>: скачивание установочного скрипта <code>bitrixsetup.php</code> для установки CMS:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> /home/bitrix/www/</span></span>
+<span class="line"><span style="color:#B392F0">wget</span><span style="color:#9ECBFF"> https://www.1c-bitrix.ru/download/scripts/bitrixsetup.php</span></span></code></pre>
+<p>После этого можно запустить мастер установки через браузер.</p>
+<p><strong>Дополнительные примеры wget:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Рекурсивная загрузка сайта (осторожно с объёмом)</span></span>
+<span class="line"><span style="color:#B392F0">wget</span><span style="color:#79B8FF"> -r</span><span style="color:#79B8FF"> -l</span><span style="color:#79B8FF"> 2</span><span style="color:#79B8FF"> -np</span><span style="color:#79B8FF"> -k</span><span style="color:#9ECBFF"> https://example.com/docs/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Скачивание с повторными попытками при ошибке</span></span>
+<span class="line"><span style="color:#B392F0">wget</span><span style="color:#79B8FF"> -t</span><span style="color:#79B8FF"> 5</span><span style="color:#79B8FF"> -w</span><span style="color:#79B8FF"> 10</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> https://example.com/unstable.iso</span></span></code></pre>
+<h2 id="rsync">Rsync</h2>
+<p><strong>Rsync</strong> — утилита для синхронизации файлов и директорий с минимальным расходом трафика. Широко применяется для резервного копирования, миграции и зеркалирования данных между серверами. </p>
+<h3 id="установка-2">Установка</h3>
+<ul>
+<li><strong>Ubuntu/Debian</strong>: <code>sudo apt install rsync</code></li>
+<li><strong>CentOS/RHEL</strong>: <code>sudo yum install rsync</code> (или <code>sudo dnf install rsync</code>)</li>
+</ul>
+<p>Проверка установки: <code>rsync --version</code>. </p>
+<h3 id="основные-флаги-и-примеры-2">Основные флаги и примеры</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Флаг</th><th>Описание</th><th>Пример</th></tr></thead><tbody><tr><td><code>-a</code> (или <code>--archive</code>)</td><td>Сохраняет права доступа, ссылки, владельцев и группы</td><td><code>rsync -a /source/ /dest/</code></td></tr><tr><td><code>-v</code> (или <code>--verbose</code>)</td><td>Выводит подробные сведения о процессе копирования</td><td><code>rsync -av /source/ /dest/</code></td></tr><tr><td><code>-z</code> (или <code>--compress</code>)</td><td>Сжимает данные при передаче по сети</td><td><code>rsync -avz /source/ user@host:/dest/</code></td></tr><tr><td><code>--delete</code></td><td>Удаляет в приёмнике файлы, отсутствующие в источнике</td><td><code>rsync -av --delete /src/folder/ /dest/folder/</code></td></tr><tr><td><code>-n</code> (dry-run)</td><td>Показать изменения без копирования</td><td><code>rsync -avn /src/ /dest/</code></td></tr></tbody></table>
+<p><strong>Пример использования в Битриксе</strong>: перенос файлов сайта на другой сервер:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avz</span><span style="color:#9ECBFF"> /var/www/bitrix/</span><span style="color:#9ECBFF"> root@новый_сервер:/var/www/bitrix/</span></span></code></pre>
+<p>Для переноса базы данных можно использовать <code>mysqldump</code>, а затем скопировать дамп через rsync.</p>
+<p><strong>Дополнительные примеры rsync:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Копирование с исключением каталогов (кэш, логи)</span></span>
+<span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avz</span><span style="color:#79B8FF"> --exclude=</span><span style="color:#9ECBFF">&#39;cache/&#39;</span><span style="color:#79B8FF"> --exclude=</span><span style="color:#9ECBFF">&#39;*.log&#39;</span><span style="color:#9ECBFF"> /var/www/site/</span><span style="color:#9ECBFF"> user@backup:/backup/site/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Просмотр изменений без копирования (dry-run)</span></span>
+<span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avzn</span><span style="color:#9ECBFF"> /source/</span><span style="color:#9ECBFF"> user@host:/dest/</span></span></code></pre>
+<h2 id="dig">Dig</h2>
+<p><strong>Dig</strong> — утилита для отправки DNS-запросов. Позволяет проверять записи (A, MX, TXT, NS, CNAME и др.), делать запросы к конкретным DNS-серверам, отслеживать цепочку DNS-запросов. </p>
+<h3 id="установка-3">Установка</h3>
+<ul>
+<li><strong>Ubuntu/Debian</strong>: <code>sudo apt install dnsutils</code></li>
+<li><strong>CentOS/RHEL</strong>: <code>sudo yum install bind-utils</code> (или <code>sudo dnf install bind-utils</code>)</li>
+</ul>
+<p>Проверка установки: <code>dig -v</code>. </p>
+<h3 id="основные-флаги-и-примеры-3">Основные флаги и примеры</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Флаг</th><th>Описание</th><th>Пример</th></tr></thead><tbody><tr><td><code>+short</code></td><td>Выводит только IP-адрес или значение записи</td><td><code>dig +short example.com</code></td></tr><tr><td><code>+noall +answer</code></td><td>Показывает только секцию ответа</td><td><code>dig +noall +answer example.com</code></td></tr><tr><td><code>+trace</code></td><td>Показывает полную цепочку DNS-разрешения</td><td><code>dig +trace example.com</code></td></tr><tr><td><code>@server</code></td><td>Запрос к указанному DNS-серверу</td><td><code>dig @8.8.8.8 example.com</code></td></tr></tbody></table>
+<p><strong>Пример использования</strong>: проверка MX-записей домена для настройки почты в Битриксе:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> MX</span><span style="color:#9ECBFF"> example.bitrix.ru</span></span></code></pre>
+<p>Это поможет убедиться, что почтовые серверы настроены корректно.</p>
+<p><strong>Дополнительные примеры dig:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Запрос к конкретному DNS-серверу (например, 8.8.8.8)</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> @8.8.8.8</span><span style="color:#9ECBFF"> example.com</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверка TXT-записи (SPF, DKIM, верификация)</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> TXT</span><span style="color:#9ECBFF"> example.com</span></span></code></pre>
+<h2 id="nslookup">Nslookup</h2>
+<p><strong>Nslookup</strong> — утилита для получения информации о DNS-записях. Позволяет узнать IP-адрес, A, NS, SOA, MX-записи для домена. </p>
+<h3 id="установка-4">Установка</h3>
+<ul>
+<li><strong>Ubuntu/Debian</strong>: <code>sudo apt install dnsutils</code></li>
+<li><strong>CentOS/RHEL</strong>: <code>sudo yum install bind-utils</code> (или <code>sudo dnf install bind-utils</code>)</li>
+</ul>
+<p>Проверка установки: <code>nslookup</code> (входит в пакет dnsutils/bind-utils).</p>
+<h3 id="основные-флаги-и-примеры-4">Основные флаги и примеры</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Флаг</th><th>Описание</th><th>Пример</th></tr></thead><tbody><tr><td><code>-type=MX</code></td><td>Запрос MX-записей</td><td><code>nslookup -type=MX example.com</code></td></tr><tr><td><code>-type=NS</code></td><td>Запрос NS-записей</td><td><code>nslookup -type=NS example.com</code></td></tr><tr><td><code>-timeout</code></td><td>Устанавливает время ожидания ответа</td><td><code>nslookup -timeout=10 example.com</code></td></tr></tbody></table>
+<p><strong>Пример использования</strong>: проверка A-записи домена перед настройкой сайта в Битриксе:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">nslookup</span><span style="color:#9ECBFF"> example.bitrix.ru</span></span></code></pre>
+<p>Это поможет убедиться, что домен правильно резолвится в IP-адрес.</p>
+<p><strong>Дополнительный пример nslookup — обратный DNS (PTR):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Узнать доменное имя по IP (например, для проверки почтового сервера)</span></span>
+<span class="line"><span style="color:#B392F0">nslookup</span><span style="color:#79B8FF"> 8.8.8.8</span></span></code></pre>
+<h2 id="важные-замечания">Важные замечания</h2>
+<ul>
+<li>При работе с <code>curl</code> и <code>wget</code> для передачи чувствительных данных (пароли, токены) всегда используйте HTTPS и по возможности не передавайте учётные данные в командной строке (они видны в <code>ps</code>); предпочтительнее переменные окружения или конфигурационные файлы.</li>
+<li>Для синхронизации с помощью <code>rsync</code> убедитесь, что на обоих узлах установлена совместимая версия утилиты; при использовании <code>--delete</code> сначала проверяйте список изменений флагом <code>-n</code> (dry-run).</li>
+<li>Ответы DNS-утилит (<code>dig</code>, <code>nslookup</code>) зависят от того, к какому DNS-серверу идёт запрос; при диагностике указывайте сервер явно (<code>dig @8.8.8.8 example.com</code>) или смотрите цепочку через <code>dig +trace</code>.</li>
+</ul>
+<h2 id="когда-использовать-curl-vs-wget">Когда использовать curl vs wget</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Задача</th><th>Предпочтительно</th><th>Причина</th></tr></thead><tbody><tr><td>Один запрос, проверка кода/заголовков</td><td>curl</td><td>Гибкий вывод (<code>-w</code>, <code>-o /dev/null</code>), все протоколы</td></tr><tr><td>Скачать файл по URL с продолжением при обрыве</td><td>wget</td><td>Встроенный <code>-c</code>, не нужны доп. флаги</td></tr><tr><td>Рекурсивная загрузка дерева (документация, статика)</td><td>wget</td><td>Нативная поддержка <code>-r</code>, <code>-l</code>, <code>-np</code></td></tr><tr><td>POST, заголовки, API, форма</td><td>curl</td><td>Полный контроль метода и тела запроса</td></tr><tr><td>Фоновая загрузка без nohup</td><td>wget</td><td>Флаг <code>-b</code></td></tr><tr><td>Скрипты и автоматизация (одноразовый запрос)</td><td>curl</td><td>Чаще уже установлен, единообразный вывод</td></tr></tbody></table>
+<p>Оба есть на типичном сервере; выбор по сценарию, а не по принципу «один вместо другого».</p>
+<h2 id="dig-vs-nslookup-что-выбрать-в-2026">dig vs nslookup: что выбрать в 2026</h2>
+<ul>
+<li><strong>dig</strong> — основной инструмент для диагностики DNS: предсказуемый вывод, удобные флаги (<code>+short</code>, <code>+trace</code>, <code>@server</code>), легко парсить в скриптах. Рекомендуется для скриптов и последовательной проверки нескольких записей.</li>
+<li><strong>nslookup</strong> — интерактивный режим и простые разовые запросы; вывод менее структурирован. В 2026 году по-прежнему входит в dnsutils/bind-utils, подходит, если привычнее или нужен только быстрый A/MX.</li>
+<li>Для документации и скриптов ориентируйтесь на <strong>dig</strong>; для ручной проверки «что резолвит домен» допустимы оба.</li>
+</ul>
+<h2 id="практические-сценарии-администратора">Практические сценарии администратора</h2>
+<h3 id="проверка-dns-перед-переносом-bitrix">Проверка DNS перед переносом Bitrix</h3>
+<p>Перед сменой хостинга или A-записи убедитесь, что новый сервер отдаёт ожидаемый контент и что TTL не приведёт к долгому кэшированию старого IP у пользователей.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Текущий IP домена и NS</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> A</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> NS</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверка с конкретного DNS (например, провайдера)</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> @8.8.8.8</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> A</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Убедиться, что на новом IP отдаётся нужный сайт (подставьте новый IP)</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#79B8FF"> -H</span><span style="color:#9ECBFF"> &quot;Host: site.ru&quot;</span><span style="color:#9ECBFF"> http://NEW_IP/</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span><span style="color:#79B8FF"> -5</span></span></code></pre>
+<p>После переключения DNS — повторить <code>dig +short A site.ru</code> с разных серверов (<code>@8.8.8.8</code>, <code>@1.1.1.1</code>), пока не увидите новый IP везде.</p>
+<h3 id="диагностика-сайт-не-открывается">Диагностика «сайт не открывается»</h3>
+<p>Последовательность без лишних шагов: DNS → доступность порта/сервера → HTTP/HTTPS.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Резолвится ли домен</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> A</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. Отвечает ли хост по HTTP (с сервера или своей машины)</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#79B8FF"> --connect-timeout</span><span style="color:#79B8FF"> 5</span><span style="color:#9ECBFF"> http://site.ru/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. Код ответа и редиректы</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> --connect-timeout</span><span style="color:#79B8FF"> 5</span><span style="color:#9ECBFF"> https://site.ru/</span></span></code></pre>
+<p>Если <code>dig</code> не возвращает IP — проблема DNS или сети до DNS. Если <code>curl</code> таймаутит — файрвол, неверный порт или сервис не слушает.</p>
+<h3 id="проверка-редиректов-и-https">Проверка редиректов и HTTPS</h3>
+<p>Проверить цепочку редиректов (например, http → https, www → без www) и корректность сертификата.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Куда в итоге приводит и с каким кодом</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> -w</span><span style="color:#9ECBFF"> &quot;Final URL: %{url_effective}\n&quot;</span><span style="color:#9ECBFF"> https://site.ru/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверка сертификата (срок, issuer)</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> openssl</span><span style="color:#9ECBFF"> s_client</span><span style="color:#79B8FF"> -servername</span><span style="color:#9ECBFF"> site.ru</span><span style="color:#79B8FF"> -connect</span><span style="color:#9ECBFF"> site.ru:443</span><span style="color:#F97583"> 2&gt;</span><span style="color:#9ECBFF">/dev/null</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> openssl</span><span style="color:#9ECBFF"> x509</span><span style="color:#79B8FF"> -noout</span><span style="color:#79B8FF"> -dates</span><span style="color:#79B8FF"> -issuer</span></span></code></pre>
+<h2 id="чек-лист-типовых-проблем-и-команд">Чек-лист типовых проблем и команд</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Проблема</th><th>Что проверить</th><th>Команда</th></tr></thead><tbody><tr><td>Домен не резолвится</td><td>DNS, кэш резолвера</td><td><code>dig +short A site.ru</code>; <code>dig @8.8.8.8 +short A site.ru</code></td></tr><tr><td>Сайт не открывается по HTTPS</td><td>Сертификат, порт 443</td><td><code>curl -sI https://site.ru/</code>; <code>openssl s_client -connect site.ru:443</code></td></tr><tr><td>Редирект уходит не туда</td><td>Цепочка редиректов</td><td><code>curl -sI -L https://site.ru/</code></td></tr><tr><td>После переноса старый контент</td><td>Кэш DNS (TTL), CDN</td><td><code>dig +short A site.ru</code> с разных DNS; снизить TTL заранее</td></tr><tr><td>Файл не докачивается</td><td>Обрыв связи</td><td><code>wget -c URL</code></td></tr><tr><td>Нужно сравнить каталоги перед rsync</td><td>Что изменится</td><td><code>rsync -avn /src/ /dest/</code></td></tr><tr><td>Почта не уходит / не принимается</td><td>MX и PTR</td><td><code>dig MX site.ru</code>; <code>dig +short -x IP_СЕРВЕРА</code></td></tr></tbody></table>
+<h2 id="шпаргалка-команды-под-рукой">Шпаргалка: команды под рукой</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Доступность и код ответа</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> /dev/null</span><span style="color:#79B8FF"> -s</span><span style="color:#79B8FF"> -w</span><span style="color:#9ECBFF"> &quot;%{http_code}\n&quot;</span><span style="color:#9ECBFF"> https://site.ru/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Только заголовки</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#9ECBFF"> https://site.ru/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Следовать редиректам</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sI</span><span style="color:#79B8FF"> -L</span><span style="color:#9ECBFF"> https://site.ru/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># A-запись коротко</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> A</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># DNS к конкретному серверу</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> @8.8.8.8</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> A</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Цепочка разрешения DNS</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +trace</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># MX и TXT</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> MX</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"><span style="color:#B392F0">dig</span><span style="color:#9ECBFF"> +short</span><span style="color:#9ECBFF"> TXT</span><span style="color:#9ECBFF"> site.ru</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Синхронизация с просмотром (dry-run)</span></span>
+<span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avn</span><span style="color:#9ECBFF"> /src/</span><span style="color:#9ECBFF"> user@host:/dest/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Синхронизация с удалением лишнего на приёмнике</span></span>
+<span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avz</span><span style="color:#79B8FF"> --delete</span><span style="color:#9ECBFF"> /src/</span><span style="color:#9ECBFF"> user@host:/dest/</span></span></code></pre> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

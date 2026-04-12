@@ -1,0 +1,217 @@
+:root {
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    transition: background var(--transition), color var(--transition);
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100svh;
+    min-height: -webkit-fill-available;
+    width: 100%;
+    position: relative;
+}
+
+body.light {
+    --bg: #f9fafb;
+    --text: #111;
+    --accent: #0072ff;
+    --card-bg: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+    --card: #fff;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse at top, rgba(0, 198, 255, 0.25), transparent 70%),
+        radial-gradient(ellipse at bottom, rgba(138, 43, 226, 0.2), transparent 70%);
+    background-size: 100% 100%;
+    animation: gradientShift 20s ease-in-out infinite alternate;
+    filter: blur(40px);
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+@keyframes gradientShift {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+
+    100% {
+        transform: scale(1.05) translateY(-20px);
+    }
+}
+
+@keyframes avatarPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 25px rgba(0, 198, 255, 0.2), 0 0 50px rgba(138, 43, 226, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 35px rgba(0, 198, 255, 0.4), 0 0 60px rgba(138, 43, 226, 0.3);
+    }
+}
+
+/* === Контейнер и структура === */
+
+
+h1 {
+    font-size: 2rem;
+    margin-top: 1rem;
+}
+
+h2 {
+    color: var(--accent);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+
+ul {
+    list-style: none;
+    padding-left: 0;
+
+    & li {
+        padding: 0.3rem 0;
+    }
+}
+
+.wrapper {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem 1.7rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--container-padding-mobile);
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Планшет */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .main {
+        gap: var(--container-padding-tablet);
+    }
+}
+
+/* Десктоп */
+@media (min-width: 1025px) {
+    .main {
+        gap: var(--container-padding-desktop);
+    }
+}
+
+@media (max-width: 640px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .wrapper {
+        padding: 1rem 1.2rem;
+    }
+}
+
+.info-section__inner {
+    display: grid;
+    gap: var(--space-m);
+}
+
+.info-section__subtitle {
+    margin: 0;
+    opacity: .75;
+    line-height: 1.45;
+}
+
+.info-section__body {
+    display: grid;
+    gap: var(--space-s);
+}
+
+.info-section__body p {
+    margin: 0;
+    line-height: 1.65;
+    opacity: .92;
+}
+
+/* аккуратно подсветить ключевые слова */
+.info-section__body b {
+    color: var(--accent);
+    font-weight: 650;
+}
+
+/* === Унифицированный header секции (как на сертификатах) === */
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    margin: 0;
+}
+
+.section-subtitle {
+    margin: .35rem 0 0;
+    opacity: .75;
+    line-height: 1.4;
+}
+
+.section-stats {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+.section-stat {
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .6rem .8rem;
+    min-width: 130px;
+}
+
+.section-stat__label {
+    display: block;
+    font-size: 12px;
+    opacity: .7;
+}
+
+.section-stat__value {
+    display: block;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+@media (max-width: 900px) {
+    .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-stat {
+        min-width: 0;
+    }
+}

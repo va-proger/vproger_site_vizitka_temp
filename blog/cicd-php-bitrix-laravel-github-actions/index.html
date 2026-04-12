@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CI/CD для PHP, Bitrix и Laravel: настраиваем GitHub Actions по шагам</title><meta name="description" content="Руководство по CI/CD для PHP-проектов: GitHub Actions для 1C-Битрикс и Laravel. Проверка кода, Composer, тесты, деплой по SSH, секреты. Реальные примеры workflow и типичные ошибки при внедрении."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> cicd </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> CI/CD для PHP, Bitrix и Laravel: настраиваем GitHub Actions по шагам </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>4 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/cicd-php-bitrix-laravel-github-actions-new.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="cicd-для-php-bitrix-и-laravel-на-github-actions">CI/CD для PHP: Bitrix и Laravel на GitHub Actions</h1>
+<p>Деплой по SSH с ноутбука, страх трогать <code>main</code> перед выходными и проверка кода «на глаз» — знакомые сценарии. Когда так живёт проект, <strong>CI/CD либо отсутствует, либо существует только на бумаге</strong>. В этой статье — как сделать по-настоящему работающий пайплайн для PHP: разберём и <strong>Bitrix</strong>, и <strong>Laravel</strong>, с примерами конфигов и без лишней теории.</p>
+<hr/>
+<h2 id="ci-и-cd--что-это-и-зачем-в-php-мире">CI и CD — что это и зачем в PHP-мире</h2>
+<h3 id="ci--непрерывная-интеграция">CI — непрерывная интеграция</h3>
+<p><strong>CI</strong> (Continuous Integration) — это автоматическая проверка кода при каждом изменении в репозитории. Обычный сценарий:</p>
+<ul>
+<li>клонирование репозитория;</li>
+<li>установка зависимостей (Composer);</li>
+<li>проверка синтаксиса PHP;</li>
+<li>запуск тестов и линтеров.</li>
+</ul>
+<p>Если что-то падает — пайплайн завершается с ошибкой, и в <code>main</code> не попадёт сломанный код.</p>
+<p>По сути CI отвечает на вопрос: <strong>можно ли этот код вообще запускать?</strong></p>
+<h3 id="cd--непрерывная-доставка-и-деплой">CD — непрерывная доставка и деплой</h3>
+<p><strong>CD</strong> (Continuous Delivery / Deployment) — следующий шаг: автоматическая доставка собранного и проверенного кода на staging или production. То есть не только «проверили», но и «выкатили» (или подготовили к выкладке).</p>
+<p>CD отвечает на вопрос: <strong>безопасно ли выкатывать этот код?</strong></p>
+<hr/>
+<h2 id="зачем-cicd-именно-в-php-bitrix-и-laravel">Зачем CI/CD именно в PHP, Bitrix и Laravel</h2>
+<p>В PHP-проектах часто накапливаются типичные риски:</p>
+<ol>
+<li><strong>Человеческий фактор</strong> — забыли обновить <code>vendor</code>, не закоммитили файл, «у меня локально работало».</li>
+<li><strong>Разное окружение</strong> — версия PHP, расширения, права на папки, кеш, cron и агенты (в Bitrix).</li>
+<li><strong>Страх продакшена</strong> — особенно на Bitrix, где фатал или ошибка в ядре могут дать белый экран.</li>
+</ol>
+<p>CI/CD не решает все проблемы разом, но <strong>убирает лотерею</strong> при каждом мерже и деплое.</p>
+<hr/>
+<h2 id="почему-выбирают-github-actions">Почему выбирают GitHub Actions</h2>
+<p>Для репозиториев на GitHub Actions — естественный выбор:</p>
+<ul>
+<li>не нужен отдельный сервер (Jenkins, GitLab Runner);</li>
+<li>конфигурация лежит в <code>.github/workflows/</code> рядом с кодом;</li>
+<li>YAML-файлы читаются как пошаговый сценарий;</li>
+<li>бесплатный лимит для публичных репозиториев.</li>
+</ul>
+<p>Для большинства PHP-проектов (в том числе Bitrix и Laravel) этого достаточно, чтобы поднять CI и при желании CD.</p>
+<hr/>
+<h2 id="где-хранятся-workflow-файлы">Где хранятся workflow-файлы</h2>
+<p>Структура в репозитории:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>.github/</span></span>
+<span class="line"><span>└── workflows/</span></span>
+<span class="line"><span>    └── ci.yml</span></span></code></pre>
+<p>Один YAML-файл — один сценарий (workflow). Можно добавить отдельные файлы, например <code>deploy.yml</code> для CD.</p>
+<hr/>
+<h2 id="базовый-ci-для-php-синтаксис-и-composer">Базовый CI для PHP: синтаксис и Composer</h2>
+<p>Ниже — минимальный, но полноценный CI для проекта на PHP 8.2 с Composer. По <a href="https://docs.github.com/en/actions">документации GitHub Actions</a> и <a href="https://github.com/shivammathur/setup-php">shivammathur/setup-php</a> используются стандартные действия.</p>
+<h3 id="полный-пример-workflow">Полный пример workflow</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">PHP CI</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">  pull_request</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  php-ci</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup PHP 8.2</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">shivammathur/setup-php@v2</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          php-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;8.2&quot;</span></span>
+<span class="line"><span style="color:#85E89D">          extensions</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">mbstring, intl, pdo, pdo_mysql</span></span>
+<span class="line"><span style="color:#85E89D">          coverage</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">none</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install Composer dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">composer install --no-interaction --prefer-dist --no-progress</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Check PHP syntax</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">find . -path ./vendor -prune -o -type f -name &quot;*.php&quot; -print | xargs -n1 php -l</span></span></code></pre>
+<p>Важно: <code>find</code> с <code>-path ./vendor -prune</code> исключает папку <code>vendor</code>, чтобы не проверять сторонние пакеты. Так мы проверяем только свой код.</p>
+<h3 id="зачем-нужен-composer-install---prefer-dist">Зачем нужен <code>composer install --prefer-dist</code></h3>
+<ul>
+<li>Используется <code>composer.lock</code>, сборка воспроизводима.</li>
+<li>Меньше шансов на «у меня работает, у тебя нет» из-за разных версий зависимостей.</li>
+</ul>
+<hr/>
+<h2 id="триггеры-когда-запускается-ci">Триггеры: когда запускается CI</h2>
+<p>Блок <code>on</code> определяет события:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">  pull_request</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<p>CI запускается при пуше в <code>main</code> и при каждом Pull Request в <code>main</code>. <strong>Без проверки PR</strong> смысл CI теряется: код может попадать в основную ветку без прогона тестов и линтеров.</p>
+<hr/>
+<h2 id="добавляем-php_codesniffer-стиль-кода">Добавляем PHP_CodeSniffer (стиль кода)</h2>
+<p>Чтобы CI ругался на нарушение стандарта кодирования, а не только на синтаксис, добавляем PHP_CodeSniffer (предполагается, что он уже в <code>composer.json</code> как dev-зависимость):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run PHP_CodeSniffer</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">vendor/bin/phpcs --standard=PSR12 src/</span></span></code></pre>
+<p>Если структура проекта другая (например, <code>local/</code> в Bitrix), замените <code>src/</code> на нужный путь. Так код-ревью можно сосредоточить на логике, а не на отступах.</p>
+<hr/>
+<h2 id="ci-для-laravel-env-ключ-миграции-тесты">CI для Laravel: env, ключ, миграции, тесты</h2>
+<p>Laravel требует окружение (<code>.env</code>), ключ приложения и при необходимости — миграции. В CI обычно используют отдельную БД (часто SQLite в памяти), чтобы не зависеть от внешнего сервера.</p>
+<h3 id="шаги-в-workflow-для-laravel">Шаги в workflow для Laravel</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Copy environment</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">cp .env.example .env</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Generate application key</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">php artisan key:generate</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run migrations</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">php artisan migrate --force</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Execute tests</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">php artisan test</span></span></code></pre>
+<p>В <code>.env.example</code> для CI можно задать:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>APP_ENV=testing</span></span>
+<span class="line"><span>APP_DEBUG=true</span></span>
+<span class="line"><span>DB_CONNECTION=sqlite</span></span>
+<span class="line"><span>DB_DATABASE=:memory:</span></span></code></pre>
+<p>Так тесты выполняются быстро и изолированно, без настройки MySQL на раннере.</p>
+<hr/>
+<h2 id="ci-для-bitrix-что-реально-проверять">CI для Bitrix: что реально проверять</h2>
+<p>В Bitrix полно «тяжёлого» ядра и модулей; поднимать весь сайт в CI нецелесообразно. Разумный подход — <strong>проверять только свой код</strong>: PHP-синтаксис, при необходимости статический анализ и стиль. Ядро и стандартные модули в CI не трогаем.</p>
+<h3 id="что-имеет-смысл-гонять-в-ci-под-bitrix">Что имеет смысл гонять в CI под Bitrix</h3>
+<ul>
+<li>Проверка синтаксиса PHP в каталоге <code>/local</code> (и при необходимости в своих модулях).</li>
+<li>Composer — если проект использует зависимости (например, в <code>local/</code>).</li>
+<li>PHP_CodeSniffer или другой линтер по своему коду.</li>
+<li>Отсутствие фаталов при подключении критичных файлов (опционально, через простой bootstrap).</li>
+</ul>
+<h3 id="пример-ci-только-для-кода-в-local">Пример CI только для кода в <code>local/</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Bitrix CI</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  pull_request</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  bitrix-ci</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">shivammathur/setup-php@v2</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          php-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;8.1&quot;</span></span>
+<span class="line"><span style="color:#85E89D">          extensions</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">mbstring, gd, mysqli, intl</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Composer install (if composer.json in local)</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          if [ -f local/composer.json ]; then</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd local &amp;&amp; composer install --no-interaction --prefer-dist</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd ..</span></span>
+<span class="line"><span style="color:#9ECBFF">          fi</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">PHP syntax check (local only)</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          find local -type f -name &quot;*.php&quot; | while read f; do</span></span>
+<span class="line"><span style="color:#9ECBFF">            php -l &quot;$f&quot; || exit 1</span></span>
+<span class="line"><span style="color:#9ECBFF">          done</span></span></code></pre>
+<p>Правило: <strong>CI проверяет ваш код и зависимости, а не ядро Bitrix.</strong></p>
+<h3 id="чем-ещё-полезен-ci-для-битриксоидов">Чем ещё полезен CI для битриксоидов</h3>
+<ul>
+<li><strong>Права на файлы</strong> — в деплое можно явно выставлять права на <code>upload</code>, кеш и т.п.; список команд удобно держать в скрипте деплоя и вызывать из CD.</li>
+<li><strong>Кеш после деплоя</strong> — после <code>git pull</code> на сервере имеет смысл очищать управляемый кеш (например, через вызов агентов или скрипт), это можно описать в том же deploy-шаге.</li>
+<li><strong>Агенты</strong> — CI не запускает агенты Bitrix; за их расписание и логи отвечает сервер. В документации Bitrix по <a href="https://dev.1c-bitrix.ru/api_d7/bitrix/main/agent/index.php">настройке агентов</a> и <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=05734">cron</a> можно вынести напоминание команде, что после деплоя нужно убедиться в актуальности расписания.</li>
+</ul>
+<p>Дополнительный полезный текст: если вы выкатываете обновления своих модулей или доработок в <code>local/</code>, CI гарантирует, что хотя бы синтаксис и (при наличии) тесты проходят до попадания в прод. Это сильно снижает риск «забыл файл» или «не обновил vendor» и даёт уверенность перед выходными.</p>
+<hr/>
+<h2 id="cd-деплой-на-сервер-по-ssh">CD: деплой на сервер по SSH</h2>
+<p>После успешного CI можно автоматизировать выкладку: по пушу в <code>main</code> подключаться к серверу по SSH и выполнять обновление кода и зависимостей.</p>
+<h3 id="идея-цепочки">Идея цепочки</h3>
+<ol>
+<li>Разработчик пушит в <code>main</code> (или мержит PR).</li>
+<li>CI проходит (синтаксис, тесты, линтеры).</li>
+<li>Запускается job деплоя (только для ветки <code>main</code>).</li>
+<li>На сервере выполняется <code>git pull</code>, <code>composer install --no-dev</code> и при необходимости миграции или сброс кеша.</li>
+</ol>
+<h3 id="где-хранить-учётные-данные">Где хранить учётные данные</h3>
+<p>В репозитории <strong>никогда</strong> не должны лежать пароли и приватные ключи. В GitHub:</p>
+<p><strong>Settings → Secrets and variables → Actions</strong></p>
+<p>Создайте секреты, например:</p>
+<ul>
+<li><code>SSH_HOST</code> — хост сервера (IP или домен);</li>
+<li><code>SSH_USER</code> — пользователь для SSH;</li>
+<li><code>SSH_PRIVATE_KEY</code> — содержимое приватного ключа (весь блок от <code>-----BEGIN ...</code> до <code>-----END ...</code>).</li>
+</ul>
+<p>В workflow они подставляются через <code>${{ secrets.SSH_HOST }}</code> и т.д.</p>
+<h3 id="пример-шага-деплоя-по-ssh-laravel-подобный-сценарий">Пример шага деплоя по SSH (Laravel-подобный сценарий)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to production</span></span>
+<span class="line"><span style="color:#85E89D">  if</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">github.ref == &#39;refs/heads/main&#39; &amp;&amp; github.event_name == &#39;push&#39;</span></span>
+<span class="line"><span style="color:#85E89D">  env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    SSH_HOST</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.SSH_HOST }}</span></span>
+<span class="line"><span style="color:#85E89D">    SSH_USER</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.SSH_USER }}</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">    mkdir -p ~/.ssh</span></span>
+<span class="line"><span style="color:#9ECBFF">    echo &quot;${{ secrets.SSH_PRIVATE_KEY }}&quot; &gt; ~/.ssh/deploy_key</span></span>
+<span class="line"><span style="color:#9ECBFF">    chmod 600 ~/.ssh/deploy_key</span></span>
+<span class="line"><span style="color:#9ECBFF">    ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SSH_USER}@${SSH_HOST} &#39;</span></span>
+<span class="line"><span style="color:#9ECBFF">      cd /var/www/myapp &amp;&amp;</span></span>
+<span class="line"><span style="color:#9ECBFF">      git pull origin main &amp;&amp;</span></span>
+<span class="line"><span style="color:#9ECBFF">      composer install --no-dev --no-interaction &amp;&amp;</span></span>
+<span class="line"><span style="color:#9ECBFF">      php artisan migrate --force &amp;&amp;</span></span>
+<span class="line"><span style="color:#9ECBFF">      php artisan config:cache</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;</span></span>
+<span class="line"><span style="color:#9ECBFF">    rm -f ~/.ssh/deploy_key</span></span></code></pre>
+<p>Для Bitrix вместо <code>artisan migrate</code> и <code>config:cache</code> будут свои команды: обновление кода, при необходимости <code>composer install</code> в <code>local/</code>, сброс кеша (скрипт или вызов через curl/CLI, если так принято в проекте).</p>
+<hr/>
+<h2 id="типовая-схема-cicd-для-php">Типовая схема CI/CD для PHP</h2>
+<p>Упрощённо цепочка выглядит так:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>PR → CI (синтаксис, тесты, линтеры) → merge в main → снова CI → CD (деплой на сервер)</span></span></code></pre>
+<p>Один раз настроили — дальше процесс повторяемый и предсказуемый.</p>
+<hr/>
+<h2 id="частые-ошибки-при-внедрении">Частые ошибки при внедрении</h2>
+<ul>
+<li>Запуск CI только вручную (нет срабатывания на <code>push</code>/<code>pull_request</code>).</li>
+<li>CI не настроен на PR — код попадает в <code>main</code> без проверок.</li>
+<li>Деплой срабатывает из любой ветки, а не только из <code>main</code>.</li>
+<li>Пароли или ключи в YAML или в коде.</li>
+<li>Один огромный job без разбиения: при падении одного шага непонятно, что именно сломалось.</li>
+<li>Нет внятных имён шагов — в логах трудно искать причину ошибки.</li>
+</ul>
+<hr/>
+<h2 id="что-делать-правильно">Что делать правильно</h2>
+<ul>
+<li>Включать CI на все Pull Request в основную ветку.</li>
+<li>Запускать CD только при пуше в <code>main</code> (или в ветку, с которой деплоите).</li>
+<li>Хранить учётные данные только в GitHub Secrets (или аналоге), не в репозитории.</li>
+<li>Давать шагам осмысленные имена (<code>name:</code>), чтобы по логам было понятно, где упало.</li>
+<li>Держать конфиг простым: меньше «магии», больше явных шагов — так проще поддерживать и отлаживать.</li>
+</ul>
+<hr/>
+<h2 id="краткий-итог">Краткий итог</h2>
+<p>CI/CD в PHP-проектах — не привилегия «крупных» команд, а способ меньше ломать прод и спокойнее выкатывать изменения. Для Bitrix и Laravel:</p>
+<ul>
+<li><strong>CI</strong> — обязательный минимум: синтаксис, зависимости, тесты (где есть), линтеры.</li>
+<li><strong>CD</strong> — по желанию, но сильно упрощает жизнь при частых релизах.</li>
+<li><strong>GitHub Actions</strong> — удобный и достаточный вариант для большинства таких проектов.</li>
+</ul>
+<p>Настроив один раз проверку на PR и при пуше в <code>main</code>, вы переходите от ручного «задеплоил и надеюсь» к контролируемому процессу: код попадает на сервер только после прохождения заданных проверок.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

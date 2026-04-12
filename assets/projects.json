@@ -1,65 +1,142 @@
 [
   {
-    "name": "VProger Password Generator",
+    "name": "Password Generator",
     "url": "https://github.com/va-proger/vp-password-generator",
     "demo_url": "https://generator.vproger.ru/",
     "description": "🔐 Генератор паролей с настройкой длины и символов, моментальным копированием, QR-экспортом и полной локальной обработкой без трекинга.",
-    "tags": ["🔐 Security", "⚡ Instant Copy", "📱 QR Export", "🛡 Client-Side", "🎨 Minimal UI", "🧩 2025Stack"]
+    "tags": [
+      "🔐 Security",
+      "⚡ Instant Copy",
+      "📱 QR Export",
+      "🛡 Client-Side",
+      "🎨 Minimal UI",
+      "🧩 2025Stack"
+    ]
   },
   {
     "name": "Telegram Channel Parser",
     "url": "https://github.com/va-proger/vproger_parce_php",
     "demo_url": "",
     "description": "📡 Парсер Telegram-каналов на MadelineProto v8: загрузка постов, вложений, генерация HTML и NDJSON для аналитики и архивирования.",
-    "tags": ["🐘 PHP 8.1+", "📡 MadelineProto", "📰 HTML/NDJSON", "⚙️ Automation", "💾 Archiver", "🔧 DevOps Tool"]
+    "tags": [
+      "🐘 PHP 8.1+",
+      "📡 MadelineProto",
+      "📰 HTML/NDJSON",
+      "⚙️ Automation",
+      "💾 Archiver",
+      "🔧 DevOps Tool"
+    ]
   },
   {
     "name": "Sitemap State Checker Bot",
     "url": "https://github.com/va-proger/sitemap-checker",
     "demo_url": "",
     "description": "🕵️ Multithread CLI tool: проверяет sitemap.xml (200/404/500), формирует CSV-отчёты, пишет логи. 1000+ URL/мин — удобно для SEO и DevOps.",
-    "tags": ["🐍 Python", "🗺 Sitemap Scanner", "📊 CSV Reports", "⚙️ Multithread", "🛡 Monitoring", "💻 CLI Tool"]
+    "tags": [
+      "🐍 Python",
+      "🗺 Sitemap Scanner",
+      "📊 CSV Reports",
+      "⚙️ Multithread",
+      "🛡 Monitoring",
+      "💻 CLI Tool"
+    ]
   },
   {
     "name": "Bitrix Import Sync Agent",
     "url": "https://github.com/va-proger/vp-sync-import-agent-bitrix",
     "demo_url": "",
     "description": "🕒 PHP-агент Bitrix: SSH-синхронизация файлов, CLI-импорт, бэкапы, защита от параллельных запусков и подробные логи.",
-    "tags": ["🐘 PHP 8+", "🧩 Bitrix Agent", "🔐 SSH Sync", "🕒 Cron Automation", "📦 CLI Import", "🚀 No-Downtime"]
+    "tags": [
+      "🐘 PHP 8+",
+      "🧩 Bitrix Agent",
+      "🔐 SSH Sync",
+      "🕒 Cron Automation",
+      "📦 CLI Import",
+      "🚀 No-Downtime"
+    ]
   },
   {
     "name": "Pomodoro Pro",
     "url": "https://github.com/va-proger/vp-pomidora/",
     "demo_url": "https://pomidoro.vproger.ru",
     "description": "🍅 PWA-таймер Pomodoro: задачи, фокус-сессии, статистика (Chart.js), конфетти, темы dark/light. Полностью локально, без аккаунтов.",
-    "tags": ["🍅 Productivity", "📊 Chart.js Stats", "⚡ PWA Offline", "🌗 Theme Switch", "🎨 Tailwind", "🧩 2025Stack"]
+    "tags": [
+      "🍅 Productivity",
+      "📊 Chart.js Stats",
+      "⚡ PWA Offline",
+      "🌗 Theme Switch",
+      "🎨 Tailwind",
+      "🧩 2025Stack"
+    ]
   },
   {
     "name": "Bitrix Delivery Fix Handler",
     "url": "https://github.com/va-proger/vp-fix-delivery-service-calculate-bitrix",
     "demo_url": "",
     "description": "🚚 Хендлер OnSaleDeliveryCalculate: подмена стоимости доставки через HLBlock без модификации ядра. Чистый event-driven код.",
-    "tags": ["🐘 PHP 8+", "🧩 Bitrix Events", "📦 HLBlock", "🚚 Delivery Calc", "⚙️ Handler", "🧼 Clean Code"]
+    "tags": [
+      "🐘 PHP 8+",
+      "🧩 Bitrix Events",
+      "📦 HLBlock",
+      "🚚 Delivery Calc",
+      "⚙️ Handler",
+      "🧼 Clean Code"
+    ]
   },
   {
     "name": "Retro Pixel Gallery",
     "url": "https://github.com/va-proger/retro-pixel-gallery",
     "demo_url": "https://retro.vproger.ru/",
     "description": "🎮 PWA-галерея в CRT/WebGL стиле: пикселизация, ретро-глитчи, drag&drop, ZIP-экспорт. IndexedDB — оффлайн режим.",
-    "tags": ["🖼 Pixel Art", "💚 CRT/WebGL", "⚡ PWA Offline", "📦 IndexedDB", "🎮 Canvas Effects", "🖱 DragDrop"]
+    "tags": [
+      "🖼 Pixel Art",
+      "💚 CRT/WebGL",
+      "⚡ PWA Offline",
+      "📦 IndexedDB",
+      "🎮 Canvas Effects",
+      "🖱 DragDrop"
+    ]
   },
   {
     "name": "FavGen Pro",
     "url": "https://github.com/va-proger/vp-generator-favicon-page",
     "demo_url": "https://generation-favicon.vproger.ru/",
     "description": "✨ Фавикон-генератор: PNG/ICO всех размеров, manifest.json и ZIP. Neon-UI, drag&drop, тёмная/светлая темы.",
-    "tags": ["🪄 Favicon Generator", "📦 PNG/ICO ZIP", "⚡ DragDrop", "🌗 Theme Switch", "🎨 Neon UI", "Web Tool"]
+    "tags": [
+      "🪄 Favicon Generator",
+      "📦 PNG/ICO ZIP",
+      "⚡ DragDrop",
+      "🌗 Theme Switch",
+      "🎨 Neon UI",
+      "Web Tool"
+    ]
   },
   {
     "name": "SEO Image Optimizer Pro",
     "url": "https://github.com/va-proger/seo-image-optimizer-pro",
     "demo_url": "https://image-optimize.vproger.ru",
     "description": "🚀 Локальная оптимизация WebP/AVIF, responsive srcset, ALT из имени, ZIP + HTML. React + Vite + Tailwind, PWA-оффлайн.",
-    "tags": ["🖼 Image Optimizer", "⚡ WebPerf", "⚙️ PWA Offline", "🔧 Vite React", "🎨 Tailwind Atomic", "📦 ZIP Srcset"]
+    "tags": [
+      "🖼 Image Optimizer",
+      "⚡ WebPerf",
+      "⚙️ PWA Offline",
+      "🔧 Vite React",
+      "🎨 Tailwind Atomic",
+      "📦 ZIP Srcset"
+    ]
+  },
+  {
+    "name": "Bitrix CMS ↔ CRM Status Sync",
+    "url": "https://github.com/va-proger/vp_bitrix_deal_to_order_status_sync",
+    "demo_url": "",
+    "description": "🔁 Двусторонняя синхронизация статусов заказов (CMS) и сделок (CRM) в коробочном Bitrix. Event-driven логика, защита от циклов, приоритет оплаты, подробное логирование.",
+    "tags": [
+      "🧩 Bitrix",
+      "🔁 CMS ↔ CRM",
+      "⚙️ Event-Driven",
+      "📦 Sale / CRM",
+      "🛡 Loop Protection",
+      "📊 Logging"
+    ]
   }
 ]

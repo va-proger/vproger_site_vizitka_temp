@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Двусторонняя синхронизация статусов CMS и CRM в 1C-Битрикс</title><meta name="description" content="Как связать статусы заказов и сделок в Битрикс без циклов: OnSaleOrderSaved, OnAfterCrmDealUpdate, маппинг статусов, проверка расхождений. Готовые примеры кода."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> bitrix </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Двусторонняя синхронизация статусов CMS и CRM в 1C-Битрикс </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>19 декабря 2025 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/cms-crm-status-sync.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="двусторонняя-синхронизация-статусов-cms-и-crm-в-1c-битрикс">Двусторонняя синхронизация статусов CMS и CRM в 1C-Битрикс</h1>
+<p><strong>Проблема:</strong> заказы создаются в CMS, сделки ведутся в CRM, а бизнесу нужна <strong>синхронизация в обе стороны</strong>. Меняют статус в одном месте — он должен подтянуться в другом, без ручного дублирования и без зацикливания.</p>
+<p><strong>Решение:</strong> разделение на три сценария (CMS → CRM, CRM → CMS, оплата), проверка расхождений перед обновлением, использование корректных событий из документации. Готовые примеры кода для коробочной версии.</p>
+<hr/>
+<h2 id="в-чём-проблема-почему-нельзя-делать-в-лоб">В чём проблема: почему нельзя делать «в лоб»</h2>
+<p>Если навесить обработчики на события без учёта источника изменения:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. CMS меняет статус заказа → CRM обновляет сделку</span></span>
+<span class="line"><span>2. CRM меняет стадию сделки → CMS обновляет заказ</span></span>
+<span class="line"><span>3. 🔁 Возникает цикл: обновление тянет за собой следующее</span></span>
+<span class="line"><span>4. Растёт нагрузка на БД, статусы «прыгают», данные перестают быть консистентными</span></span></code></pre>
+<p><strong>Причина:</strong> обработчик не различает, кто инициировал изменение — пользователь или другой обработчик.</p>
+<p><strong>Решение:</strong> явно разделять сценарии и обновлять вторую сторону <strong>только когда значения реально различаются</strong>.</p>
+<hr/>
+<h2 id="архитектура-решения-три-сценария">Архитектура решения: три сценария</h2>
+<p>Логику разносим на <strong>три независимых сценария</strong>:</p>
+<h3 id="сценарий-1-cms--crm">Сценарий 1: CMS → CRM</h3>
+<ul>
+<li><strong>Триггер:</strong> сохранение заказа в CMS (<code>OnSaleOrderSaved</code>)</li>
+<li><strong>Действие:</strong> обновить стадию сделки в CRM</li>
+<li><strong>Защита от цикла:</strong> проверять, что статус заказа изменился</li>
+</ul>
+<h3 id="сценарий-2-crm--cms">Сценарий 2: CRM → CMS</h3>
+<ul>
+<li><strong>Триггер:</strong> обновление сделки в CRM (<code>OnAfterCrmDealUpdate</code>)</li>
+<li><strong>Действие:</strong> обновить статус заказа в CMS</li>
+<li><strong>Защита от цикла:</strong> проверять, что стадя сделки изменилась</li>
+</ul>
+<h3 id="сценарий-3-оплата-приоритет">Сценарий 3: Оплата (приоритет)</h3>
+<ul>
+<li><strong>Триггер:</strong> смена статуса заказа на оплаченный</li>
+<li><strong>Действие:</strong> сразу обновить сделку в CRM</li>
+<li><strong>Особенность:</strong> без лишних проверок, минимальная задержка</li>
+</ul>
+<hr/>
+<h2 id="где-размещать-код">Где размещать код</h2>
+<h3 id="коробка-1c-битрикс-cms-и-crm-на-одном-ядре">Коробка 1C-Битрикс: CMS и CRM на одном ядре</h3>
+<p>В типовой установке один сервер, одно ядро, но два приложения:</p>
+<ul>
+<li><strong>CMS (сайт магазина)</strong> — <code>/ext_www/&lt;domain&gt;/public_html</code></li>
+<li><strong>CRM-портал</strong> — <code>/ext_www/crm.&lt;domain&gt;/</code></li>
+</ul>
+<p>У каждого свой <code>DOCUMENT_ROOT</code>, поэтому код синхронизации разносим по двум местам.</p>
+<h3 id="структура-файлов">Структура файлов</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>CMS (сайт):</span></span>
+<span class="line"><span>/home/bitrix/ext_www/&lt;domain&gt;/public_html/local/php_interface/</span></span>
+<span class="line"><span>├── init.php</span></span>
+<span class="line"><span>└── lib/</span></span>
+<span class="line"><span>    └── SyncCmsOrderToDeal.php</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>CRM (портал):</span></span>
+<span class="line"><span>/home/bitrix/ext_www/crm.&lt;domain&gt;/local/php_interface/</span></span>
+<span class="line"><span>├── init.php</span></span>
+<span class="line"><span>├── lib/</span></span>
+<span class="line"><span>│   ├── SyncCrmDealToOrder.php</span></span>
+<span class="line"><span>│   └── SyncCrmOrderToDeal.php</span></span></code></pre>
+<hr/>
+<h2 id="рабочее-решение-пошаговая-реализация">Рабочее решение: пошаговая реализация</h2>
+<h3 id="шаг-1-подключение-обработчиков-в-cms">Шаг 1: Подключение обработчиков в CMS</h3>
+<p>Файл <code>/local/php_interface/init.php</code> (CMS):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#6A737D">// Подключение синхронизации CMS → CRM</span></span>
+<span class="line"><span style="color:#E1E4E8">$path_order_to_deal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&quot;DOCUMENT_ROOT&quot;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &quot;/local/php_interface/lib/SyncCmsOrderToDeal.php&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">file_exists</span><span style="color:#E1E4E8">($path_order_to_deal)) {</span></span>
+<span class="line"><span style="color:#F97583">    require_once</span><span style="color:#E1E4E8"> $path_order_to_deal;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Основной триггер — создание и сохранение заказа</span></span>
+<span class="line"><span style="color:#79B8FF">    \Bitrix\Main\EventManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addEventHandler</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;sale&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;OnSaleOrderSaved&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        [</span><span style="color:#79B8FF">\Local\Sync\SyncCmsOrderToDeal</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;onOrderSaved&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="шаг-2-подключение-обработчиков-в-crm">Шаг 2: Подключение обработчиков в CRM</h3>
+<p>Файл <code>/local/php_interface/init.php</code> (CRM):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#6A737D">// Подключение синхронизации CRM ↔ CMS</span></span>
+<span class="line"><span style="color:#E1E4E8">$sync_deal_to_order </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&quot;DOCUMENT_ROOT&quot;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &quot;/local/php_interface/lib/SyncCrmDealToOrder.php&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">$path_order_to_deal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&quot;DOCUMENT_ROOT&quot;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &quot;/local/php_interface/lib/SyncCrmOrderToDeal.php&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">file_exists</span><span style="color:#E1E4E8">($sync_deal_to_order)) {</span></span>
+<span class="line"><span style="color:#F97583">    require_once</span><span style="color:#E1E4E8"> $sync_deal_to_order;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">file_exists</span><span style="color:#E1E4E8">($path_order_to_deal)) {</span></span>
+<span class="line"><span style="color:#F97583">    require_once</span><span style="color:#E1E4E8"> $path_order_to_deal;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// CRM → CMS (изменение стадии сделки)</span></span>
+<span class="line"><span style="color:#B392F0">AddEventHandler</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;crm&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;OnAfterCrmDealUpdate&quot;</span><span style="color:#E1E4E8">, [</span><span style="color:#79B8FF">\Local\Sync\SyncCrmDealToOrder</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;onDealUpdate&quot;</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// CMS → CRM (изменение статуса заказа)</span></span>
+<span class="line"><span style="color:#B392F0">AddEventHandler</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;sale&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;OnSaleStatusOrder&quot;</span><span style="color:#E1E4E8">, [</span><span style="color:#79B8FF">\Local\Sync\SyncCrmOrderToDeal</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;onOrderStatusChange&quot;</span><span style="color:#E1E4E8">]);</span></span></code></pre>
+<h3 id="шаг-3-обработчик-cms--crm">Шаг 3: Обработчик CMS → CRM</h3>
+<p>Файл <code>/local/php_interface/lib/SyncCmsOrderToDeal.php</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Local\Sync</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Event</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\EventResult</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> SyncCmsOrderToDeal</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> onOrderSaved</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Event</span><span style="color:#E1E4E8"> $event)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">\CModule</span><span style="color:#F97583">::</span><span style="color:#B392F0">IncludeModule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;crm&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        $order </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getParameter</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;ENTITY&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$order </span><span style="color:#F97583">||</span><span style="color:#F97583"> !</span><span style="color:#79B8FF">method_exists</span><span style="color:#E1E4E8">($order, </span><span style="color:#9ECBFF">&#39;getId&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $orderId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $order</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getId</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        $status </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">) $order</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getField</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;STATUS_ID&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Найти связанную сделку</span></span>
+<span class="line"><span style="color:#E1E4E8">        $dealId </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">getLinkedDealId</span><span style="color:#E1E4E8">($orderId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$dealId) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Смаппить статус заказа в стадию сделки</span></span>
+<span class="line"><span style="color:#E1E4E8">        $targetStage </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">mapOrderStatusToDeal</span><span style="color:#E1E4E8">($status);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Проверить текущую стадию (защита от цикла)</span></span>
+<span class="line"><span style="color:#E1E4E8">        $currentStage </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">getDealStage</span><span style="color:#E1E4E8">($dealId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($currentStage </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> $targetStage) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// Не обновляем, если статусы совпадают</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Обновить сделку</span></span>
+<span class="line"><span style="color:#F97583">        self::</span><span style="color:#B392F0">updateDealStage</span><span style="color:#E1E4E8">($dealId, $targetStage);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getLinkedDealId</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $orderId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?int</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $res </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetList</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            [],</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;UF_CRM_ORDER_ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $orderId],</span></span>
+<span class="line"><span style="color:#79B8FF">            false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;nTopCount&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">        $row </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $res </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> $res</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">Fetch</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $row </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $row[</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getDealStage</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $dealId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetByID</span><span style="color:#E1E4E8">($dealId);</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $deal </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> ($deal[</span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">??</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> mapOrderStatusToDeal</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $orderStatus)</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $map </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;N&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">,           </span><span style="color:#6A737D">// Новый</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;P&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;PREPARATION&#39;</span><span style="color:#E1E4E8">,   </span><span style="color:#6A737D">// Принят / в работе</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;F&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;WON&#39;</span><span style="color:#E1E4E8">,           </span><span style="color:#6A737D">// Выполнен</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;C&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;LOSE&#39;</span><span style="color:#E1E4E8">,          </span><span style="color:#6A737D">// Отменён</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $map[$orderStatus] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> updateDealStage</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $dealId, </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $stageId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">Update</span><span style="color:#E1E4E8">($dealId, [</span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $stageId]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="шаг-4-обработчик-crm--cms">Шаг 4: Обработчик CRM → CMS</h3>
+<p>Файл <code>/local/php_interface/lib/SyncCrmDealToOrder.php</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Local\Sync</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> SyncCrmDealToOrder</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    /**</span></span>
+<span class="line"><span style="color:#6A737D">     * Обработчик OnAfterCrmDealUpdate: параметры ($id, &amp;$arFields)</span></span>
+<span class="line"><span style="color:#6A737D">     */</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> onDealUpdate</span><span style="color:#E1E4E8">($id, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">$arFields)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $id </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $id;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($id </span><span style="color:#F97583">&lt;=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">\CModule</span><span style="color:#F97583">::</span><span style="color:#B392F0">IncludeModule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;sale&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $deal </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetByID</span><span style="color:#E1E4E8">($id);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$deal) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Найти связанный заказ</span></span>
+<span class="line"><span style="color:#E1E4E8">        $orderId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) ($deal[</span><span style="color:#9ECBFF">&#39;UF_CRM_ORDER_ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">??</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($orderId </span><span style="color:#F97583">&lt;=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Смаппить стадию сделки в статус заказа</span></span>
+<span class="line"><span style="color:#E1E4E8">        $newStage </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">) ($deal[</span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $targetOrderStatus </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">mapDealStageToOrder</span><span style="color:#E1E4E8">($newStage);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Проверить текущий статус (защита от цикла)</span></span>
+<span class="line"><span style="color:#E1E4E8">        $currentStatus </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">getOrderStatus</span><span style="color:#E1E4E8">($orderId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($currentStatus </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> $targetOrderStatus) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// Не обновляем, если статусы совпадают</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Обновить заказ</span></span>
+<span class="line"><span style="color:#F97583">        self::</span><span style="color:#B392F0">updateOrderStatus</span><span style="color:#E1E4E8">($orderId, $targetOrderStatus);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getOrderStatus</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $orderId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \Bitrix\Sale\Order</span><span style="color:#F97583">::</span><span style="color:#B392F0">load</span><span style="color:#E1E4E8">($orderId);</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $order </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> $order</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getField</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;STATUS_ID&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> mapDealStageToOrder</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $stageId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $map </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;NEW&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;N&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;PREPARATION&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;P&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;WON&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;F&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;LOSE&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;C&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $map[$stageId] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;N&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> updateOrderStatus</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $orderId, </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $statusId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \Bitrix\Sale\Order</span><span style="color:#F97583">::</span><span style="color:#B392F0">load</span><span style="color:#E1E4E8">($orderId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$order) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">setField</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;STATUS_ID&#39;</span><span style="color:#E1E4E8">, $statusId);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">save</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="шаг-5-обработчик-смены-статуса-заказа-в-crm-onsalestatusorder">Шаг 5: Обработчик смены статуса заказа в CRM (OnSaleStatusOrder)</h3>
+<p>Событие <strong>OnSaleStatusOrder</strong> вызывается <strong>после</strong> изменения статуса заказа. Параметры по <a href="https://dev.1c-bitrix.ru/api_help/sale/events/events_status_order.php">документации Битрикс</a>: <code>$ID</code> — идентификатор заказа, <code>$val</code> — новый идентификатор статуса. Обработчик размещается в <strong>CRM</strong> (там же, где висит событие).</p>
+<p>Файл <code>/local/php_interface/lib/SyncCrmOrderToDeal.php</code> (на портале CRM):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Local\Sync</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">/**</span></span>
+<span class="line"><span style="color:#6A737D"> * Синхронизация: смена статуса заказа (CMS) → обновление стадии сделки (CRM).</span></span>
+<span class="line"><span style="color:#6A737D"> * Обработчик события OnSaleStatusOrder (параметры по документации: ID заказа, val — код статуса).</span></span>
+<span class="line"><span style="color:#6A737D"> * </span><span style="color:#F97583">@see</span><span style="color:#6A737D"> https://dev.1c-bitrix.ru/api_help/sale/events/events_status_order.php</span></span>
+<span class="line"><span style="color:#6A737D"> */</span></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> SyncCrmOrderToDeal</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    /**</span></span>
+<span class="line"><span style="color:#6A737D">     * Вызывается после изменения статуса заказа. Параметры: $ID, $val (документация Sale).</span></span>
+<span class="line"><span style="color:#6A737D">     * </span><span style="color:#F97583">@param</span><span style="color:#F97583"> int</span><span style="color:#6A737D"> $ID   Идентификатор заказа</span></span>
+<span class="line"><span style="color:#6A737D">     * </span><span style="color:#F97583">@param</span><span style="color:#F97583"> string</span><span style="color:#6A737D"> $val Новый идентификатор статуса (N, P, F, C и т.д.)</span></span>
+<span class="line"><span style="color:#6A737D">     */</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> onOrderStatusChange</span><span style="color:#E1E4E8">($ID, $val)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $orderId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $ID;</span></span>
+<span class="line"><span style="color:#E1E4E8">        $status  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">) $val;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($orderId </span><span style="color:#F97583">&lt;=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">\CModule</span><span style="color:#F97583">::</span><span style="color:#B392F0">IncludeModule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;crm&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $dealId </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">getLinkedDealId</span><span style="color:#E1E4E8">($orderId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$dealId) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $targetStage </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">mapOrderStatusToDeal</span><span style="color:#E1E4E8">($status);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $currentStage </span><span style="color:#F97583">=</span><span style="color:#F97583"> self::</span><span style="color:#B392F0">getDealStage</span><span style="color:#E1E4E8">($dealId);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> ($currentStage </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> $targetStage) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        self::</span><span style="color:#B392F0">updateDealStage</span><span style="color:#E1E4E8">($dealId, $targetStage);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getLinkedDealId</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $orderId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?int</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $res </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetList</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            [],</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;UF_CRM_ORDER_ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $orderId],</span></span>
+<span class="line"><span style="color:#79B8FF">            false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;nTopCount&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">            [</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">        $row </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $res </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> $res</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">Fetch</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $row </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $row[</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getDealStage</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $dealId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetByID</span><span style="color:#E1E4E8">($dealId);</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $deal </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> ($deal[</span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">??</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> mapOrderStatusToDeal</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $orderStatus)</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $map </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;N&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;P&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;PREPARATION&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;F&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;WON&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;C&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;LOSE&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> $map[$orderStatus] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> updateDealStage</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $dealId, </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $stageId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $deal</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">Update</span><span style="color:#E1E4E8">($dealId, [</span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $stageId]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Важно:</strong> код поля связи сделки с заказом (<code>UF_CRM_ORDER_ID</code>) и коды стадий могут отличаться в вашей конфигурации — проверьте в настройках CRM (Настройки → Сделки → Поля сделки) и в <a href="https://dev.1c-bitrix.ru/api_help/crm/classes/crmdeal/getlist.php">документации CCrmDeal::GetList, Update</a>.</p>
+<hr/>
+<h2 id="как-связать-заказ-и-сделку">Как связать заказ и сделку</h2>
+<p>Связь «заказ ↔ сделка» делается через <strong>пользовательские поля</strong>:</p>
+<ul>
+<li>У сделки — поле с ID заказа (часто <code>UF_CRM_ORDER_ID</code>)</li>
+<li>У заказа — свойство с ID сделки (опционально)</li>
+</ul>
+<h3 id="получить-id-связанной-сделки-по-id-заказа">Получить ID связанной сделки по ID заказа</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> getLinkedDealId</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $orderId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?int</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    $res </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetList</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        [],</span></span>
+<span class="line"><span style="color:#E1E4E8">        [</span><span style="color:#9ECBFF">&#39;UF_CRM_ORDER_ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $orderId],</span></span>
+<span class="line"><span style="color:#79B8FF">        false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        [</span><span style="color:#9ECBFF">&#39;nTopCount&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">        [</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;STAGE_ID&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">    $row </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $res </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> $res</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">Fetch</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> $row </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $row[</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="получить-id-связанного-заказа-по-id-сделки">Получить ID связанного заказа по ID сделки</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> getLinkedOrderId</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $dealId)</span><span style="color:#F97583">:</span><span style="color:#F97583"> ?int</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    $deal </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> \CCrmDeal</span><span style="color:#F97583">::</span><span style="color:#B392F0">GetByID</span><span style="color:#E1E4E8">($dealId);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">$deal) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    $orderId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $deal[</span><span style="color:#9ECBFF">&#39;UF_CRM_ORDER_ID&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">??</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> $orderId </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">) $orderId </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Важно:</strong> код поля связи (<code>UF_CRM_ORDER_ID</code>) может отличаться в вашей конфигурации — смотрите свойства сделки в настройках CRM.</p>
+<hr/>
+<h2 id="маппинг-статусов">Маппинг статусов</h2>
+<p>Коды статусов заказа и коды стадий сделки не совпадают, поэтому нужны две функции перевода:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> mapOrderStatusToDeal</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $orderStatus)</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    $mapping </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;N&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">,           </span><span style="color:#6A737D">// Новый</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;P&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;PREPARATION&#39;</span><span style="color:#E1E4E8">,   </span><span style="color:#6A737D">// Принят / в работе</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;F&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;WON&#39;</span><span style="color:#E1E4E8">,           </span><span style="color:#6A737D">// Выполнен</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;C&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;LOSE&#39;</span><span style="color:#E1E4E8">,          </span><span style="color:#6A737D">// Отменён</span></span>
+<span class="line"><span style="color:#E1E4E8">    ];</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> $mapping[$orderStatus] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;NEW&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> mapDealStageToOrder</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $dealStage)</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    $mapping </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;NEW&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;N&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;PREPARATION&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;P&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;WON&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;F&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;LOSE&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;C&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ];</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> $mapping[$dealStage] </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;N&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Важно:</strong> маппинг должен быть <strong>симметричным</strong> — иначе часть переходов «потеряется».</p>
+<hr/>
+<h2 id="проверка-результата">Проверка результата</h2>
+<h3 id="1-проверка-связи-заказ-сделка">1. Проверка связи заказ-сделка</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// В init.php временно включить логирование</span></span>
+<span class="line"><span style="color:#79B8FF">define</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;LOCAL_SYNC_DEBUG&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Создать тестовый заказ в CMS</span></span>
+<span class="line"><span style="color:#6A737D">// Проверить лог: /local/log/sync_status.log</span></span></code></pre>
+<h3 id="2-проверка-синхронизации-cms--crm">2. Проверка синхронизации CMS → CRM</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Изменить статус заказа в CMS</span></span>
+<span class="line"><span style="color:#6A737D"># 2. Открыть сделку в CRM</span></span>
+<span class="line"><span style="color:#6A737D"># 3. Проверить, что стадия обновилась</span></span></code></pre>
+<h3 id="3-проверка-синхронизации-crm--cms">3. Проверка синхронизации CRM → CMS</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Изменить стадию сделки в CRM</span></span>
+<span class="line"><span style="color:#6A737D"># 2. Открыть заказ в CMS</span></span>
+<span class="line"><span style="color:#6A737D"># 3. Проверить, что статус обновился</span></span></code></pre>
+<h3 id="4-проверка-оплаты">4. Проверка оплаты</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Оплатить заказ в CMS</span></span>
+<span class="line"><span style="color:#6A737D"># 2. Проверить сделку в CRM (должна обновиться за доли секунды)</span></span></code></pre>
+<h3 id="5-проверка-отсутствия-циклов">5. Проверка отсутствия циклов</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Включить логирование</span></span>
+<span class="line"><span style="color:#6A737D"># 2. Изменить статус заказа</span></span>
+<span class="line"><span style="color:#6A737D"># 3. Проверить лог: должно быть 1-2 обновления, не больше</span></span></code></pre>
+<hr/>
+<h2 id="типичные-ошибки">Типичные ошибки</h2>
+<h3 id="-ошибка-обработчик-не-срабатывает">❌ Ошибка: обработчик не срабатывает</h3>
+<p><strong>Причина:</strong> неверное имя события или путь к файлу.</p>
+<p><strong>Решение:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// Проверить подключение в init.php</span></span>
+<span class="line"><span style="color:#F97583">require_once</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&quot;DOCUMENT_ROOT&quot;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &quot;/local/php_interface/lib/SyncCmsOrderToDeal.php&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Проверить имя события</span></span>
+<span class="line"><span style="color:#B392F0">AddEventHandler</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;sale&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;OnSaleOrderSaved&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">]);  </span><span style="color:#6A737D">// Не OnSaleOrderSave!</span></span></code></pre>
+<h3 id="-ошибка-зацикливание-обновлений">❌ Ошибка: зацикливание обновлений</h3>
+<p><strong>Причина:</strong> нет проверки расхождений перед обновлением.</p>
+<p><strong>Решение:</strong> всегда проверять текущее значение:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($currentStage </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> $targetStage) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// Не обновлять, если статусы совпадают</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="-ошибка-связь-заказ-сделка-не-находится">❌ Ошибка: связь заказ-сделка не находится</h3>
+<p><strong>Причина:</strong> неверный код поля связи (<code>UF_CRM_ORDER_ID</code>).</p>
+<p><strong>Решение:</strong> проверить в настройках CRM: Настройки → Настройки продукта → Сделки → Поля сделки.</p>
+<h3 id="-ошибка-после-обновления-ядра-синхронизация-пропала">❌ Ошибка: после обновления ядра синхронизация пропала</h3>
+<p><strong>Причина:</strong> код лежит в <code>/bitrix/</code> вместо <code>/local/</code>.</p>
+<p><strong>Решение:</strong> всегда размещать код в <code>/local/php_interface/</code> — эта папка не затрагивается при обновлениях.</p>
+<hr/>
+<h2 id="отладка-и-логирование">Отладка и логирование</h2>
+<h3 id="минимальный-лог-в-обработчике">Минимальный лог в обработчике</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// В классе SyncCmsOrderToDeal</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> log</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $message, </span><span style="color:#F97583">array</span><span style="color:#E1E4E8"> $context </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [])</span><span style="color:#F97583">:</span><span style="color:#F97583"> void</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;LOCAL_SYNC_DEBUG&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#F97583"> !</span><span style="color:#79B8FF">LOCAL_SYNC_DEBUG</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    $line </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> date</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Y-m-d H:i:s&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39; [Sync] &#39;</span><span style="color:#F97583"> .</span><span style="color:#E1E4E8"> $message;</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> ($context </span><span style="color:#F97583">!==</span><span style="color:#E1E4E8"> []) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $line </span><span style="color:#F97583">.=</span><span style="color:#9ECBFF"> &#39; &#39;</span><span style="color:#F97583"> .</span><span style="color:#79B8FF"> json_encode</span><span style="color:#E1E4E8">($context, </span><span style="color:#79B8FF">JSON_UNESCAPED_UNICODE</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#79B8FF">    file_put_contents</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        $_SERVER[</span><span style="color:#9ECBFF">&#39;DOCUMENT_ROOT&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/local/log/sync_status.log&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        $line </span><span style="color:#F97583">.</span><span style="color:#79B8FF"> PHP_EOL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">        FILE_APPEND</span><span style="color:#F97583"> |</span><span style="color:#79B8FF"> LOCK_EX</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Использование</span></span>
+<span class="line"><span style="color:#F97583">self::</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;updating deal&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;dealId&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $dealId, </span><span style="color:#9ECBFF">&#39;stage&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> $targetStage]);</span></span></code></pre>
+<h3 id="включение-отладки">Включение отладки</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// В init.php временно включить</span></span>
+<span class="line"><span style="color:#79B8FF">define</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;LOCAL_SYNC_DEBUG&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// После отладки выключить</span></span>
+<span class="line"><span style="color:#6A737D">// define(&#39;LOCAL_SYNC_DEBUG&#39;, false);</span></span></code></pre>
+<hr/>
+<h2 id="где-применять">Где применять</h2>
+<ul>
+<li><strong>Интернет-магазины на Битрикс:</strong> синхронизация заказов и сделок</li>
+<li><strong>CRM-интеграции:</strong> двусторонний обмен статусами</li>
+<li><strong>Автоматизация:</strong> оплата, отгрузка, уведомления</li>
+</ul>
+<p><strong>Связанные статьи:</strong></p>
+<ul>
+<li><a href="/blog/bitrix-local-folder-project-structure">Структура проекта Bitrix: local folder</a></li>
+<li><a href="/blog/bitrix-simple-module-with-component">Простой модуль Bitrix с компонентом</a></li>
+<li><a href="/blog/bitrix-kint-debug-kint-php">Kint в Bitrix CMS: дебаг без боли</a></li>
+</ul>
+<p><strong>Документация:</strong></p>
+<ul>
+<li><a href="https://dev.1c-bitrix.ru/api_help/sale/events/events_status_order.php">События, связанные с изменением состояния заказов (OnSaleStatusOrder)</a></li>
+<li><a href="https://dev.1c-bitrix.ru/api_d7/bitrix/sale/events/">События модуля Sale (D7)</a></li>
+<li><a href="https://dev.1c-bitrix.ru/api_help/crm/classes/crmdeal/getlist.php">CCrmDeal::GetList, GetByID, Update</a></li>
+<li><a href="https://dev.1c-bitrix.ru/api_d7/bitrix/main/events/eventmanager/addEventHandler.php">EventManager::addEventHandler</a></li>
+</ul>
+<hr/> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

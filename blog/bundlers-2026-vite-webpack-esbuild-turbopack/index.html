@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vite vs Webpack 5 vs esbuild vs Turbopack: выбор бандлера в 2026</title><meta name="description" content="Практический разбор Vite, Webpack 5, esbuild и Turbopack: когда что брать, плюсы и минусы, готовые конфиги, реальные бенчмарки и миграция с Webpack на Vite без сюрпризов."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> bundler </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Vite vs Webpack 5 vs esbuild vs Turbopack: выбор бандлера в 2026 </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>2 февраля 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/bundlers-2026-vite-webpack-esbuild-turbopack-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="vite-vs-webpack-5-vs-esbuild-vs-turbopack-что-выбрать-в-2026">Vite vs Webpack 5 vs esbuild vs Turbopack: что выбрать в 2026</h1>
+<p>Если ты выбираешь бандлер в 2026, вопрос уже не “кто умеет собирать”, а “кто собирает быстро, стабильно и без шаманства”. И да — Webpack всё ещё жив, просто он теперь “танк”: мощный, тяжёлый, не всегда быстрый.</p>
+<h2 id="карта-выбора-за-60-секунд">Карта выбора за 60 секунд</h2>
+<ul>
+<li><strong>Vite</strong> — дефолт для большинства фронтенд-проектов: быстрый dev, нормальный build, минимум конфигов.</li>
+<li><strong>Webpack 5</strong> — когда нужно <strong>нестандартное</strong>: сложные legacy-проекты, куча лоадеров, микрофронты, специфичные пайплайны, “у нас так исторически сложилось”.</li>
+<li><strong>esbuild</strong> — ультрабыстрый транспайлер/минификатор/бандлер “для простых задач”; часто идеален как <strong>часть</strong> сборки (или для библиотек/CLI/инструментов).</li>
+<li><strong>Turbopack</strong> — если ты в <strong>Next.js 16+</strong> и хочешь максимум скорости “из коробки”; как standalone-бандлер — пока не твой универсальный молоток. (<a href="https://nextjs.org/docs/app/api-reference/config/turbopack" title="Next.js: Turbopack">nextjs.org</a>)</li>
+</ul>
+<h2 id="что-это-вообще-за-звери-в-двух-строках">Что это вообще за звери (в двух строках)</h2>
+<h3 id="vite">Vite</h3>
+<p>Dev-сервер на ESM (браузер грузит модули как есть), прод-сборка через Rollup. В итоге dev обычно ощущается “мгновенным”, особенно на средних проектах. (<a href="https://strapi.io/blog" title="Strapi Blog">strapi.io</a>)</p>
+<h3 id="webpack-5">Webpack 5</h3>
+<p>Классический “всё в один граф”, огромная экосистема, гибкость и цена этой гибкости: конфиги, лоадеры, магия. Официально много внимания к performance-гайдам и кэшированию. (<a href="https://webpack.js.org/guides/build-performance/" title="Webpack: Build Performance">webpack</a>)</p>
+<h3 id="esbuild">esbuild</h3>
+<p>Нативный бинарник (Go), очень быстрые трансформации, но как “бандлер для всего” ограничен: экосистема и тонкая настройка хуже, чем у Webpack/Vite. (Часто выигрывает как ускоритель внутри других инструментов.) (<a href="https://esbuild.github.io/" title="esbuild">Medium</a>)</p>
+<h3 id="turbopack">Turbopack</h3>
+<p>Rust-бандлер внутри Next.js. В Next.js 16 заявлен как стабильный и дефолтный для новых проектов; цель — скорость в dev и в билд-пайплайне. (<a href="https://nextjs.org/docs/app/api-reference/config/turbopack" title="Next.js: Turbopack">nextjs.org</a>)</p>
+<h2 id="реальные-бенчмарки-а-не-у-меня-на-ноуте-летает">Реальные бенчмарки (а не “у меня на ноуте летает”)</h2>
+<p>Тут важно: сравнивать нужно <strong>2 вещи</strong> — dev (холодный старт + HMR/Fast Refresh) и prod build (время сборки + размер + стабильность).</p>
+<h3 id="типичные-результаты-которые-стабильно-повторяются-в-статьяхзамерах">Типичные результаты, которые стабильно повторяются в статьях/замерах</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Сценарий</th><th style="text-align:right">Vite</th><th style="text-align:right">Webpack 5</th><th style="text-align:right">Turbopack (в Next)</th><th style="text-align:right">esbuild</th></tr></thead><tbody><tr><td>Dev: быстрые пересборки</td><td style="text-align:right">очень быстро</td><td style="text-align:right">медленнее на крупных графах</td><td style="text-align:right">очень быстро</td><td style="text-align:right">очень быстро</td></tr><tr><td>Prod build</td><td style="text-align:right">быстро (но зависит от Rollup/плагинов)</td><td style="text-align:right">может быть долго, лечится кэшем</td><td style="text-align:right">заявлено 2–5× быстрее Webpack</td><td style="text-align:right">быстро на простых проектах</td></tr></tbody></table>
+<p>По источникам:</p>
+<ul>
+<li>В обзорах по “современным бандлерам” Vite/esbuild дают “почти мгновенную обратную связь” в dev, тогда как Webpack чаще медленнее на пересборках. (<a href="https://strapi.io/blog" title="Strapi Blog">strapi.io</a>)</li>
+<li>В Next.js 16 заявляют прирост <strong>2–5×</strong> к production builds и до <strong>10×</strong> к Fast Refresh относительно Webpack (в контексте Next). (<a href="https://nextjs.org/docs/app/api-reference/config/turbopack" title="Next.js: Turbopack">nextjs.org</a>)</li>
+<li>В сравнительных статьях Vite часто выигрывает по скорости и DX, Webpack выигрывает по “всё можно сделать”. (<a href="https://kinsta.com/blog/webpack-vs-vite/" title="Kinsta: Webpack vs Vite">Kinsta®</a>)</li>
+</ul>
+<h3 id="как-сделать-честный-бенчмарк-у-себя-копипаст">Как сделать честный бенчмарк у себя (копипаст)</h3>
+<p>Сделай три прогона и считай <strong>медиану</strong> (первый прогон прогревает кэши).</p>
+<p><strong>package.json</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  &quot;scripts&quot;</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    &quot;bench:clean&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;rm -rf node_modules/.cache dist .vite&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    &quot;bench:vite&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;npm run build&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    &quot;bench:webpack&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;webpack --mode production&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    &quot;bench:time&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;node -e </span><span style="color:#79B8FF">\&quot;</span><span style="color:#9ECBFF">const {execSync}=require(&#39;child_process&#39;); const t=Date.now(); execSync(process.argv[1],{stdio:&#39;inherit&#39;}); console.log(&#39;ms:&#39;,Date.now()-t)</span><span style="color:#79B8FF">\&quot;</span><span style="color:#9ECBFF">&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>И запускай:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> bench:clean</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> bench:time</span><span style="color:#9ECBFF"> &quot;npm run bench:vite&quot;</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> bench:time</span><span style="color:#9ECBFF"> &quot;npm run bench:webpack&quot;</span></span></code></pre>
+<p>(Да, это не лаборатория NASA, но для выбора инструмента — более чем.)</p>
+<h2 id="когда-что-использовать">Когда что использовать</h2>
+<h3 id="vite--стандартная-скорость-для-стандартного-мира">Vite — “стандартная скорость для стандартного мира”</h3>
+<p>Бери Vite, если у тебя:</p>
+<ul>
+<li>SPA/MPA на React/Vue/Svelte/vanilla</li>
+<li>нужен быстрый dev и простая конфигурация</li>
+<li>проект не завязан на экзотические webpack-лоадеры “из 2018”</li>
+</ul>
+<p><strong>Минусы Vite в реальности:</strong></p>
+<ul>
+<li>миграции с Webpack часто ломаются на “магии лоадеров” (SVG, raw-импорты, алиасы, define globals)</li>
+<li>некоторые плагины/кейсы проще реализованы в Webpack (особенно enterprise-легаси)</li>
+</ul>
+<h3 id="webpack-5--legacy-тяжеловес-который-ещё-всем-нужен">Webpack 5 — “legacy-тяжеловес, который ещё всем нужен”</h3>
+<p>Бери Webpack, если:</p>
+<ul>
+<li>огромная кодовая база + нестандартная сборка + куча лоадеров</li>
+<li>модульная федерация/микрофронты (часто исторически на Webpack)</li>
+<li>нужно тонко контролировать чанкинг/оптимизации/полифиллы</li>
+</ul>
+<p><strong>Ключ к скорости Webpack</strong> — кэш и дисциплина конфигов. Официальный гайд по performance реально полезен. (<a href="https://webpack.js.org/guides/build-performance/" title="Webpack: Build Performance">webpack</a>)</p>
+<h3 id="esbuild--быстро-но-без-фанатизма">esbuild — “быстро, но без фанатизма”</h3>
+<p>Отлично, если:</p>
+<ul>
+<li>собираешь <strong>библиотеку</strong>, CLI-утилиту, простое приложение без наворотов</li>
+<li>хочешь быстрый TS/JS билд и нормальный minify</li>
+<li>готов жить без “всё поддерживается плагином”</li>
+</ul>
+<p>Минус: сложные кейсы (CSS-pipeline, asset graph, тонкий split) — быстрее решаются Vite/Webpack.</p>
+<h3 id="turbopack--nextjs-дорога-без-съездов">Turbopack — “Next.js-дорога, без съездов”</h3>
+<p>Если проект на Next.js — Turbopack в 2026 уже не эксперимент, а реальный дефолт в новых Next-проектах. (<a href="https://nextjs.org/docs/app/api-reference/config/turbopack" title="Next.js: Turbopack">nextjs.org</a>)
+Но как “универсальный бандлер для всего подряд” — пока осторожно: он в первую очередь про Next-экосистему.</p>
+<h2 id="миграция-с-webpack-на-vite-что-ломается-и-как-чинить">Миграция с Webpack на Vite: что ломается и как чинить</h2>
+<h3 id="1-processenv-__dirname-node-полифиллы">1) <code>process.env</code>, <code>__dirname</code>, Node-полифиллы</h3>
+<p>В Webpack часто “само работало”. В Vite по умолчанию — браузерная реальность: никакого Node, если ты это явно не включил.</p>
+<p><strong>Было (Webpack):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (process.env.</span><span style="color:#79B8FF">NODE_ENV</span><span style="color:#F97583"> ===</span><span style="color:#9ECBFF"> &#39;production&#39;</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Production build&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Стало (Vite):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">PROD</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Production build&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#6A737D">// Переменные из .env (префикс VITE_ обязателен для клиента):</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> apiUrl</span><span style="color:#F97583"> =</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">VITE_API_URL</span><span style="color:#F97583"> ??</span><span style="color:#9ECBFF"> &#39;https://api.example.com&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p><strong>Замена <code>__dirname</code> в Vite</strong> (нужен путь к файлу в конфиге):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { fileURLToPath } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;node:url&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> path </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;node:path&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> __dirname</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">dirname</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">fileURLToPath</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.url));</span></span>
+<span class="line"><span style="color:#6A737D">// теперь: path.resolve(__dirname, &#39;src&#39;)</span></span></code></pre>
+<h3 id="2-алиасы">2) Алиасы</h3>
+<p><strong>Vite (vite.config.ts)</strong> — алиасы без <code>__dirname</code> через <code>import.meta.url</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;vite&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> path </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;node:path&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { fileURLToPath } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;node:url&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> __dirname</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">dirname</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">fileURLToPath</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.url));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  resolve: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    alias: {</span></span>
+<span class="line"><span style="color:#9ECBFF">      &#39;@&#39;</span><span style="color:#E1E4E8">: path.</span><span style="color:#B392F0">resolve</span><span style="color:#E1E4E8">(__dirname, </span><span style="color:#9ECBFF">&#39;src&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#9ECBFF">      &#39;@components&#39;</span><span style="color:#E1E4E8">: path.</span><span style="color:#B392F0">resolve</span><span style="color:#E1E4E8">(__dirname, </span><span style="color:#9ECBFF">&#39;src/components&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<h3 id="3-svg--raw-imports--file-loader">3) SVG / raw imports / file-loader</h3>
+<p>В Webpack: <code>file-loader</code>, <code>raw-loader</code>, <code>svgr</code>.
+В Vite: чаще через плагины.</p>
+<p>Пример для React + SVG как компонент:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> i</span><span style="color:#79B8FF"> -D</span><span style="color:#9ECBFF"> vite-plugin-svgr</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// vite.config.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> svgr </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;vite-plugin-svgr&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  plugins: [</span><span style="color:#B392F0">svgr</span><span style="color:#E1E4E8">()],</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<h3 id="4-cssscss-pipeline">4) CSS/SCSS pipeline</h3>
+<p>В Webpack обычно <code>style-loader + css-loader + postcss-loader + sass-loader</code>.
+В Vite многие вещи “просто работают”, но если у тебя кастомный PostCSS — перенеси конфиг в <code>postcss.config.cjs</code>.</p>
+<h3 id="5-defineprovideplugin-и-глобалы">5) Define/ProvidePlugin и “глобалы”</h3>
+<p>Если проект завязан на глобальные константы из Webpack — переноси в <code>define</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  define: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    __APP_VERSION__: </span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;1.2.3&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Использование в коде</strong> (React-компонент):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="tsx"><code><span class="line"><span style="color:#6A737D">// src/components/AppVersion.tsx</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> AppVersion</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> title</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">PROD</span><span style="color:#F97583"> ?</span><span style="color:#9ECBFF"> &#39;Production&#39;</span><span style="color:#F97583"> :</span><span style="color:#9ECBFF"> &#39;Development&#39;</span><span style="color:#E1E4E8">}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      v{(</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#F97583"> as</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">).env.__APP_VERSION__ </span><span style="color:#F97583">??</span><span style="color:#9ECBFF"> &#39;0.0.0&#39;</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Либо через глобальный тип для TypeScript:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// env.d.ts</span></span>
+<span class="line"><span style="color:#6A737D">/// &lt;</span><span style="color:#85E89D">reference</span><span style="color:#B392F0"> types</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;vite/client&quot;</span><span style="color:#6A737D"> /&gt;</span></span>
+<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ImportMetaEnv</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> VITE_API_URL</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> __APP_VERSION__</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="готовые-конфиги-для-типовых-сценариев">Готовые конфиги для типовых сценариев</h2>
+<h3 id="vite--react-2026">Vite + React (2026)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> vite@latest</span><span style="color:#9ECBFF"> my-app</span><span style="color:#79B8FF"> --</span><span style="color:#79B8FF"> --template</span><span style="color:#9ECBFF"> react-ts</span></span></code></pre>
+<p>Минимальный <code>vite.config.ts</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;vite&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> react </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;@vitejs/plugin-react&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  plugins: [</span><span style="color:#B392F0">react</span><span style="color:#E1E4E8">()],</span></span>
+<span class="line"><span style="color:#E1E4E8">  server: { port: </span><span style="color:#79B8FF">5173</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Ленивая загрузка (code splitting)</strong> — Vite и Rollup автоматически режут чанки по динамическому <code>import()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="tsx"><code><span class="line"><span style="color:#6A737D">// src/App.tsx — тяжёлый компонент подгружается только при переходе</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { lazy, Suspense } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;react&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> HeavyChart</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> lazy</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;./components/HeavyChart&#39;</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> App</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#79B8FF">Suspense</span><span style="color:#B392F0"> fallback</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{&lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;Загрузка…&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#79B8FF">HeavyChart</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#79B8FF">Suspense</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="vite--vue">Vite + Vue</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> vite@latest</span><span style="color:#9ECBFF"> my-vue</span><span style="color:#79B8FF"> --</span><span style="color:#79B8FF"> --template</span><span style="color:#9ECBFF"> vue-ts</span></span></code></pre>
+<h3 id="vite--vanilla-js">Vite + vanilla JS</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> vite@latest</span><span style="color:#9ECBFF"> my-vanilla</span><span style="color:#79B8FF"> --</span><span style="color:#79B8FF"> --template</span><span style="color:#9ECBFF"> vanilla</span></span></code></pre>
+<h3 id="webpack-5-минимальный-скелет-под-react">Webpack 5 (минимальный скелет под React)</h3>
+<p>Если нужен Webpack именно как “свой контролируемый пайплайн”:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// webpack.config.js</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> path</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;path&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">module</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">exports</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  mode: </span><span style="color:#9ECBFF">&#39;production&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  entry: </span><span style="color:#9ECBFF">&#39;./src/main.tsx&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    path: path.</span><span style="color:#B392F0">resolve</span><span style="color:#E1E4E8">(__dirname, </span><span style="color:#9ECBFF">&#39;dist&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    filename: </span><span style="color:#9ECBFF">&#39;bundle.[contenthash].js&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    clean: </span><span style="color:#79B8FF">true</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#E1E4E8">  resolve: { extensions: [</span><span style="color:#9ECBFF">&#39;.ts&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;.tsx&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;.js&#39;</span><span style="color:#E1E4E8">] },</span></span>
+<span class="line"><span style="color:#E1E4E8">  module: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    rules: [</span></span>
+<span class="line"><span style="color:#E1E4E8">      { test:</span><span style="color:#9ECBFF"> /</span><span style="color:#85E89D;font-weight:bold">\.</span><span style="color:#79B8FF">[tj]</span><span style="color:#DBEDFF">sx</span><span style="color:#F97583">?$</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">, exclude:</span><span style="color:#9ECBFF"> /</span><span style="color:#DBEDFF">node_modules</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">, use: </span><span style="color:#9ECBFF">&#39;babel-loader&#39;</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#E1E4E8">      { test:</span><span style="color:#9ECBFF"> /</span><span style="color:#85E89D;font-weight:bold">\.</span><span style="color:#DBEDFF">css</span><span style="color:#F97583">$</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">, use: [</span><span style="color:#9ECBFF">&#39;style-loader&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;css-loader&#39;</span><span style="color:#E1E4E8">] }</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#E1E4E8">  cache: { type: </span><span style="color:#9ECBFF">&#39;filesystem&#39;</span><span style="color:#E1E4E8"> } </span><span style="color:#6A737D">// must-have в 2026</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<h3 id="esbuild-быстрая-сборка-vanillats">esbuild (быстрая сборка vanilla/TS)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// build.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> esbuild </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;esbuild&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">await</span><span style="color:#E1E4E8"> esbuild.</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  entryPoints: [</span><span style="color:#9ECBFF">&#39;src/index.ts&#39;</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">  bundle: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  outdir: </span><span style="color:#9ECBFF">&#39;dist&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  minify: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  sourcemap: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  target: [</span><span style="color:#9ECBFF">&#39;es2020&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p>Запуск:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">node</span><span style="color:#9ECBFF"> build.mjs</span></span></code></pre>
+<h2 id="практический-вывод-тимлида-без-философии">Практический вывод тимлида (без философии)</h2>
+<ul>
+<li>Если у тебя <strong>нет</strong> железных причин сидеть на Webpack — <strong>бери Vite</strong>. Это сейчас самый “нормальный по умолчанию” выбор. (<a href="https://www.syncfusion.com/blogs" title="Syncfusion Blog">Syncfusion</a>)</li>
+<li>Если проект — <strong>Next.js</strong>, то в 2026 разумно смотреть в сторону <strong>Turbopack</strong> как дефолта экосистемы Next. (<a href="https://nextjs.org/docs/app/api-reference/config/turbopack" title="Next.js: Turbopack">nextjs.org</a>)</li>
+<li>Если ты пишешь <strong>инструменты/библиотеки/простые фронты</strong>, и хочешь speedrun — <strong>esbuild</strong> отличный, но не пытайся сделать из него Webpack (он обидится и уйдёт в Go). (<a href="https://esbuild.github.io/" title="esbuild">Medium</a>)</li>
+<li>Webpack 5 — оставляй там, где он реально нужен: legacy-монстры, кастомные пайплайны, экзотика. И обязательно включай кэш и оптимизации по гайду. (<a href="https://webpack.js.org/guides/build-performance/" title="Webpack: Build Performance">webpack</a>)</li>
+</ul>
+<hr/>
+<h2 id="практические-сниппеты-по-теме">Практические сниппеты по теме</h2>
+<p>На сайте есть готовые сниппеты с конфигами и миграцией:</p>
+<ul>
+<li><a href="/snippets/vite-config-2026-production">Vite: production vite.config.ts (2026)</a> — алиасы, <code>build.target</code>, sourcemap, порты dev/preview</li>
+<li><a href="/snippets/webpack-config-2026-production">Webpack 5: production webpack.config.js (2026)</a> — <code>mode</code>, output с contenthash, filesystem cache, базовая обработка JS/TS</li>
+<li><a href="/snippets/esbuild-build-library-utility">esbuild: сборка библиотеки или утилиты (build.mjs)</a> — entryPoints, bundle, outdir, minify, sourcemap, target; запуск через <code>node build.mjs</code></li>
+<li><a href="/snippets/webpack-to-vite-migration-typical">Миграция Webpack → Vite: типовые отличия</a> — <code>process.env</code> → <code>import.meta.env</code>, алиасы, DefinePlugin → <code>define</code>, что проверить в первую очередь</li>
+</ul>
+<hr/>
+<h2 id="полезные-ссылки">Полезные ссылки</h2>
+<ul>
+<li><a href="https://nextjs.org/docs/app/api-reference/config/turbopack">Next.js: Turbopack</a> — документация по Turbopack в Next.js</li>
+<li><a href="https://webpack.js.org/guides/build-performance/">Webpack: Build Performance</a> — официальный гайд по ускорению сборки</li>
+<li><a href="https://esbuild.github.io/">esbuild</a> — сайт и документация esbuild</li>
+<li><a href="https://vite.dev/">Vite</a> — официальный сайт Vite</li>
+</ul> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

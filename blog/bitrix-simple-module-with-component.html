@@ -1,0 +1,643 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Свой простой модуль для 1С-Битрикс: от /local/modules до рабочего компонента</title><meta name="description" content="Пошаговый практический пример создания простого модуля для 1С-Битрикс: структура /local/modules, класс модуля, установка компонента и проверка через админку."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> bitrix </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Свой простой модуль для 1С-Битрикс: от /local/modules до рабочего компонента </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>9 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/bitrix-simple-module-component-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="свой-простой-модуль-для-1с-битрикс-от-localmodules-до-рабочего-компонента">Свой простой модуль для 1С-Битрикс: от /local/modules до рабочего компонента</h1>
+<p>В этой статье разберём <strong>минимальный, но боевой пример</strong> собственного модуля под <strong>1С‑Битрикс</strong>, который:</p>
+<ul>
+<li>корректно устанавливается и удаляется через админку;</li>
+<li>ставит <strong>один компонент</strong>;</li>
+<li>не ломает обновления и соответствует официальному подходу.</li>
+</ul>
+<p>Без философии. Только практика и структура из учебного курса Битрикса, но нормальным человеческим языком.</p>
+<hr/>
+<h2 id="когда-нужен-модуль-а-не-код-в-local">Когда нужен модуль, а не код в <code>/local</code></h2>
+<p>Коротко и по делу:</p>
+<p>Модуль нужен, когда:</p>
+<ul>
+<li>код <strong>переиспользуется</strong> на нескольких проектах;</li>
+<li>требуется <strong>установка/удаление</strong> через админку;</li>
+<li>нужны <strong>настройки, версии, права доступа</strong>;</li>
+<li>компонент — часть функционального блока, а не разовая правка.</li>
+</ul>
+<p>Если код живёт только в одном проекте и никогда никуда не поедет — <code>/local/php_interface</code> ок.
+Во всех остальных случаях — <strong>модуль</strong>.</p>
+<hr/>
+<h2 id="структура-простого-модуля">Структура простого модуля</h2>
+<p>Делаем модуль <code>vendor.simplemodule</code>.</p>
+<h3 id="базовая-структура">Базовая структура</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>/local/modules/vendor.simplemodule/</span></span>
+<span class="line"><span>├── install/</span></span>
+<span class="line"><span>│   ├── components/</span></span>
+<span class="line"><span>│   │   └── vendor/</span></span>
+<span class="line"><span>│   │       └── simple.date/</span></span>
+<span class="line"><span>│   │           ├── component.php</span></span>
+<span class="line"><span>│   │           ├── .description.php</span></span>
+<span class="line"><span>│   │           └── templates/</span></span>
+<span class="line"><span>│   │               └── .default/</span></span>
+<span class="line"><span>│   │                   └── template.php</span></span>
+<span class="line"><span>│   ├── index.php</span></span>
+<span class="line"><span>│   ├── step.php</span></span>
+<span class="line"><span>│   ├── unstep.php</span></span>
+<span class="line"><span>│   └── version.php</span></span>
+<span class="line"><span>├── lang/</span></span>
+<span class="line"><span>├── include.php</span></span>
+<span class="line"><span>└── vendor.simplemodule.php</span></span></code></pre>
+<p>Обрати внимание: <strong>компонент лежит внутри модуля</strong>, а не сразу в <code>/local/components</code>.</p>
+<hr/>
+<h2 id="файл-versionphp">Файл <code>version.php</code></h2>
+<p>Минимальный, но обязательный.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#E1E4E8">$arModuleVersion </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;VERSION&quot;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &quot;1.0.0&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;VERSION_DATE&quot;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &quot;2026-02-09&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">];</span></span></code></pre>
+<p>По документации Битрикс в <code>version.php</code> используют <strong>двойные кавычки</strong> — одинарные могут не отрабатывать при установке.</p>
+<hr/>
+<h2 id="класс-модуля">Класс модуля</h2>
+<blockquote>
+<p><strong>Сниппеты по статье:</strong> <a href="/snippets/bitrix-module-install-db-sql">InstallDB/UnInstallDB и SQL</a> · <a href="/snippets/bitrix-module-events-install-uninstall">События при установке/удалении</a> · <a href="/snippets/bitrix-module-autoload-loader">Автозагрузка классов модуля</a> · <a href="/snippets/bitrix-component-prolog-check">Проверка B_PROLOG_INCLUDED в компоненте</a></p>
+</blockquote>
+<p>Файл:
+<code>/local/modules/vendor.simplemodule/vendor.simplemodule.php</code></p>
+<p>В <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=101&LESSON_ID=3216">структуре по документации</a> класс может быть описан в <code>install/index.php</code>; на практике его часто выносят в корневой файл с именем модуля (например, <code>vendor.simplemodule.php</code>), чтобы подключать через <code>include.php</code>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\ModuleManager</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> vendor_simplemodule</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> CModule</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_ID </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_VERSION;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_VERSION_DATE;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_NAME </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;Простой учебный модуль&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_DESCRIPTION </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;Учебный модуль с одним компонентом&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> $MODULE_GROUP_RIGHTS </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;N&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#79B8FF"> __construct</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        include</span><span style="color:#79B8FF"> __DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/version.php&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">        $this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_VERSION </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $arModuleVersion[</span><span style="color:#9ECBFF">&#39;VERSION&#39;</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#79B8FF">        $this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_VERSION_DATE </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $arModuleVersion[</span><span style="color:#9ECBFF">&#39;VERSION_DATE&#39;</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<h3 id="что-здесь-важно">Что здесь важно</h3>
+<ul>
+<li><code>$MODULE_ID</code> <strong>строго совпадает</strong> с именем папки;</li>
+<li>версия и дата берутся из <code>version.php</code>;</li>
+<li>никакой логики — только описание.</li>
+</ul>
+<hr/>
+<h2 id="установка-файлов-installfiles">Установка файлов (InstallFiles)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> InstallFiles</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        CopyDirFiles</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">            __DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/components&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $_SERVER[</span><span style="color:#9ECBFF">&#39;DOCUMENT_ROOT&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/local/components&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            true</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<p>Что происходит:</p>
+<ul>
+<li>копируем компоненты из модуля;</li>
+<li>они появляются в <code>/local/components/vendor/...</code>;</li>
+<li>Bitrix начинает их видеть.</li>
+</ul>
+<hr/>
+<h2 id="удаление-файлов-uninstallfiles">Удаление файлов (UnInstallFiles)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> UnInstallFiles</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        DeleteDirFilesEx</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;/local/components/vendor/simple.date&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<p>Никакой магии — просто аккуратно удаляем то, что поставили.</p>
+<hr/>
+<h2 id="установка-модуля-doinstall">Установка модуля (DoInstall)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> DoInstall</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $APPLICATION;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">        $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">InstallFiles</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">        ModuleManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">registerModule</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeAdminFile</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;Установка модуля&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            __DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/step.php&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<h3 id="порядок-важен">Порядок важен</h3>
+<ol>
+<li>Копируем файлы</li>
+<li>Регистрируем модуль</li>
+<li>Показываем шаг установки</li>
+</ol>
+<p>В <a href="https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=101&LESSON_ID=3223">учебном курсе Битрикс</a> в <code>DoInstall()</code> вызывают <code>InstallDB()</code> → <code>InstallEvents()</code> → <code>InstallFiles()</code>, причём в том примере <code>InstallDB()</code> только регистрирует модуль (<code>RegisterModule</code>). Мы используем современный API <code>ModuleManager::registerModule()</code> и показываем шаг установки через <code>IncludeAdminFile</code> — оба варианта соответствуют документации.</p>
+<hr/>
+<h2 id="удаление-модуля-douninstall">Удаление модуля (DoUninstall)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> DoUninstall</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $APPLICATION;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">        $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">UnInstallFiles</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">        ModuleManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">unRegisterModule</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeAdminFile</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;Удаление модуля&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            __DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/unstep.php&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr/>
+<h2 id="файлы-stepphp-и-unstepphp">Файлы <code>step.php</code> и <code>unstep.php</code></h2>
+<p>Минимальный вариант.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> &#39;Модуль успешно установлен&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> &#39;Модуль успешно удалён&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<hr/>
+<h2 id="простейший-компонент-внутри-модуля">Простейший компонент внутри модуля</h2>
+<p>Компонент:
+<code>vendor:simple.date</code></p>
+<h3 id="descriptionphp"><code>.description.php</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#E1E4E8">$arComponentDescription </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;NAME&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;Текущая дата&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;DESCRIPTION&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;Простой компонент для вывода текущей даты&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;PATH&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;vendor&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;NAME&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;Учебные компоненты&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">];</span></span></code></pre>
+<hr/>
+<h3 id="componentphp"><code>component.php</code></h3>
+<p>Защита от прямого вызова — проверка <code>B_PROLOG_INCLUDED</code> (<a href="/snippets/bitrix-component-prolog-check">сниппет</a>):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;B_PROLOG_INCLUDED&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#79B8FF"> B_PROLOG_INCLUDED</span><span style="color:#F97583"> !==</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    die</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$arResult[</span><span style="color:#9ECBFF">&#39;DATE&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> date</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;d.m.Y&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeComponentTemplate</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<hr/>
+<h3 id="шаблон-компонента">Шаблон компонента</h3>
+<p><code>templates/.default/template.php</code> — в шаблоне та же проверка (<a href="/snippets/bitrix-component-prolog-check">сниппет</a>):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;B_PROLOG_INCLUDED&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#79B8FF"> B_PROLOG_INCLUDED</span><span style="color:#F97583"> !==</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    die</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">?&gt;</span></span>
+<span class="line"><span style="color:#F97583">&lt;</span><span style="color:#79B8FF">div</span><span style="color:#F97583"> class=</span><span style="color:#9ECBFF">&quot;simple-date&quot;</span><span style="color:#F97583">&gt;</span></span>
+<span class="line"><span style="color:#79B8FF">    Текущая</span><span style="color:#79B8FF"> дата</span><span style="color:#F97583">:</span><span style="color:#F97583"> &lt;</span><span style="color:#79B8FF">strong</span><span style="color:#F97583">&gt;&lt;?=</span><span style="color:#B392F0"> htmlspecialcharsbx</span><span style="color:#E1E4E8">($arResult[</span><span style="color:#9ECBFF">&#39;DATE&#39;</span><span style="color:#E1E4E8">]) </span><span style="color:#F97583">?&gt;&lt;/</span><span style="color:#79B8FF">strong</span><span style="color:#F97583">&gt;</span></span>
+<span class="line"><span style="color:#F97583">&lt;/</span><span style="color:#79B8FF">div</span><span style="color:#F97583">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="установка-и-проверка">Установка и проверка</h2>
+<h3 id="1-установка-модуля">1. Установка модуля</h3>
+<p>Админка → Настройки → Модули → <strong>Простой учебный модуль</strong> → Установить.</p>
+<p>Если не появился:</p>
+<ul>
+<li>проверь имя папки;</li>
+<li>проверь <code>$MODULE_ID</code>;</li>
+<li>обнови список модулей.</li>
+</ul>
+<hr/>
+<h3 id="2-проверка-компонента">2. Проверка компонента</h3>
+<p>В визуальном редакторе или в коде:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#E1E4E8">$APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeComponent</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor:simple.date&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    []</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>Если видишь текущую дату — <strong>всё работает</strong>.</p>
+<hr/>
+<h2 id="настройки-модуля-options">Настройки модуля (options)</h2>
+<p>В Битриксе <strong>настройки модуля</strong> — это значения, хранящиеся в таблице <code>b_option</code>.
+Работаем <strong>только через API</strong>, без самодельных таблиц.</p>
+<h3 id="где-живут-настройки">Где живут настройки</h3>
+<ul>
+<li>ключи и значения — в <code>b_option</code></li>
+<li>интерфейс — через <code>options.php</code> (если нужен UI)</li>
+<li>доступ — через <code>\Bitrix\Main\Config\Option</code></li>
+</ul>
+<hr/>
+<h3 id="простейшая-настройка-без-интерфейса">Простейшая настройка без интерфейса</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Config\Option</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// запись</span></span>
+<span class="line"><span style="color:#79B8FF">Option</span><span style="color:#F97583">::</span><span style="color:#B392F0">set</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;show_date&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;Y&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// чтение</span></span>
+<span class="line"><span style="color:#E1E4E8">$showDate </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> Option</span><span style="color:#F97583">::</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;show_date&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;N&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><strong>Важно:</strong></p>
+<ul>
+<li>первый параметр — <code>MODULE_ID</code>;</li>
+<li>всегда указывай дефолт;</li>
+<li>никаких <code>COption</code> (устаревшее API).</li>
+</ul>
+<hr/>
+<h3 id="использование-настройки-в-компоненте">Использование настройки в компоненте</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Config\Option</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">Option</span><span style="color:#F97583">::</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;show_date&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Y&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">!==</span><span style="color:#9ECBFF"> &#39;Y&#39;</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$arResult[</span><span style="color:#9ECBFF">&#39;DATE&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> date</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;d.m.Y&#39;</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h2 id="права-доступа-модуля">Права доступа модуля</h2>
+<p>Права доступа в модуле — <strong>стандартный механизм</strong>, не самописный.</p>
+<h3 id="включение-поддержки-прав">Включение поддержки прав</h3>
+<p>В классе модуля:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#E1E4E8"> $MODULE_GROUP_RIGHTS </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &#39;Y&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>После этого в админке появится вкладка <strong>«Права доступа»</strong>.</p>
+<hr/>
+<h3 id="проверка-прав-в-коде">Проверка прав в коде</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">global</span><span style="color:#E1E4E8"> $APPLICATION;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">GetGroupRight</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&lt;</span><span style="color:#9ECBFF"> &#39;R&#39;</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="стандартные-уровни">Стандартные уровни</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Код</th><th>Значение</th></tr></thead><tbody><tr><td>D</td><td>доступ запрещён</td></tr><tr><td>R</td><td>чтение</td></tr><tr><td>W</td><td>запись</td></tr><tr><td>X</td><td>полный доступ</td></tr></tbody></table>
+<p><strong>Важно:</strong> не выдумывай свои уровни — Bitrix этого не любит.</p>
+<hr/>
+<h2 id="автозагрузка-классов-модуля">Автозагрузка классов модуля</h2>
+<p>Современный способ — <strong>через <code>Bitrix\Main\Loader</code> и PSR-4</strong>. Готовый шаблон: <a href="/snippets/bitrix-module-autoload-loader">сниппет «Автозагрузка классов модуля»</a>.</p>
+<h3 id="структура">Структура</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>/local/modules/vendor.simplemodule/</span></span>
+<span class="line"><span>├── lib/</span></span>
+<span class="line"><span>│   └── Service/</span></span>
+<span class="line"><span>│       └── DateProvider.php</span></span>
+<span class="line"><span>├── include.php</span></span></code></pre>
+<hr/>
+<h3 id="includephp"><code>include.php</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Loader</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Loader</span><span style="color:#F97583">::</span><span style="color:#B392F0">registerAutoLoadClasses</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span></span>
+<span class="line"><span style="color:#9ECBFF">        &#39;Vendor</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">SimpleModule</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">Service</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">DateProvider&#39;</span><span style="color:#F97583"> =&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">            &#39;lib/Service/DateProvider.php&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h3 id="класс">Класс</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Vendor\SimpleModule\Service</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> DateProvider</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getCurrentDate</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">:</span><span style="color:#F97583"> string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> date</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;d.m.Y&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr/>
+<h3 id="использование">Использование</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Vendor\SimpleModule\Service\DateProvider</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$arResult[</span><span style="color:#9ECBFF">&#39;DATE&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> DateProvider</span><span style="color:#F97583">::</span><span style="color:#B392F0">getCurrentDate</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<p><strong>Критично:</strong></p>
+<ul>
+<li><code>namespace</code> в формате <code>Vendor\SimpleModule\...</code> (например, <code>Vendor\SimpleModule\Service</code>);</li>
+<li>путь <strong>от корня модуля</strong>;</li>
+<li>никаких <code>require_once</code>.</li>
+</ul>
+<hr/>
+<h2 id="модуль-с-orm-datamanager">Модуль с ORM (DataManager)</h2>
+<p>ORM в Битриксе — это <code>\Bitrix\Main\Entity\DataManager</code>.
+Используется <strong>только для своих таблиц</strong>.</p>
+<hr/>
+<h3 id="таблица">Таблица</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> vendor_simple_date</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    ID </span><span style="color:#F97583">int</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8"> AUTO_INCREMENT,</span></span>
+<span class="line"><span style="color:#E1E4E8">    CREATED_AT </span><span style="color:#F97583">datetime</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">    PRIMARY KEY</span><span style="color:#E1E4E8"> (ID)</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h3 id="класс-таблицы">Класс таблицы</h3>
+<p><code>/local/modules/vendor.simplemodule/lib/DateTable.php</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Vendor\SimpleModule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Entity</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Type\DateTime</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> DateTable</span><span style="color:#F97583"> extends</span><span style="color:#79B8FF"> Entity\</span><span style="color:#B392F0">DataManager</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getTableName</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#9ECBFF"> &#39;vendor_simple_date&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getMap</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#F97583">            new</span><span style="color:#79B8FF"> Entity\IntegerField</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;primary&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;autocomplete&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            ]),</span></span>
+<span class="line"><span style="color:#F97583">            new</span><span style="color:#79B8FF"> Entity\DatetimeField</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CREATED_AT&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;required&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                &#39;default_value&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> DateTime</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">            ]),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr/>
+<h3 id="использование-orm">Использование ORM</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Vendor\SimpleModule\DateTable</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">DateTable</span><span style="color:#F97583">::</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">([]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$items </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> DateTable</span><span style="color:#F97583">::</span><span style="color:#B392F0">getList</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;order&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;ID&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#9ECBFF"> &#39;DESC&#39;</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;limit&#39;</span><span style="color:#F97583"> =&gt;</span><span style="color:#79B8FF"> 5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">])</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">fetchAll</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<hr/>
+<h2 id="события-модуля">События модуля</h2>
+<p>События подключаются <strong>только после установки модуля</strong>. Регистрация и снятие в DoInstall/DoUninstall: <a href="/snippets/bitrix-module-events-install-uninstall">сниппет «События при установке/удалении»</a>.</p>
+<h3 id="регистрация-обработчика">Регистрация обработчика</h3>
+<p>В <code>DoInstall()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\EventManager</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">EventManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">registerEventHandler</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;main&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;OnPageStart&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;Vendor</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">SimpleModule</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">EventHandler&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;onPageStart&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h3 id="удаление-обработчика">Удаление обработчика</h3>
+<p>В <code>DoUninstall()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#79B8FF">EventManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unRegisterEventHandler</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;main&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;OnPageStart&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;vendor.simplemodule&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;Vendor</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">SimpleModule</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">EventHandler&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;onPageStart&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h3 id="класс-обработчика">Класс обработчика</h3>
+<p><code>/lib/EventHandler.php</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> Vendor\SimpleModule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> EventHandler</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> onPageStart</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // минимальная логика</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Важно:</strong></p>
+<ul>
+<li>события <strong>регистрируются и удаляются</strong>;</li>
+<li>не оставляй «висячие» хендлеры;</li>
+<li>никакой бизнес-логики в событиях.</li>
+</ul>
+<p>Ниже — создание и удаление таблиц через <code>install.sql</code>/<code>uninstall.sql</code> (штатный DB API) и типичные ошибки модулей, из-за которых «падают обновления» и админка начинает ненавидеть тебя.</p>
+<hr/>
+<h2 id="installsql--uninstallsql-создание-и-удаление-таблицы">install.sql / uninstall.sql (создание и удаление таблицы)</h2>
+<h3 id="где-хранить-sql-в-модуле">Где хранить SQL в модуле</h3>
+<p>Классический (официальный, учебный) подход — держать SQL внутри <code>install/</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>/local/modules/vendor.simplemodule/</span></span>
+<span class="line"><span>└── install/</span></span>
+<span class="line"><span>    ├── db/</span></span>
+<span class="line"><span>    │   ├── install.sql</span></span>
+<span class="line"><span>    │   └── uninstall.sql</span></span>
+<span class="line"><span>    └── ...</span></span></code></pre>
+<blockquote>
+<p>Да, пути могут быть разными в реальных модулях, но суть по доке: <strong>SQL выполняем через <code>$DB-&gt;RunSQLBatch()</code></strong> (метод принимает путь к .sql-файлу; глобальный <code>$DB</code> — экземпляр <code>CDatabase</code>), а файлы лежат в install-части.</p>
+</blockquote>
+<hr/>
+<h3 id="installdbinstallsql"><code>install/db/install.sql</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> IF</span><span style="color:#F97583"> NOT</span><span style="color:#F97583"> EXISTS</span><span style="color:#E1E4E8"> vendor_simple_date (</span></span>
+<span class="line"><span style="color:#E1E4E8">  ID </span><span style="color:#F97583">INT</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8"> AUTO_INCREMENT,</span></span>
+<span class="line"><span style="color:#E1E4E8">  CREATED_AT </span><span style="color:#F97583">DATETIME</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">  PRIMARY KEY</span><span style="color:#E1E4E8"> (ID)</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="installdbuninstallsql"><code>install/db/uninstall.sql</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">DROP</span><span style="color:#F97583"> TABLE</span><span style="color:#F97583"> IF</span><span style="color:#F97583"> EXISTS</span><span style="color:#E1E4E8"> vendor_simple_date;</span></span></code></pre>
+<hr/>
+<h3 id="выполнение-sql-при-установкеудалении-строго-штатно">Выполнение SQL при установке/удалении (строго штатно)</h3>
+<p>Добавляем в класс модуля два метода: <code>InstallDB()</code> и <code>UnInstallDB()</code>. Готовый код с проверкой ошибок: <a href="/snippets/bitrix-module-install-db-sql">сниппет «InstallDB/UnInstallDB и SQL»</a>. В учебнике Битрикс метод <code>InstallDB()</code> иногда используется только для регистрации модуля в БД (<code>RegisterModule</code>); здесь мы используем его для создания своих таблиц, а регистрацию делаем отдельно через <code>ModuleManager::registerModule()</code> в <code>DoInstall()</code> — так делают многие штатные и партнёрские модули.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\Application</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Bitrix\Main\IO\Path</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> vendor_simplemodule</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> CModule</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> InstallDB</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $DB;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $sqlPath </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&#39;DOCUMENT_ROOT&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/local/modules/&#39;</span><span style="color:#F97583"> .</span><span style="color:#79B8FF"> $this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/install/db/install.sql&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">file_exists</span><span style="color:#E1E4E8">($sqlPath)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            $errors </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $DB</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">RunSQLBatch</span><span style="color:#E1E4E8">($sqlPath);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">is_array</span><span style="color:#E1E4E8">($errors)) {</span></span>
+<span class="line"><span style="color:#F97583">                throw</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> \Bitrix\Main\SystemException</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">implode</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">, $errors));</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> UnInstallDB</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        global</span><span style="color:#E1E4E8"> $DB;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        $sqlPath </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_SERVER[</span><span style="color:#9ECBFF">&#39;DOCUMENT_ROOT&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/local/modules/&#39;</span><span style="color:#F97583"> .</span><span style="color:#79B8FF"> $this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID </span><span style="color:#F97583">.</span><span style="color:#9ECBFF"> &#39;/install/db/uninstall.sql&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">file_exists</span><span style="color:#E1E4E8">($sqlPath)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            $errors </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $DB</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">RunSQLBatch</span><span style="color:#E1E4E8">($sqlPath);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">is_array</span><span style="color:#E1E4E8">($errors)) {</span></span>
+<span class="line"><span style="color:#F97583">                throw</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> \Bitrix\Main\SystemException</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">implode</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">, $errors));</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="подключаем-в-doinstall-и-douninstall">Подключаем в <code>DoInstall()</code> и <code>DoUninstall()</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> DoInstall</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    global</span><span style="color:#E1E4E8"> $APPLICATION;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">InstallDB</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">    $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">InstallFiles</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    \Bitrix\Main\ModuleManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">registerModule</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeAdminFile</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Установка модуля&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">__DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/step.php&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> DoUninstall</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    global</span><span style="color:#E1E4E8"> $APPLICATION;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">UnInstallFiles</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">    $this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">UnInstallDB</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    \Bitrix\Main\ModuleManager</span><span style="color:#F97583">::</span><span style="color:#B392F0">unRegisterModule</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">MODULE_ID);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $APPLICATION</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">IncludeAdminFile</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Удаление модуля&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">__DIR__</span><span style="color:#F97583"> .</span><span style="color:#9ECBFF"> &#39;/install/unstep.php&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Критично:</strong></p>
+<ul>
+<li>SQL выполняем <strong>до</strong> register/unregister — так проще отлаживать;</li>
+<li><code>RunSQLBatch()</code> возвращает массив ошибок — его нельзя игнорировать;</li>
+<li><code>IF EXISTS</code>/<code>IF NOT EXISTS</code> спасают при повторной установке/удалении.</li>
+</ul>
+<hr/>
+<h2 id="типичные-ошибки-модулей-из-за-которых-падают-обновления">Типичные ошибки модулей, из-за которых «падают обновления»</h2>
+<p>Это то, что реально валит проекты после апдейтов, миграций и просто «перестало работать в понедельник».</p>
+<h3 id="1-модуль-пишетправит-файлы-в-bitrix">1) Модуль пишет/правит файлы в <code>/bitrix/*</code></h3>
+<p><strong>Плохо:</strong> модуль кладёт свои файлы в ядро или меняет файлы ядра.
+<strong>Почему падает:</strong> обновление ядра перезатирает всё. Иногда — вместе с проектом.</p>
+<p>✅ Правило: всё своё — <strong>в <code>/local</code></strong>. Ядро — не трогаем.</p>
+<hr/>
+<h3 id="2-нет-симметрии-между-install-и-uninstall">2) Нет симметрии между install и uninstall</h3>
+<p><strong>Плохо:</strong> зарегистрировал обработчики событий, но не удалил; создал таблицы, но не удалил; скопировал компоненты, но не удалил.</p>
+<p><strong>Симптомы:</strong></p>
+<ul>
+<li>дубли обработчиков → код выполняется дважды;</li>
+<li>ошибки при переустановке;</li>
+<li>«призраки» в системе.</li>
+</ul>
+<p>✅ Правило: что поставил — то убрал (файлы/события/опции/таблицы).</p>
+<hr/>
+<h3 id="3-бизнес-логика-в-doinstall--__construct">3) Бизнес-логика в <code>DoInstall()</code> / <code>__construct()</code></h3>
+<p><strong>Плохо:</strong> в конструкторе модуля подключаются классы, бьётся ORM, читаются таблицы, вызываются сервисы.</p>
+<p><strong>Почему падает:</strong> админка просто открывает список модулей → а у тебя там пол-проекта стартует и валится.</p>
+<p>✅ Правило:</p>
+<ul>
+<li><code>__construct()</code> — только мета (<code>version.php</code>, name/desc).</li>
+<li>установка — только инфраструктура (файлы, таблицы, события).</li>
+</ul>
+<hr/>
+<h3 id="4-неправильный-module_id-и-структура-папок">4) Неправильный <code>$MODULE_ID</code> и структура папок</h3>
+<p><strong>Плохо:</strong> папка <code>vendor.simplemodule</code>, а <code>$MODULE_ID = &#39;vendor.simple_module&#39;</code> или класс модуля называется иначе.</p>
+<p><strong>Симптомы:</strong> модуль “не виден”, “не ставится”, “не удаляется”.</p>
+<p>✅ Правило:</p>
+<ul>
+<li>папка: <code>vendor.simplemodule</code></li>
+<li><code>$MODULE_ID</code>: <code>vendor.simplemodule</code></li>
+<li>класс: <code>vendor_simplemodule</code> (точно как ожидает Bitrix)</li>
+</ul>
+<hr/>
+<h3 id="5-компонент-кладут-не-туда">5) Компонент кладут не туда</h3>
+<p><strong>Плохо:</strong> компонент лежит прямо в <code>/local/modules/.../components</code> и не копируется, или копируется в <code>/bitrix/components</code>.</p>
+<p>✅ Правило:</p>
+<ul>
+<li>исходники компонента: <code>/install/components/vendor/...</code></li>
+<li>установка: копирование в <code>/local/components/vendor/...</code></li>
+</ul>
+<hr/>
+<h3 id="6-классы-без-автозагрузки-всё-через-require_once">6) Классы без автозагрузки, всё через <code>require_once</code></h3>
+<p><strong>Плохо:</strong> в <code>init.php</code> или <code>component.php</code> пачка <code>require_once</code>, часть путей относительная.</p>
+<p><strong>Почему падает:</strong> при изменении структуры / кеша / окружения ловишь “Failed opening required”.</p>
+<p>✅ Правило:</p>
+<ul>
+<li>регистрируй автозагрузку через <code>Loader::registerAutoLoadClasses()</code></li>
+<li><code>require_once</code> — только для install-скриптов и то по необходимости.</li>
+</ul>
+<hr/>
+<h3 id="7-события-регистрируются-в-рантайме-а-не-через-установку">7) События регистрируются «в рантайме», а не через установку</h3>
+<p><strong>Плохо:</strong> <code>AddEventHandler</code> вызывается в <code>init.php</code> модуля или в <code>include.php</code> без контроля установки.</p>
+<p><strong>Почему падает:</strong> модуль удалили, а обработчики продолжают жить или подключаться.</p>
+<p>✅ Правило:</p>
+<ul>
+<li>регистрировать события через <code>EventManager</code> в <code>DoInstall()</code></li>
+<li>удалять в <code>DoUninstall()</code></li>
+</ul>
+<hr/>
+<h3 id="8-нет-проверки-b_prolog_included-в-компонентахшаблонах">8) Нет проверки <code>B_PROLOG_INCLUDED</code> в компонентах/шаблонах</h3>
+<p><strong>Плохо:</strong> шаблон или <code>component.php</code> может выполняться напрямую.</p>
+<p>✅ Правило: в каждом файле компонента/шаблона (<a href="/snippets/bitrix-component-prolog-check">сниппет</a>):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;B_PROLOG_INCLUDED&#39;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#79B8FF"> B_PROLOG_INCLUDED</span><span style="color:#F97583"> !==</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    die</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr/>
+<h3 id="9-грязные-опции-не-удаляются--конфликтуют-по-ключам">9) Грязные опции: не удаляются / конфликтуют по ключам</h3>
+<p><strong>Плохо:</strong> <code>Option::set()</code> без namespace и без удаления при uninstall.</p>
+<p>✅ Правило:</p>
+<ul>
+<li>ключи только под своим <code>MODULE_ID</code></li>
+<li>при удалении — чистим опции модуля (если политика проекта это допускает).</li>
+</ul>
+<hr/>
+<h2 id="итоговый-чек-лист-перед-продом">Итоговый чек-лист перед продом</h2>
+<p>Перед тем как использовать модуль в реальном проекте, проверь:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Имя папки = <code>$MODULE_ID</code></li>
+<li class="task-list-item"><input type="checkbox" disabled/> Компоненты копируются <strong>в <code>/local/components</code></strong></li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>InstallFiles</code> и <code>UnInstallFiles</code> симметричны</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Нет бизнес-логики в классе модуля</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Компонент работает без модуля (после копирования)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Модуль корректно удаляется и ставится повторно</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Код не трогает <code>/bitrix</code></li>
+</ul>
+<hr/>
+<h2 id="итог">Итог</h2>
+<p>Ты получил:</p>
+<ul>
+<li>минимальный, но корректный модуль;</li>
+<li>понятную структуру;</li>
+<li>компонент, который реально устанавливается;</li>
+<li>основу для масштабирования (настройки, события, ORM — дальше).</li>
+</ul>
+<p>Это <strong>ровно тот уровень</strong>, с которого стоит начинать писать свои модули под Битрикс — без оверинженеринга и шаманства.</p>
+<p>В статье уже разобраны настройки модуля, права доступа, автозагрузка классов, ORM и события — пользуйся соответствующими разделами как справочником.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

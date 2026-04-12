@@ -1,0 +1,318 @@
+/* ------------------------------------------
+   HEADER
+------------------------------------------ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: var(--blur-backdrop);
+  -webkit-backdrop-filter: var(--blur-backdrop);
+  background: rgba(14, 15, 18, 0.82);
+  border-bottom: 1px solid var(--clr-border);
+  /* Safe area для iPhone X и новее */
+  padding-top: env(safe-area-inset-top);
+}
+
+.nav {
+  width: 100%;
+}
+
+.nav-inner {
+  max-width: var(--container-max-desktop);
+  margin: 0 auto;
+  padding-inline: var(--container-padding-desktop);
+  height: var(--header-height-desktop);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ------------------------------------------
+   LOGO
+------------------------------------------ */
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  text-decoration: none;
+  color: var(--clr-accent);
+  font-weight: 600;
+  font-size: var(--fs-base);
+}
+
+.nav-logo-img {
+  width: 38px;
+  height: 38px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------
+   NAV LINKS (DESKTOP BASE)
+------------------------------------------ */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-l);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links>li {
+  position: relative;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-m);
+  border-radius: var(--radius-s);
+  text-decoration: none;
+  color: var(--clr-text);
+  font-size: var(--fs-m);
+  transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* hover только на десктопе */
+@media (hover: hover) and (pointer: fine) {
+  .nav-links a:hover {
+    background: var(--clr-card-bg-alt);
+    color: var(--clr-accent);
+  }
+}
+
+.nav-links a.active {
+  background: var(--clr-accent);
+  color: #fff;
+  box-shadow: var(--clr-shadow-accent-hover);
+}
+
+/* ------------------------------------------
+   SUBMENU (DESKTOP)
+------------------------------------------ */
+
+.has-sub>a::after {
+  content: "▾";
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.sub-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+
+  min-width: 180px;
+  padding: 0.4rem 0;
+
+  background: var(--clr-bg);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--clr-border);
+  box-shadow: var(--shadow-l);
+
+  display: none;
+  flex-direction: column;
+  z-index: 120;
+}
+
+/* показываем dropdown только на десктопе */
+@media (hover: hover) and (pointer: fine) {
+  .has-sub:hover .sub-menu {
+    display: flex;
+  }
+}
+
+.sub-menu a {
+  padding: 0.5rem 1rem;
+  font-size: var(--fs-s);
+}
+
+/* кнопка раскрытия подменю для мобилки — на десктопе скрыта */
+.sub-toggle {
+  display: none;
+}
+
+/* ------------------------------------------
+   ACTIONS
+------------------------------------------ */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+.theme-btn {
+  background: none;
+  border: none;
+  color: var(--clr-accent);
+  font-size: var(--fs-l);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* BURGER */
+
+.burger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.burger-btn .line {
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--clr-text);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.burger-btn.is-open .top {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.burger-btn.is-open .middle {
+  opacity: 0;
+}
+
+.burger-btn.is-open .bottom {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ------------------------------------------
+   TABLET
+------------------------------------------ */
+
+@media (min-width: 481px) and (max-width: 1024px) {
+  .nav-inner {
+    padding-inline: var(--container-padding-tablet);
+    height: var(--header-height-tablet);
+  }
+
+  .nav-links {
+    gap: var(--space-m);
+  }
+
+  .nav-links a {
+    padding: var(--space-s) var(--space-m);
+  }
+}
+
+/* ------------------------------------------
+   MOBILE
+------------------------------------------ */
+
+@media (max-width: 720px) {
+  .nav-inner {
+    padding-inline: var(--container-padding-mobile);
+    height: var(--header-height-mobile);
+  }
+
+  .burger-btn {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    inset-inline: 0;
+    top: calc(var(--header-height-mobile) + env(safe-area-inset-top, 0px));
+
+    height: calc(100vh - var(--header-height-mobile) - env(safe-area-inset-top, 0px));
+    padding: 1.6rem 1.2rem 2rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+
+    background: rgba(10, 12, 16, 0.96);
+    backdrop-filter: var(--blur-backdrop);
+    -webkit-backdrop-filter: var(--blur-backdrop);
+
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.3s ease;
+  }
+
+  .nav-links.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links a {
+    width: 100%;
+    justify-content: flex-start;
+    font-size: var(--fs-m);
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* подменю на мобилке: аккордеон */
+  .has-sub-wrapper {
+    display: flex;
+  }
+
+  .has-sub>a::after {
+    display: none;
+  }
+
+  .sub-toggle {
+    display: inline-flex;
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--clr-text);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.2rem;
+    transition: transform 0.25s ease;
+  }
+
+  .sub-toggle.is-open {
+    transform: rotate(90deg);
+  }
+
+  .sub-menu {
+    position: static;
+    margin-top: 0.3rem;
+    padding: 0.3rem 0 0.2rem;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    border-left: 1px solid var(--clr-border);
+    padding-left: 0.9rem;
+    display: none;
+    gap: 0.3rem;
+    background: none;
+  }
+
+  .sub-menu.is-open {
+    display: flex;
+  }
+}

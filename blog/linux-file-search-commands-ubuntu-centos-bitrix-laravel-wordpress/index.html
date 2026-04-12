@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Linux-команды для работы с файлами и поиском: Ubuntu, CentOS и практические примеры для Bitrix, Laravel и WordPress</title><meta name="description" content="Подробный и практический разбор Linux-команд для работы с файлами и поиска: find, grep, ripgrep, locate, xargs, rsync, tar. Примеры из реальной серверной практики на BitrixVM, Laravel и WordPress."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> linux </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Linux-команды для работы с файлами и поиском: Ubuntu, CentOS и практические примеры для Bitrix, Laravel и WordPress </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>2 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/linux-file-search-commands.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="linux-команды-для-работы-с-файлами-и-поиска">Linux-команды для работы с файлами и поиска</h1>
+<h2 id="ubuntu-и-centos--разбор-с-практическими-примерами">Ubuntu и CentOS — разбор с практическими примерами</h2>
+<p>Есть два подхода к работе на сервере:</p>
+<ol>
+<li><strong>Понимать, где что лежит, и находить это командами.</strong></li>
+<li>Открывать файловый менеджер, долго смотреть и в итоге ничего не найти.</li>
+</ol>
+<p>Эта статья — про первый подход.</p>
+<p>Здесь собраны <strong>базовые и продвинутые команды Linux</strong> для работы с файлами и поиска:<br/>
+на Ubuntu и CentOS, в окружениях BitrixVM, Laravel и WordPress.<br/>
+Без абстрактной теории — только то, что действительно используется в ежедневной серверной практике.</p>
+<hr/>
+<h2 id="типовая-структура-проектов-на-сервере">Типовая структура проектов на сервере</h2>
+<h3 id="bitrix--bitrixvm">Bitrix / BitrixVM</h3>
+<ul>
+<li>корень сайта:<br/>
+<code>/home/bitrix/ext_www/DOMAIN/public_html/</code></li>
+<li>логи nginx:<br/>
+<code>/var/log/nginx/</code></li>
+<li>логи Apache:<br/>
+<code>/var/log/httpd/</code> (CentOS) или <code>/var/log/apache2/</code> (Ubuntu)</li>
+<li>cron-задачи:<br/>
+<code>/etc/crontab</code>, <code>/etc/cron.d/</code>, <code>crontab -e</code></li>
+</ul>
+<h3 id="laravel">Laravel</h3>
+<ul>
+<li>корень проекта:<br/>
+<code>/var/www/project</code> или <code>/home/user/project</code></li>
+<li>логи приложения:<br/>
+<code>storage/logs/laravel.log</code></li>
+<li>конфигурация:<br/>
+<code>.env</code>, каталог <code>config/</code></li>
+</ul>
+<h3 id="wordpress">WordPress</h3>
+<ul>
+<li>корень сайта:<br/>
+<code>/var/www/site</code> или <code>/home/.../public_html</code></li>
+<li>конфигурация:<br/>
+<code>wp-config.php</code></li>
+<li>плагины и загрузки:<br/>
+<code>wp-content/</code></li>
+</ul>
+<hr/>
+<h2 id="просмотр-файлов-и-структуры-каталога">Просмотр файлов и структуры каталога</h2>
+<h3 id="список-файлов-и-размеры">Список файлов и размеры</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -lah</span></span>
+<span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -lahS</span></span></code></pre>
+<h3 id="подробная-информация-о-файле">Подробная информация о файле</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#79B8FF">stat</span><span style="color:#9ECBFF"> wp-config.php</span></span></code></pre>
+<p>Команда полезна, когда нужно проверить:</p>
+<ul>
+<li>дату изменения;</li>
+<li>владельца и группу;</li>
+<li>реальные права доступа.</li>
+</ul>
+<h3 id="быстрый-просмотр-структуры">Быстрый просмотр структуры</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tree</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> 2</span></span></code></pre>
+<hr/>
+<h2 id="поиск-файлов-команда-find">Поиск файлов: команда <code>find</code></h2>
+<h3 id="поиск-по-имени">Поиск по имени</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;wp-config.php&quot;</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> /home/bitrix/ext_www</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;.env&quot;</span></span></code></pre>
+<h3 id="поиск-без-учёта-регистра">Поиск без учёта регистра</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -iname</span><span style="color:#9ECBFF"> &quot;*.log&quot;</span></span></code></pre>
+<h3 id="поиск-недавно-изменённых-файлов">Поиск недавно изменённых файлов</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -mtime</span><span style="color:#79B8FF"> -2</span></span></code></pre>
+<p><strong>Пример из практики:</strong>
+После взлома сайта нужно понять, какие PHP-файлы появились или изменились за последние сутки.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> /home/bitrix/ext_www/DOMAIN/public_html</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;*.php&quot;</span><span style="color:#79B8FF"> -mtime</span><span style="color:#79B8FF"> -1</span></span></code></pre>
+<hr/>
+<h3 id="поиск-подозрительных-файлов-в-upload-каталогах">Поиск подозрительных файлов в upload-каталогах</h3>
+<p>Bitrix и WordPress часто становятся жертвами загрузки PHP-файлов в каталоги для медиа.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> upload</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;*.php&quot;</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> wp-content/uploads</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;*.php&quot;</span></span></code></pre>
+<hr/>
+<h3 id="поиск-файлов-по-размеру">Поиск файлов по размеру</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -size</span><span style="color:#9ECBFF"> +200M</span></span></code></pre>
+<p>Полезно, когда заканчивается место на диске и нужно быстро найти источник проблемы.</p>
+<hr/>
+<h2 id="поиск-текста-внутри-файлов">Поиск текста внутри файлов</h2>
+<h3 id="grep--классический-инструмент"><code>grep</code> — классический инструмент</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -RIn</span><span style="color:#9ECBFF"> &quot;eval(&quot;</span><span style="color:#9ECBFF"> .</span></span>
+<span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -RIn</span><span style="color:#9ECBFF"> &quot;base64_decode&quot;</span><span style="color:#9ECBFF"> .</span></span></code></pre>
+<p>Флаги:</p>
+<ul>
+<li><code>-R</code> — рекурсивно;</li>
+<li><code>-I</code> — игнорировать бинарные файлы;</li>
+<li><code>-n</code> — показывать номера строк.</li>
+</ul>
+<p><strong>Пример из практики WordPress:</strong>
+Сайт начал делать редиректы на сторонние ресурсы.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -RIn</span><span style="color:#9ECBFF"> &quot;gzinflate&quot;</span><span style="color:#9ECBFF"> wp-content</span></span>
+<span class="line"><span style="color:#B392F0">grep</span><span style="color:#79B8FF"> -RIn</span><span style="color:#9ECBFF"> &quot;base64_decode&quot;</span><span style="color:#9ECBFF"> wp-content</span></span></code></pre>
+<hr/>
+<h3 id="ripgrep-rg--современная-альтернатива"><code>ripgrep</code> (<code>rg</code>) — современная альтернатива</h3>
+<p>Если доступен, использовать его предпочтительнее: быстрее и удобнее.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rg</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> &quot;APP_KEY&quot;</span></span>
+<span class="line"><span style="color:#B392F0">rg</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> &quot;DB_HOST&quot;</span></span></code></pre>
+<p><strong>Пример из практики Laravel:</strong>
+Нужно найти, где используется конкретная переменная окружения.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rg</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> &quot;PAYMENT_PROVIDER&quot;</span><span style="color:#9ECBFF"> .</span></span></code></pre>
+<hr/>
+<h2 id="комбинация-find-и-xargs">Комбинация <code>find</code> и <code>xargs</code></h2>
+<p>Позволяет выполнять действия над результатами поиска.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> &quot;*.php&quot;</span><span style="color:#79B8FF"> -print0</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> xargs</span><span style="color:#79B8FF"> -0</span><span style="color:#9ECBFF"> grep</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> &quot;eval(&quot;</span></span></code></pre>
+<p>Использование <code>-print0</code> и <code>-0</code> защищает от проблем с пробелами в именах файлов.</p>
+<hr/>
+<h2 id="быстрый-поиск-по-системе-locate">Быстрый поиск по системе: <code>locate</code></h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">locate</span><span style="color:#9ECBFF"> php.ini</span></span>
+<span class="line"><span style="color:#B392F0">locate</span><span style="color:#9ECBFF"> wp-config.php</span></span></code></pre>
+<p>Важно помнить, что <code>locate</code> ищет по базе, которая может быть неактуальной.</p>
+<p>Обновление базы:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">updatedb</span></span></code></pre>
+<hr/>
+<h2 id="работа-с-логами">Работа с логами</h2>
+<h3 id="просмотр-последних-записей">Просмотр последних записей</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 200</span><span style="color:#9ECBFF"> /var/log/nginx/error.log</span></span>
+<span class="line"><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> /var/log/nginx/access.log</span></span></code></pre>
+<h3 id="чтение-с-поиском">Чтение с поиском</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">less</span><span style="color:#9ECBFF"> /var/log/nginx/error.log</span></span></code></pre>
+<h3 id="systemd-журналы">systemd-журналы</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">journalctl</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> nginx</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 200</span><span style="color:#79B8FF"> --no-pager</span></span>
+<span class="line"><span style="color:#B392F0">journalctl</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> php-fpm</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 200</span><span style="color:#79B8FF"> --no-pager</span></span>
+<span class="line"><span style="color:#B392F0">journalctl</span><span style="color:#79B8FF"> -xe</span></span></code></pre>
+<hr/>
+<h2 id="проверка-дискового-пространства">Проверка дискового пространства</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">df</span><span style="color:#79B8FF"> -h</span></span>
+<span class="line"><span style="color:#B392F0">du</span><span style="color:#79B8FF"> -sh</span><span style="color:#79B8FF"> *</span></span></code></pre>
+<p>Поиск самых “тяжёлых” файлов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">du</span><span style="color:#79B8FF"> -ah</span><span style="color:#9ECBFF"> .</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#79B8FF"> -hr</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 30</span></span></code></pre>
+<hr/>
+<h2 id="архивирование-tar">Архивирование: <code>tar</code></h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tar</span><span style="color:#79B8FF"> -czf</span><span style="color:#9ECBFF"> site.tar.gz</span><span style="color:#9ECBFF"> public_html</span></span></code></pre>
+<p>Исключение кешей и временных файлов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">tar</span><span style="color:#79B8FF"> -czf</span><span style="color:#9ECBFF"> site.tar.gz</span><span style="color:#9ECBFF"> public_html</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --exclude=</span><span style="color:#9ECBFF">&quot;public_html/bitrix/cache&quot;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --exclude=</span><span style="color:#9ECBFF">&quot;public_html/bitrix/managed_cache&quot;</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --exclude=</span><span style="color:#9ECBFF">&quot;public_html/upload/tmp&quot;</span></span></code></pre>
+<hr/>
+<h2 id="синхронизация-и-переносы-rsync">Синхронизация и переносы: <code>rsync</code></h2>
+<p>Пробный запуск:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avhn</span><span style="color:#79B8FF"> --delete</span><span style="color:#9ECBFF"> ./</span><span style="color:#9ECBFF"> public_html/</span></span></code></pre>
+<p>Реальный перенос:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">rsync</span><span style="color:#79B8FF"> -avh</span><span style="color:#79B8FF"> --delete</span><span style="color:#9ECBFF"> ./</span><span style="color:#9ECBFF"> user@server:/var/www/site/</span></span></code></pre>
+<hr/>
+<h2 id="права-и-владельцы">Права и владельцы</h2>
+<p>Проверка:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -lah</span></span>
+<span class="line"><span style="color:#79B8FF">stat</span><span style="color:#9ECBFF"> index.php</span></span></code></pre>
+<p>Исправление владельца (BitrixVM):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">chown</span><span style="color:#79B8FF"> -R</span><span style="color:#9ECBFF"> bitrix:bitrix</span><span style="color:#9ECBFF"> /home/bitrix/ext_www/DOMAIN/public_html</span></span></code></pre>
+<p>Рекомендуемые права:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> d</span><span style="color:#79B8FF"> -exec</span><span style="color:#9ECBFF"> chmod</span><span style="color:#79B8FF"> 755</span><span style="color:#9ECBFF"> {}</span><span style="color:#79B8FF"> \;</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -exec</span><span style="color:#9ECBFF"> chmod</span><span style="color:#79B8FF"> 644</span><span style="color:#9ECBFF"> {}</span><span style="color:#79B8FF"> \;</span></span></code></pre>
+<hr/>
+<h2 id="итог">Итог</h2>
+<p>Команды Linux — это не “магия для администраторов”, а <strong>рабочий инструмент разработчика</strong>.</p>
+<p>Если уметь:</p>
+<ul>
+<li>искать файлы (<code>find</code>);</li>
+<li>искать текст (<code>grep</code>, <code>rg</code>);</li>
+<li>читать логи;</li>
+<li>контролировать дисковое пространство;</li>
+<li>аккуратно работать с правами;</li>
+</ul>
+<p>то сервер перестаёт быть источником хаоса и превращается в предсказуемую систему.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

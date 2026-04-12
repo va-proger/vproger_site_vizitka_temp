@@ -1,0 +1,375 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Как мигрировать с MySQL на PostgreSQL: типы, данные, проверка и типичные ошибки</title><meta name="description" content="Пошаговое решение миграции с MySQL на PostgreSQL: отличия типов, pgloader, правки схемы, проверка данных, EXPLAIN и типичные ошибки. Код и примеры Node, PHP, SQL."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> postgresql </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Как мигрировать с MySQL на PostgreSQL: типы, данные, проверка и типичные ошибки </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>5 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/postgresql-for-web-developers-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="как-мигрировать-с-mysql-на-postgresql-типы-данные-проверка-и-типичные-ошибки">Как мигрировать с MySQL на PostgreSQL: типы, данные, проверка и типичные ошибки</h1>
+<p>Веб-разработчики с опытом MySQL сталкиваются с миграцией на PostgreSQL, когда проект перерастает простой CRUD: нужны JSON-поля с индексами, аналитика, сложные выборки, отчёты. При переносе данных и схемы легко наступить на грабли — неправильные типы, отсутствие индексов, попытки писать под Postgres «как под MySQL». Ниже — пошаговое решение: отличия типов, миграция данных, проверка и типичные ошибки.</p>
+<hr/>
+<h2 id="в-чём-проблема">В чём проблема</h2>
+<p>При миграции с MySQL на PostgreSQL типичные симптомы: падения запросов из-за несовместимого синтаксиса, потери или искажения данных при конвертации типов, медленные выборки из-за отсутствия индексов на больших таблицах. Ошибки часто возникают уже на этапе переноса схемы и данных. В логах — ошибки вида <code>column &quot;id&quot; does not exist</code>, <code>syntax error at or near</code>, или долгий <code>Seq Scan</code> в <code>EXPLAIN</code>. Причина: отличия типов (AUTO_INCREMENT vs SERIAL, TINYINT(1) vs BOOLEAN, JSON vs JSONB), другая семантика строк и дат, а также незнание инструментов миграции и проверки.</p>
+<p><strong>Сравнение для выбора:</strong></p>
+<h3 id="postgresql-vs-mysql-когда-что-выбирать">PostgreSQL vs MySQL (когда что выбирать)</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Критерий</th><th>PostgreSQL</th><th>MySQL</th></tr></thead><tbody><tr><td>Типы данных</td><td>Богатые (JSONB, ARRAY, UUID)</td><td>Базовые</td></tr><tr><td>JSON</td><td>JSONB + индексы</td><td>JSON без индексов</td></tr><tr><td>Аналитика</td><td>Window Functions, CTE</td><td>Ограниченно</td></tr><tr><td>Расширяемость</td><td>EXTENSION</td><td>Почти нет</td></tr><tr><td>Лицензия</td><td>PostgreSQL License</td><td>GPL / коммерция</td></tr><tr><td>Full-text</td><td>Встроенный</td><td>Слабее</td></tr><tr><td>Когда выбирать</td><td>Сложные запросы, аналитика</td><td>Простой CRUD</td></tr></tbody></table>
+<p><strong>Коротко:</strong> CRUD-блог или простой сайт — часто достаточно MySQL; API, аналитика, JSON, отчёты — лучше PostgreSQL, чтобы не упираться в ограничения позже.</p>
+<hr/>
+<h2 id="рабочее-решение">Рабочее решение</h2>
+<h3 id="установка-postgresql">Установка PostgreSQL</h3>
+<h3 id="ubuntu--debian">Ubuntu / Debian</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> update</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> postgresql</span><span style="color:#9ECBFF"> postgresql-contrib</span></span></code></pre>
+<h3 id="centos--rocky-linux">CentOS / Rocky Linux</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> dnf</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> postgresql-server</span><span style="color:#9ECBFF"> postgresql-contrib</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> postgresql-setup</span><span style="color:#79B8FF"> --initdb</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#79B8FF"> --now</span><span style="color:#9ECBFF"> postgresql</span></span></code></pre>
+<h3 id="macos-homebrew">macOS (Homebrew)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> postgresql@16</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> services</span><span style="color:#9ECBFF"> start</span><span style="color:#9ECBFF"> postgresql@16</span></span></code></pre>
+<h3 id="windows-wsl2">Windows (WSL2)</h3>
+<ol>
+<li>Установи Ubuntu в WSL2</li>
+<li>Далее — как для Ubuntu</li>
+<li>Работай <strong>только внутри WSL</strong>, не из-под Windows.</li>
+</ol>
+<h3 id="первое-подключение">Первое подключение</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> postgres</span><span style="color:#9ECBFF"> psql</span></span></code></pre>
+<p><strong>Типичная ошибка:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>psql: FATAL: role &quot;user&quot; does not exist</span></span></code></pre>
+<p><strong>Решение:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> postgres</span><span style="color:#9ECBFF"> createuser</span><span style="color:#79B8FF"> --interactive</span></span></code></pre>
+<hr/>
+<h3 id="типы-данных-отличия-от-mysql">Типы данных: отличия от MySQL</h3>
+<h3 id="integer-serial-vs-auto_increment">INTEGER, SERIAL vs AUTO_INCREMENT</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> users</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  id </span><span style="color:#F97583">SERIAL</span><span style="color:#F97583"> PRIMARY KEY</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  email </span><span style="color:#F97583">TEXT</span><span style="color:#F97583"> NOT NULL</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><code>SERIAL</code> — это sugar над sequence. В PostgreSQL это нормально.</p>
+<h3 id="varchar-vs-text">VARCHAR vs TEXT</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">email </span><span style="color:#F97583">TEXT</span></span></code></pre>
+<p>В PostgreSQL <strong>нет разницы по производительности</strong> между ними. <code>TEXT</code> — твой друг.</p>
+<h3 id="boolean-vs-tinyint1">BOOLEAN vs TINYINT(1)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">is_active </span><span style="color:#F97583">BOOLEAN</span><span style="color:#F97583"> DEFAULT</span><span style="color:#E1E4E8"> true</span></span></code></pre>
+<p>Без <code>0/1</code>. Человечно.</p>
+<h3 id="jsonb">JSONB</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> products</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  id </span><span style="color:#F97583">SERIAL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  attrs JSONB</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> products</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> attrs @</span><span style="color:#F97583">&gt;</span><span style="color:#9ECBFF"> &#39;{&quot;color&quot;: &quot;red&quot;}&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>JSONB <strong>индексируется</strong> и реально работает. Подробно: <a href="/snippets/postgresql-jsonb-gin-index">снипет «JSONB и GIN-индекс»</a>.</p>
+<h3 id="array">ARRAY</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">tags </span><span style="color:#F97583">TEXT</span><span style="color:#E1E4E8">[];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> articles</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#9ECBFF"> &#39;postgres&#39;</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> ANY(tags);</span></span></code></pre>
+<p>Массивы прямо в БД — иногда очень удобно.</p>
+<h3 id="uuid">UUID</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#E1E4E8"> EXTENSION </span><span style="color:#F97583">IF</span><span style="color:#F97583"> NOT</span><span style="color:#F97583"> EXISTS</span><span style="color:#9ECBFF"> &quot;uuid-ossp&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> events</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  id UUID </span><span style="color:#F97583">DEFAULT</span><span style="color:#E1E4E8"> uuid_generate_v4() </span><span style="color:#F97583">PRIMARY KEY</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">  name</span><span style="color:#F97583"> TEXT</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="timestamptz-vs-timestamp">TIMESTAMPTZ vs TIMESTAMP</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">created_at </span><span style="color:#F97583">TIMESTAMPTZ</span><span style="color:#F97583"> DEFAULT</span><span style="color:#F97583"> now</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p><strong>Всегда используй TIMESTAMPTZ.</strong> Внутри хранится UTC, локаль выставляется на уровне приложения.</p>
+<hr/>
+<h3 id="фичи-postgresql-которых-нет-в-mysql">Фичи PostgreSQL, которых нет в MySQL</h3>
+<h3 id="window-functions">Window Functions</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span></span>
+<span class="line"><span style="color:#E1E4E8">  product_id,</span></span>
+<span class="line"><span style="color:#E1E4E8">  category_id,</span></span>
+<span class="line"><span style="color:#79B8FF">  RANK</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">OVER</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">PARTITION</span><span style="color:#F97583"> BY</span><span style="color:#E1E4E8"> category_id </span><span style="color:#F97583">ORDER BY</span><span style="color:#E1E4E8"> sales </span><span style="color:#F97583">DESC</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> products;</span></span></code></pre>
+<p>Без подзапросов и боли.</p>
+<h3 id="cte-with">CTE (WITH)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">WITH</span><span style="color:#E1E4E8"> paid_orders </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#F97583">  SELECT</span><span style="color:#F97583"> *</span><span style="color:#F97583"> FROM</span><span style="color:#E1E4E8"> orders </span><span style="color:#F97583">WHERE</span><span style="color:#F97583"> status</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &#39;paid&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#79B8FF"> COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> paid_orders;</span></span></code></pre>
+<p>Читаемо и удобно.</p>
+<h3 id="full-text-search">Full-Text Search</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> articles</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> to_tsvector(title </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> &#39; &#39;</span><span style="color:#F97583"> ||</span><span style="color:#E1E4E8"> body)</span></span>
+<span class="line"><span style="color:#E1E4E8">      @@ plainto_tsquery(</span><span style="color:#9ECBFF">&#39;postgres&#39;</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="listen--notify">LISTEN / NOTIFY</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">LISTEN order_created;</span></span>
+<span class="line"><span style="color:#E1E4E8">NOTIFY order_created, </span><span style="color:#9ECBFF">&#39;{&quot;id&quot;:123}&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>Простейшая очередь без Kafka.</p>
+<hr/>
+<h3 id="практические-примеры">Практические примеры</h3>
+<h3 id="пример-1-e-commerce">Пример 1: e-commerce</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span></span>
+<span class="line"><span style="color:#79B8FF">  o</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">id</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  SUM</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">oi</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">price</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> oi</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">qty</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> total</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> orders o</span></span>
+<span class="line"><span style="color:#F97583">JOIN</span><span style="color:#E1E4E8"> order_items oi </span><span style="color:#F97583">ON</span><span style="color:#79B8FF"> oi</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">order_id</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> o</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">id</span></span>
+<span class="line"><span style="color:#F97583">GROUP BY</span><span style="color:#79B8FF"> o</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">id</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<h3 id="пример-2-поиск--фильтр">Пример 2: поиск + фильтр</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> products</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> to_tsvector(</span><span style="color:#F97583">name</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">      @@ plainto_tsquery(</span><span style="color:#9ECBFF">&#39;iphone&#39;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">AND</span><span style="color:#E1E4E8"> price </span><span style="color:#F97583">&lt;</span><span style="color:#79B8FF"> 50000</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<h3 id="пример-3-json">Пример 3: JSON</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> products</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> attrs</span><span style="color:#F97583">-&gt;&gt;</span><span style="color:#9ECBFF">&#39;brand&#39;</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &#39;Apple&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<h3 id="пример-4-window-functions">Пример 4: Window Functions</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#F97583">  SELECT</span></span>
+<span class="line"><span style="color:#F97583">    *</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    ROW_NUMBER</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">OVER</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">PARTITION</span><span style="color:#F97583"> BY</span><span style="color:#E1E4E8"> category </span><span style="color:#F97583">ORDER BY</span><span style="color:#E1E4E8"> sales </span><span style="color:#F97583">DESC</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> rn</span></span>
+<span class="line"><span style="color:#F97583">  FROM</span><span style="color:#E1E4E8"> products</span></span>
+<span class="line"><span style="color:#E1E4E8">) t</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> rn </span><span style="color:#F97583">&lt;=</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<h3 id="пример-5-отчёт-по-продажам-за-период-cte">Пример 5: отчёт по продажам за период (CTE)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">WITH</span><span style="color:#E1E4E8"> daily_totals </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#F97583">  SELECT</span></span>
+<span class="line"><span style="color:#E1E4E8">    date_trunc(</span><span style="color:#9ECBFF">&#39;day&#39;</span><span style="color:#E1E4E8">, created_at) </span><span style="color:#F97583">AS</span><span style="color:#F97583"> day</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    SUM</span><span style="color:#E1E4E8">(total) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> revenue</span></span>
+<span class="line"><span style="color:#F97583">  FROM</span><span style="color:#E1E4E8"> orders</span></span>
+<span class="line"><span style="color:#F97583">  WHERE</span><span style="color:#F97583"> status</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &#39;paid&#39;</span></span>
+<span class="line"><span style="color:#F97583">    AND</span><span style="color:#E1E4E8"> created_at </span><span style="color:#F97583">&gt;=</span><span style="color:#F97583"> now</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> interval </span><span style="color:#9ECBFF">&#39;30 days&#39;</span></span>
+<span class="line"><span style="color:#F97583">  GROUP BY</span><span style="color:#E1E4E8"> date_trunc(</span><span style="color:#9ECBFF">&#39;day&#39;</span><span style="color:#E1E4E8">, created_at)</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span></span>
+<span class="line"><span style="color:#F97583">  day</span><span style="color:#E1E4E8">::</span><span style="color:#F97583">date</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  revenue,</span></span>
+<span class="line"><span style="color:#79B8FF">  SUM</span><span style="color:#E1E4E8">(revenue) </span><span style="color:#F97583">OVER</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">ORDER BY</span><span style="color:#F97583"> day</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> revenue_cumulative</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> daily_totals</span></span>
+<span class="line"><span style="color:#F97583">ORDER BY</span><span style="color:#F97583"> day</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<h3 id="пример-6-выборка-с-jsonb-и-агрегацией">Пример 6: выборка с JSONB и агрегацией</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#6A737D">-- Товары с атрибутом «цвет» и средняя цена по бренду</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span></span>
+<span class="line"><span style="color:#E1E4E8">  attrs</span><span style="color:#F97583">-&gt;&gt;</span><span style="color:#9ECBFF">&#39;brand&#39;</span><span style="color:#F97583"> AS</span><span style="color:#E1E4E8"> brand,</span></span>
+<span class="line"><span style="color:#79B8FF">  COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> cnt,</span></span>
+<span class="line"><span style="color:#79B8FF">  ROUND</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">AVG</span><span style="color:#E1E4E8">((attrs</span><span style="color:#F97583">-&gt;&gt;</span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8">)::</span><span style="color:#F97583">numeric</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> avg_price</span></span>
+<span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> products</span></span>
+<span class="line"><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> attrs ? </span><span style="color:#9ECBFF">&#39;color&#39;</span></span>
+<span class="line"><span style="color:#F97583">GROUP BY</span><span style="color:#E1E4E8"> attrs</span><span style="color:#F97583">-&gt;&gt;</span><span style="color:#9ECBFF">&#39;brand&#39;</span></span>
+<span class="line"><span style="color:#F97583">HAVING</span><span style="color:#79B8FF"> COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&gt;</span><span style="color:#79B8FF"> 5</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<hr/>
+<h3 id="миграция-с-mysql-на-postgresql">Миграция с MySQL на PostgreSQL</h3>
+<h3 id="подготовка">Подготовка</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">mysqldump</span><span style="color:#9ECBFF"> db</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> dump.sql</span></span></code></pre>
+<h3 id="основные-правки-схемы">Основные правки схемы</h3>
+<ul>
+<li><code>AUTO_INCREMENT</code> → <code>SERIAL</code></li>
+<li><code>VARCHAR(255)</code> → <code>TEXT</code></li>
+<li><code>TINYINT(1)</code> → <code>BOOLEAN</code></li>
+</ul>
+<h3 id="способ-а-pgloader-рекомендую">Способ А: pgloader (рекомендую)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pgloader</span><span style="color:#9ECBFF"> mysql://user:pass@localhost/db</span><span style="color:#9ECBFF"> postgresql://user:pass@localhost/db</span></span></code></pre>
+<p>Подходит для <strong>больших баз</strong>.</p>
+<h3 id="способ-б-sql-конвертер">Способ Б: SQL-конвертер</h3>
+<p>Работает, но требует ручной доработки.</p>
+<h3 id="проверка-данных">Проверка данных</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#79B8FF"> COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> users;</span></span></code></pre>
+<h3 id="миграция-схемы-в-laravel-postgresql">Миграция схемы в Laravel (PostgreSQL)</h3>
+<p>После переноса данных приложение должно создавать таблицы под Postgres. Пример миграции:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// database/migrations/xxxx_create_products_table.php</span></span>
+<span class="line"><span style="color:#79B8FF">Schema</span><span style="color:#F97583">::</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;products&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">Blueprint</span><span style="color:#E1E4E8"> $table) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">id</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">jsonb</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;attrs&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">nullable</span><span style="color:#E1E4E8">();  </span><span style="color:#6A737D">// не json(), а jsonb()</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">boolean</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;is_active&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">default</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    $table</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">timestamps</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"><span style="color:#6A737D">// Индекс по JSONB для поиска</span></span>
+<span class="line"><span style="color:#79B8FF">DB</span><span style="color:#F97583">::</span><span style="color:#B392F0">statement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;</span><span style="color:#F97583">CREATE</span><span style="color:#F97583"> INDEX</span><span style="color:#9ECBFF"> idx_products_attrs_gin </span><span style="color:#F97583">ON</span><span style="color:#9ECBFF"> products </span><span style="color:#F97583">USING</span><span style="color:#9ECBFF"> GIN (attrs)&#39;</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="откат">Откат</h3>
+<p>Всегда держи MySQL <strong>read-only</strong>, пока не проверил всё.</p>
+<hr/>
+<h3 id="orm-и-клиенты">ORM и клиенты</h3>
+<h3 id="nodejs-pg--нативный-клиент">Node.js (pg — нативный клиент)</h3>
+<p>Готовый снипет с Pool и параметризованными запросами: <a href="/snippets/postgresql-node-pg-query">PostgreSQL: Node.js (pg) — Pool и запросы</a>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">Pool</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;pg&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> pool</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Pool</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  host: </span><span style="color:#9ECBFF">&#39;localhost&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  database: </span><span style="color:#9ECBFF">&#39;myapp&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  user: </span><span style="color:#9ECBFF">&#39;app_user&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  password: process.env.</span><span style="color:#79B8FF">DB_PASSWORD</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Параметризованный запрос (защита от SQL-инъекций)</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> res</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> pool.</span><span style="color:#B392F0">query</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">  &#39;SELECT * FROM users WHERE id = $1&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  [userId]</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// JSONB-поле</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> products</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> pool.</span><span style="color:#B392F0">query</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">  `SELECT * FROM products WHERE attrs @&gt; $1`</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  [</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ color: </span><span style="color:#9ECBFF">&#39;red&#39;</span><span style="color:#E1E4E8"> })]</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><strong>Prisma</strong> (схема под PostgreSQL):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="prisma"><code><span class="line"><span style="color:#F97583">generator</span><span style="color:#B392F0"> client</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  provider </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;prisma-client-js&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">datasource</span><span style="color:#B392F0"> db</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  provider </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;postgresql&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">  url      </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;DATABASE_URL&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">model</span><span style="color:#B392F0"> User</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  id    </span><span style="color:#79B8FF">Int</span><span style="color:#B392F0">    @id</span><span style="color:#B392F0"> @default</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">autoincrement</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">  email </span><span style="color:#79B8FF">String</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>TypeORM</strong> — аналогично, в <code>ormconfig</code> укажи <code>type: &#39;postgres&#39;</code>.</p>
+<h3 id="python-psycopg2">Python (psycopg2)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> psycopg2</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> psycopg2.extras </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> RealDictCursor</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">conn </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> psycopg2.connect(</span></span>
+<span class="line"><span style="color:#FFAB70">    host</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;localhost&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">dbname</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;myapp&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">    user</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;app_user&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">password</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;secret&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">with</span><span style="color:#E1E4E8"> conn.cursor(</span><span style="color:#FFAB70">cursor_factory</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">RealDictCursor) </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> cur:</span></span>
+<span class="line"><span style="color:#E1E4E8">    cur.execute(</span></span>
+<span class="line"><span style="color:#9ECBFF">        &quot;SELECT * FROM orders WHERE created_at &gt; </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        (datetime.now() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> timedelta(</span><span style="color:#FFAB70">days</span><span style="color:#F97583">=</span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">),)</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"><span style="color:#E1E4E8">    rows </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> cur.fetchall()</span></span></code></pre>
+<h3 id="php">PHP</h3>
+<ul>
+<li><strong>Doctrine</strong> — <code>driver: pdo_pgsql</code>, типы как в документации.</li>
+<li><strong>Laravel Eloquent</strong> — в <code>.env</code> ставишь <code>DB_CONNECTION=pgsql</code>, миграции те же, для JSONB используй <code>$table-&gt;jsonb(&#39;attrs&#39;)</code>.</li>
+</ul>
+<h3 id="orm-vs-raw-sql">ORM vs raw SQL</h3>
+<ul>
+<li>CRUD → ORM</li>
+<li>отчёты, аналитика → <strong>сырой SQL</strong></li>
+</ul>
+<hr/>
+<h3 id="explain-analyze">EXPLAIN ANALYZE</h3>
+<p>Перед тем как оптимизировать — замерь. Пошаговый снипет: <a href="/snippets/postgresql-explain-analyze">EXPLAIN ANALYZE — как найти медленный запрос</a>. Запрос:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">EXPLAIN (ANALYZE, BUFFERS)</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span><span style="color:#F97583"> FROM</span><span style="color:#E1E4E8"> orders </span><span style="color:#F97583">WHERE</span><span style="color:#E1E4E8"> created_at </span><span style="color:#F97583">&gt;</span><span style="color:#F97583"> now</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> interval </span><span style="color:#9ECBFF">&#39;7 days&#39;</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>Пример вывода <strong>без индекса</strong> (плохо):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>Seq Scan on orders  (cost=0.00..1234.00 rows=5000 width=80) (actual time=0.05..89.22 rows=4823 loops=1)</span></span>
+<span class="line"><span>  Filter: (created_at &gt; (now() - &#39;7 days&#39;::interval))</span></span>
+<span class="line"><span>  Rows Removed by Filter: 95177</span></span>
+<span class="line"><span>Planning Time: 0.12 ms</span></span>
+<span class="line"><span>Execution Time: 91.45 ms</span></span></code></pre>
+<p><strong>Seq Scan</strong> по всей таблице, отфильтровано 95k строк — дорого.</p>
+<p>После создания индекса <code>CREATE INDEX idx_orders_created_at ON orders(created_at);</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>Index Scan using idx_orders_created_at on orders  (cost=0.42..312.18 rows=5000 width=80) (actual time=0.03..8.11 rows=4823 loops=1)</span></span>
+<span class="line"><span>  Index Cond: (created_at &gt; (now() - &#39;7 days&#39;::interval))</span></span>
+<span class="line"><span>Planning Time: 0.08 ms</span></span>
+<span class="line"><span>Execution Time: 9.02 ms</span></span></code></pre>
+<p><strong>Index Scan</strong> — в разы быстрее. Ориентируйся на:</p>
+<ul>
+<li><strong>Seq Scan</strong> на больших таблицах — кандидат на индекс.</li>
+<li><strong>Index Scan</strong> / <strong>Index Only Scan</strong> — хорошо.</li>
+<li>Если <strong>rows</strong> в плане сильно отличается от <strong>actual rows</strong> — обнови статистику: <code>ANALYZE orders;</code>.</li>
+</ul>
+<hr/>
+<h3 id="резервные-копии">Резервные копии</h3>
+<p>Готовые команды и варианты форматов: <a href="/snippets/postgresql-pg-dump-restore">снипет «pg_dump и pg_restore»</a>.</p>
+<h3 id="pg_dump">pg_dump</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pg_dump</span><span style="color:#9ECBFF"> db</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> backup.sql</span></span>
+<span class="line"><span style="color:#B392F0">pg_dump</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> db</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> schema.sql</span></span></code></pre>
+<h3 id="pg_restore">pg_restore</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pg_restore</span><span style="color:#79B8FF"> -d</span><span style="color:#9ECBFF"> db</span><span style="color:#9ECBFF"> backup.dump</span></span></code></pre>
+<h3 id="cron">Cron</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">0</span><span style="color:#79B8FF"> 3</span><span style="color:#79B8FF"> *</span><span style="color:#79B8FF"> *</span><span style="color:#79B8FF"> *</span><span style="color:#9ECBFF"> pg_dump</span><span style="color:#9ECBFF"> db</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> gzip</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> /backup/db.sql.gz</span></span></code></pre>
+<h3 id="s3-пример">S3 (пример)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">aws</span><span style="color:#9ECBFF"> s3</span><span style="color:#9ECBFF"> cp</span><span style="color:#9ECBFF"> backup.sql.gz</span><span style="color:#9ECBFF"> s3://my-backups/</span></span></code></pre>
+<hr/>
+<h3 id="мониторинг-и-оптимизация">Мониторинг и оптимизация</h3>
+<h3 id="логи-медленных-запросов">Логи медленных запросов</h3>
+<p>В <code>postgresql.conf</code> или через <code>ALTER SYSTEM</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">ALTER</span><span style="color:#F97583"> SYSTEM</span><span style="color:#F97583"> SET</span><span style="color:#E1E4E8"> log_min_duration_statement </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 500</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">-- логировать запросы дольше 500 ms</span></span></code></pre>
+<h3 id="индексы">Индексы</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> INDEX</span><span style="color:#B392F0"> idx_orders_created_at</span><span style="color:#F97583"> ON</span><span style="color:#E1E4E8"> orders(created_at);</span></span></code></pre>
+<p><strong>Нет индекса на <code>created_at</code> в большой таблице = боль.</strong></p>
+<h3 id="vacuum">VACUUM</h3>
+<p>PostgreSQL не чистит всё за тебя идеально. Важен автовакуум и периодический <code>ANALYZE</code>.</p>
+<h3 id="размеры">Размеры</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#E1E4E8"> pg_database_size(</span><span style="color:#9ECBFF">&#39;db&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#E1E4E8"> pg_table_size(</span><span style="color:#9ECBFF">&#39;orders&#39;</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr/>
+<h2 id="проверка-результата">Проверка результата</h2>
+<p><strong>После миграции данных</strong> — убедись, что строки на месте и типы корректны:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">SELECT</span><span style="color:#79B8FF"> COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> users;</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#79B8FF"> COUNT</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> orders;</span></span></code></pre>
+<p>Сравни с количеством строк в MySQL. Выборочно проверь даты и JSON-поля: <code>SELECT id, created_at, attrs FROM products LIMIT 5;</code>.</p>
+<p><strong>Медленные запросы</strong> — используй <code>EXPLAIN (ANALYZE, BUFFERS)</code> (см. раздел выше). Ориентируйся на: <code>Seq Scan</code> на больших таблицах — кандидат на индекс; <code>Index Scan</code> / <code>Index Only Scan</code> — норма. Если план сильно расходится с фактом по <code>rows</code> — выполни <code>ANALYZE table_name;</code>.</p>
+<p><strong>Резервная копия перед продакшен-переключением</strong> — убедись, что <code>pg_dump</code> и <code>pg_restore</code> проходят без ошибок на тестовой копии БД. Держи MySQL в read-only до полной проверки приложения на Postgres.</p>
+<hr/>
+<h2 id="типичные-ошибки">Типичные ошибки</h2>
+<h3 id="забыли-commit-или-долго-держим-транзакцию-открытой">Забыли COMMIT или долго держим транзакцию открытой</h3>
+<p><strong>Симптом:</strong> блокировки, другие сессии ждут, при падении приложения откат большого объёма. <strong>Причина:</strong> в PostgreSQL транзакция живёт до явного <code>COMMIT</code>/<code>ROLLBACK</code>. <strong>Как исправить:</strong> делай короткие транзакции, не держи соединение открытым на время логики приложения, в коде явно коммить или откатывать.</p>
+<h3 id="сортировка-и-фильтрация-по-полям-без-индекса">Сортировка и фильтрация по полям без индекса</h3>
+<p><strong>Симптом:</strong> в <code>EXPLAIN</code> — <code>Seq Scan</code>, запрос выполняется сотни миллисекунд на больших таблицах. <strong>Причина:</strong> нет индекса по колонкам в <code>WHERE</code>, <code>ORDER BY</code>, <code>GROUP BY</code>. <strong>Как исправить:</strong> добавь индекс под частые запросы, например <code>CREATE INDEX idx_orders_created_at ON orders(created_at);</code>, затем <code>ANALYZE orders;</code>.</p>
+<h3 id="truncate--cascade-без-понимания-последствий">TRUNCATE … CASCADE без понимания последствий</h3>
+<p><strong>Симптом:</strong> удалились данные из связанных таблиц, на которые не рассчитывал. <strong>Причина:</strong> <code>TRUNCATE ... CASCADE</code> сносит данные в дочерних таблицах по FK. <strong>Как исправить:</strong> перед запуском проверь зависимости, используй <code>TRUNCATE ... RESTART IDENTITY CASCADE</code> только когда уверен в списке таблиц; для выборочной очистки — <code>DELETE</code> с условием.</p>
+<h3 id="дедлоки-при-конкурентных-транзакциях">Дедлоки при конкурентных транзакциях</h3>
+<p><strong>Симптом:</strong> ошибка <code>deadlock detected</code>. <strong>Причина:</strong> две и более транзакции блокируют ресурсы в разном порядке. <strong>Как исправить:</strong> повторяй запрос при получении ошибки дедлока (retry в коде), упорядочивай блокировки (например, всегда обновляй строки в одном порядке по id).</p>
+<h3 id="json-вместо-нормальной-таблицы-для-структурированных-данных">JSON вместо нормальной таблицы для структурированных данных</h3>
+<p><strong>Симптом:</strong> сложные запросы по полям внутри JSON, медленные выборки. <strong>Причина:</strong> данные, которые по смыслу сущности (поля, связи), запихнуты в одно JSON-поле. <strong>Как исправить:</strong> вынеси стабильные поля в отдельные колонки с индексами; JSONB оставь для действительно гибких атрибутов.</p>
+<hr/>
+<h2 id="где-применять">Где применять</h2>
+<ul>
+<li><strong>Миграция с MySQL на PostgreSQL</strong> — когда проект перерастает CRUD, нужны JSON с индексами, аналитика, сложные запросы.</li>
+<li><strong>Новый веб-проект (API, отчёты, очереди)</strong> — выбор Postgres с самого начала избавляет от миграции потом.</li>
+<li><strong>Production</strong> — после переноса данных проверь счётчики, выполни <code>ANALYZE</code>, настрой бэкапы и мониторинг медленных запросов.</li>
+</ul>
+<p>PostgreSQL даёт больше возможностей при сложных выборках и аналитике; главное — не писать под него как под MySQL: учитывай отличия типов, транзакций и индексов с самого начала миграции.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

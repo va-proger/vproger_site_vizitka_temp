@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Astro vs React/Vue и SSG: когда Astro — перебор, а когда спасение</title><meta name="description" content="Практический разбор выбора между Astro, React/Vue и SSG: когда нужен максимальный SEO и скорость, а когда лучше Next/Nuxt. Trade-offs, риски и чек-лист под типы проектов."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> astro </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Astro vs React/Vue и SSG: когда Astro — перебор, а когда спасение </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>1 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/astro-vs-react-vue-ssg-when-astro-overkill-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="astro-vs-reactvue-и-ssg-когда-astro--перебор">Astro vs React/Vue и SSG: когда Astro — перебор</h1>
+<p>Выбор стека для фронта в 2026 году часто выглядит так: либо «берём Next/Nuxt и едем», либо «делаем всё на чистом SSG», либо «Astro, потому что islands». А потом выясняется, что проекту нужна не «идеальная архитектура», а <strong>быстрое время до релиза</strong>, понятное сопровождение и предсказуемая стоимость изменений.</p>
+<p>Ниже — практичная аналитика: <strong>когда Astro реально даёт выигрыш</strong>, а когда это лишний слой, который вы будете объяснять следующему разработчику по понедельникам.</p>
+<blockquote>
+<p>Для контекста: часть мыслей пересекается с моими разборками по Astro и SEO в серии статей — можно начать с этих материалов:
+<a href="https://viku-lov.ru/blog/astro-blog-setup-mdx-content-collections">Astro: структура, MDX, Content Collections</a>, <a href="https://viku-lov.ru/blog/astro-seo-sitemap-rss-setup">SEO, sitemap, RSS</a>.</p>
+</blockquote>
+<hr/>
+<h2 id="карта-местности-что-мы-вообще-сравниваем">Карта местности: что мы вообще сравниваем</h2>
+<h3 id="ssg-простая-статика">SSG (простая статика)</h3>
+<p><strong>Hugo / Eleventy / Jekyll / чистый Astro без интерактива / любой генератор</strong></p>
+<ul>
+<li>Генерируем HTML на этапе сборки.</li>
+<li>Деплой — CDN или статический хостинг.</li>
+<li>Клиентского JS — минимум.</li>
+</ul>
+<p>Пример страницы в чистом Astro (без островков — только HTML):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/about.astro — обычная статическая страница</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">html</span><span style="color:#B392F0"> lang</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;ru&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;О проекте&lt;/</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;О проекте&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Контент отрендерится в HTML при сборке. Никакого клиентского JS.&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="astro-content-first--islands">Astro (content-first + islands)</h3>
+<ul>
+<li>По умолчанию генерирует HTML как SSG.</li>
+<li>Интерактив — <strong>точечно</strong>, через islands (React/Vue/Svelte/Solid — что нравится).</li>
+<li>Главная идея: <em>«JS только там, где он реально нужен»</em>.</li>
+</ul>
+<p>Минимальный пример страницы с одним островком:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/docs.astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Counter </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../components/Counter.tsx&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">Layout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Документация&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Весь текст — статический HTML. Кнопка ниже — островок React.&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#79B8FF">Counter</span><span style="color:#B392F0"> client:load</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">Layout</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="nextjs--nuxt-app-first">Next.js / Nuxt (app-first)</h3>
+<ul>
+<li>SSR/SSG/ISR/Server Actions/edge — целая платформа.</li>
+<li>Отлично для <strong>приложений</strong> и сложной интерактивности.</li>
+<li>Цена: больше runtime-сложности и больше «магии фреймворка».</li>
+</ul>
+<hr/>
+<h2 id="когда-astro-реально-выигрывает">Когда Astro реально выигрывает</h2>
+<h3 id="1-статика-с-островками--его-родная-среда">1) «Статика с островками» — его родная среда</h3>
+<p>Если 80–95% контента — это <strong>читаемый HTML</strong>: статьи, лендинги, справка, документация, каталог с карточками, страницы услуг — Astro почти всегда уместен.</p>
+<p><strong>Почему получается быстрее:</strong></p>
+<ul>
+<li>меньше клиентского JS → меньше времени на parse/compile/execute в браузере;</li>
+<li>проще попасть в хорошие метрики (LCP, INP, CLS) без героизма;</li>
+<li>SEO «естественное»: контент уже в HTML.</li>
+</ul>
+<h3 id="2-seo-важно-а-редакторский-контент--основной-актив">2) SEO важно, а редакторский контент — основной актив</h3>
+<p>Если проект живёт на поисковом трафике, Astro помогает не мешать самому себе:</p>
+<ul>
+<li>меньше «гидратационной лапши»;</li>
+<li>меньше случайных регрессий производительности;</li>
+<li>проще держать дисциплину: <em>интерактив только по факту необходимости</em>.</li>
+</ul>
+<h3 id="3-нужно-подмешать-ui-виджеты-без-превращения-в-spa">3) Нужно «подмешать» UI-виджеты без превращения в SPA</h3>
+<p>Типовой кейс: маркетинг-сайт + калькулятор + форма + фильтры + мини-галерея.</p>
+<p>Astro позволяет не тащить весь SPA-рантайм на каждую страницу.</p>
+<p>Пример: виджет на React только там, где нужен:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/pricing.astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> PricingCalc </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../components/PricingCalc.tsx&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">section</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h2</span><span style="color:#E1E4E8">&gt;Калькулятор стоимости&lt;/</span><span style="color:#85E89D">h2</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  &lt;!-- Гидратация только по событию --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#79B8FF">PricingCalc</span><span style="color:#B392F0"> client:visible</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">section</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="4-команде-важна-простая-статика-но-хочется-современного-dx">4) Команде важна «простая статика», но хочется современного DX</h3>
+<p>Astro обычно проще «вкатить» в контент-команду, чем Next/Nuxt, если:</p>
+<ul>
+<li>много MDX/контент-коллекций;</li>
+<li>нужен быстрый билд и простой деплой;</li>
+<li>интерактив ограничен и управляем.</li>
+</ul>
+<hr/>
+<h2 id="когда-astro--перебор-и-лучше-взять-nextnuxt-или-spa">Когда Astro — перебор (и лучше взять Next/Nuxt или SPA)</h2>
+<h3 id="1-проект--это-приложение-а-не-сайт">1) Проект — это приложение, а не сайт</h3>
+<p>Если у вас:</p>
+<ul>
+<li>авторизация на каждой странице,</li>
+<li>реальные кабинеты,</li>
+<li>real-time (чаты, live-дашборды),</li>
+<li>много состояния, ролей, сложных форм,</li>
+<li>«почти всё интерактивное»</li>
+</ul>
+<p>…то Astro будет выглядеть как <strong>обходные манёвры</strong>: островков станет много, и вы придёте к «SPA, только хуже» (потому что SPA уже решает эти задачи системно).</p>
+<p><strong>Здесь честнее: Next.js или Nuxt.</strong></p>
+<h3 id="2-нужны-сильные-app-фичи-из-коробки">2) Нужны сильные app-фичи «из коробки»</h3>
+<p>Например:</p>
+<ul>
+<li>продуманная модель роутинга + middleware;</li>
+<li>серверные действия/мутации + кэш/инвалидация;</li>
+<li>встроенная story про auth, data fetching, edge, streaming;</li>
+<li>зрелая экосистема «всё готово».</li>
+</ul>
+<p>Astro может, но чаще через сборку: отдельно API, отдельно auth, отдельно SSR-слои, отдельно кэш. Это нормально, если вы DevOps-злые. Но если задача — быстро собрать продукт, Next/Nuxt экономят время.</p>
+<h3 id="3-команде-важен-единый-фреймворк-контракт-меньше-решений">3) Команде важен единый «фреймворк-контракт», меньше решений</h3>
+<p>Astro даёт свободу: <em>«выбирай сам»</em>.
+Свобода в продакшене — это иногда <strong>долг</strong>: больше вариантов, больше разнобоя, больше «а почему тут так, а тут иначе».</p>
+<p>Если команда большая/разнородная — платформенные фреймворки часто проще стандартизировать.</p>
+<hr/>
+<h2 id="trade-offs-по-честному">Trade-offs по-честному</h2>
+<h3 id="1-сложность">1) Сложность</h3>
+<ul>
+<li><strong>SSG</strong>: минимальная сложность, но меньше интерактива и гибкости.</li>
+<li><strong>Astro</strong>: средняя сложность (сборка + islands + контент), но контроль над JS.</li>
+<li><strong>Next/Nuxt</strong>: высокая сложность, зато много готовых решений для app-кейсов.</li>
+</ul>
+<h3 id="2-экосистема-и-готовые-ответы">2) Экосистема и «готовые ответы»</h3>
+<ul>
+<li><strong>Next/Nuxt</strong> выигрывают по количеству «копипаст-решений» (auth, caching, patterns).</li>
+<li><strong>Astro</strong> выигрывает, если вы строите content-first продукт: меньше лишнего.</li>
+</ul>
+<h3 id="3-время-разработки-ttm">3) Время разработки (TTM)</h3>
+<ul>
+<li>Если сайт контентный: <strong>Astro часто быстрее</strong>, потому что проще держать скорость и SEO.</li>
+<li>Если приложение интерактивное: <strong>Next/Nuxt быстрее</strong>, потому что не нужно изобретать платформу вокруг.</li>
+</ul>
+<h3 id="4-масштабирование-scaling">4) Масштабирование (scaling)</h3>
+<p>Тут важное уточнение: «скейл» бывает разный.</p>
+<p><strong>Скейл по трафику (CDN, статика):</strong> SSG/Astro — отлично.
+<strong>Скейл по фичам приложения:</strong> Next/Nuxt — чаще предсказуемее.
+<strong>Скейл команды:</strong> чем больше «правил и контрактов», тем меньше хаоса. Тут Next/Nuxt часто проще.</p>
+<hr/>
+<h2 id="практическое-правило-8020-сколько-у-вас-интерактива">Практическое правило 80/20: «сколько у вас интерактива?»</h2>
+<p>Вот быстрый тест:</p>
+<ul>
+<li>Если <strong>&gt;70% страниц</strong> — читаемый контент (текст/карточки/лендинги), интерактив точечный → <strong>Astro/SSG</strong>.</li>
+<li>Если <strong>&gt;70% экранов</strong> — интерактивные формы, состояние, кабинет, real-time → <strong>Next/Nuxt</strong>.</li>
+<li>Если «пополам» → обычно решает: <em>SEO-важность + команда + сроки</em>.</li>
+</ul>
+<hr/>
+<h2 id="чек-лист-какой-стек-выбрать-для">Чек-лист: какой стек выбрать для…</h2>
+<h3 id="блог--документация--контент-портал">Блог / документация / контент-портал</h3>
+<p><strong>Выбор:</strong> SSG или Astro</p>
+<ul>
+<li>Astro — если нужны islands (поиск, фильтры, виджеты, комменты).</li>
+<li>Чистый SSG — если интерактива почти нет.</li>
+</ul>
+<h3 id="маркетинг-сайт--лендинги--сайт-услуг">Маркетинг-сайт / лендинги / сайт услуг</h3>
+<p><strong>Выбор:</strong> Astro (или SSG)</p>
+<ul>
+<li>минимальный JS, высокая скорость, простой деплой.</li>
+<li>если нужны A/B, формы, аналитика — всё влезет островками.</li>
+</ul>
+<h3 id="каталог-товаров-без-тяжёлого-кабинета">Каталог товаров (без тяжёлого кабинета)</h3>
+<p><strong>Выбор:</strong> Astro + islands или Next/Nuxt (по ситуации)</p>
+<ul>
+<li>если каталог в основном читаемый + фильтры → Astro.</li>
+<li>если личный кабинет, история заказов, персонализация повсюду → Next/Nuxt.</li>
+</ul>
+<h3 id="spa-продукт--личный-кабинет--админка">SPA-продукт / личный кабинет / админка</h3>
+<p><strong>Выбор:</strong> React/Vue SPA <strong>или</strong> Next/Nuxt</p>
+<ul>
+<li>«админка внутри компании» часто быстрее как SPA (Vite + React/Vue) + API.</li>
+<li>если нужна SSR-история, deep-linking, сложная платформа → Next/Nuxt.</li>
+</ul>
+<h3 id="real-time-дашборды--чаты--тяжёлый-ui">Real-time дашборды / чаты / тяжёлый UI</h3>
+<p><strong>Выбор:</strong> Next/Nuxt или SPA
+Astro здесь почти всегда будет «не туда»: островки размножатся и вы сами себе поставите ловушку.</p>
+<hr/>
+<h2 id="мини-матрица-решений-быстро-в-табличку">Мини-матрица решений (быстро в табличку)</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Задача / критерий</th><th style="text-align:right">SSG</th><th style="text-align:right">Astro</th><th style="text-align:right">Next/Nuxt</th></tr></thead><tbody><tr><td>Максимальная скорость «по умолчанию»</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅</td></tr><tr><td>SEO из коробки</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅✅</td></tr><tr><td>Сложный интерактив повсюду</td><td style="text-align:right">❌</td><td style="text-align:right">⚠️</td><td style="text-align:right">✅✅✅</td></tr><tr><td>Быстрый старт контентного проекта</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅</td></tr><tr><td>Быстрый старт приложения</td><td style="text-align:right">⚠️</td><td style="text-align:right">⚠️</td><td style="text-align:right">✅✅✅</td></tr><tr><td>Контроль над клиентским JS</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅✅✅</td><td style="text-align:right">✅ (нужно следить)</td></tr><tr><td>«Один фреймворк решает всё»</td><td style="text-align:right">❌</td><td style="text-align:right">⚠️</td><td style="text-align:right">✅✅✅</td></tr></tbody></table>
+<hr/>
+<h2 id="примеры-как-выглядит-подход-в-коде">Примеры «как выглядит подход» (в коде)</h2>
+<h3 id="1-astro-интерактив-только-там-где-нужно">1) Astro: интерактив только там, где нужно</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> SearchWidget </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../components/SearchWidget.vue&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;База знаний&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;90% страницы — контент. Поиск — островок.&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">SearchWidget</span><span style="color:#B392F0"> client:idle</span><span style="color:#E1E4E8"> /&gt;</span></span></code></pre>
+<h3 id="2-nextnuxt-приложение-где-данные-и-мутации--повсюду">2) Next/Nuxt: приложение, где данные и мутации — повсюду</h3>
+<p>Псевдокод логики «app-first» (смысл — в постоянном data flow):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="tsx"><code><span class="line"><span style="color:#6A737D">// app/profile/page.tsx — серверный компонент по умолчанию</span></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> ProfilePage</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> session</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> getServerSession</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> user</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> db.user.</span><span style="color:#B392F0">findUnique</span><span style="color:#E1E4E8">({ where: { id: session.userId } });</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Профиль&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#79B8FF">ProfileForm</span><span style="color:#B392F0"> user</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{user} /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// app/actions/profile.ts — Server Action</span></span>
+<span class="line"><span style="color:#9ECBFF">&quot;use server&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> updateProfile</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">data</span><span style="color:#F97583">:</span><span style="color:#B392F0"> ProfilePayload</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  await</span><span style="color:#E1E4E8"> db.user.</span><span style="color:#B392F0">update</span><span style="color:#E1E4E8">({ where: { id: data.userId }, data });</span></span>
+<span class="line"><span style="color:#B392F0">  revalidatePath</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;/profile&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Клиентский компонент <code>ProfileForm</code> вызывает <code>updateProfile</code> — кэш, инвалидация, права уже «встроены» в платформу.</p>
+<h3 id="3-spa-vite-админка-без-лишней-платформы">3) SPA (Vite): админка без лишней платформы</h3>
+<p>Если это «внутренняя панель», где SEO не важно — часто идеально:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// vite + react/vue: максимум контроля, минимум лишнего</span></span>
+<span class="line"><span style="color:#6A737D">// роутинг, стор, запросы — ровно то, что нужно проекту</span></span></code></pre>
+<p>(Да, это выглядит скучно. Скучный прод — это комплимент.)</p>
+<h3 id="4-директивы-гидратации-astro-когда-подключать-js">4) Директивы гидратации Astro: когда подключать JS</h3>
+<p>На практике важно не размножать островки. Кратко по директивам:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Директива</th><th>Когда использовать</th></tr></thead><tbody><tr><td><code>client:load</code></td><td>Сразу при загрузке страницы (критичный интерактив).</td></tr><tr><td><code>client:idle</code></td><td>После <code>requestIdleCallback</code> — когда браузер свободен.</td></tr><tr><td><code>client:visible</code></td><td>Когда компонент попал в viewport (например, калькулятор ниже первого экрана).</td></tr><tr><td><code>client:media</code></td><td>По медиа-запросу (виджет только на десктопе и т.п.).</td></tr></tbody></table>
+<p>Пример: форма в футере не должна тянуть JS до скролла — используйте <code>client:visible</code>.</p>
+<hr/>
+<h2 id="gap-в-контент-поле-чего-не-хватает-в-обсуждении-astronextnuxt">«Gap в контент-поле»: чего не хватает в обсуждении Astro/Next/Nuxt</h2>
+<p>Почти весь контент про выбор стека — это либо:</p>
+<ul>
+<li>фанатские баталии,</li>
+<li>либо сравнение бенчмарков в вакууме.</li>
+</ul>
+<p>А реальный gap — вот он:</p>
+<ol>
+<li><strong>Стоимость изменений через 6 месяцев</strong> (а не скорость первого релиза).</li>
+<li><strong>Дисциплина клиентского JS</strong> (кто реально будет следить, чтобы «островки не размножались»?).</li>
+<li><strong>Кадровая реальность</strong>: кого проще нанять/заменить под ваш стек.</li>
+<li><strong>Платформенные зависимости</strong>: где будет жить runtime, как дебажить прод, как катать деплои.</li>
+</ol>
+<p>Если ответов нет — выбор «самого модного» фреймворка превращается в лотерею с красивым README.</p>
+<hr/>
+<h2 id="итог-быстрый-выбор-без-философии">Итог: быстрый выбор без философии</h2>
+<ul>
+<li><strong>Контент + SEO + скорость + немного интерактива</strong> → Astro (или SSG).</li>
+<li><strong>Приложение, кабинеты, real-time, сложная логика</strong> → Next.js / Nuxt.</li>
+<li><strong>Внутренняя админка без SEO</strong> → SPA на Vite (React/Vue) + нормальный API.</li>
+</ul>
+<hr/>
+<h3 id="связанные-сниппеты">Связанные сниппеты</h3>
+<ul>
+<li><a href="/snippets/static-page-minimal-html">Astro: минимальная статическая страница без клиентского JS</a></li>
+<li><a href="/snippets/island-client-load-react">Astro: островок React с client:load</a></li>
+<li><a href="/snippets/island-client-visible-widget">Astro: островок с client:visible — гидратация при появлении в viewport</a></li>
+<li><a href="/snippets/output-static-default">Astro: output static — статическая сборка по умолчанию</a></li>
+</ul> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Astro 2025–2026 (часть 3): Actions, API Routes, SSR/SSG и деплой — от разработки до production</title><meta name="description" content="Astro 5: формы с Actions и Zod, API Routes, SSR и SSG, адаптеры и деплой. Создание форм, REST endpoints, выбор режима рендеринга, настройка Netlify, Vercel, Node.js."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:860px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}
+:root{color-scheme:dark;--card-padding: clamp(24px, 5vw, 80px)}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{width:95%;max-width:1920px;margin:40px auto;padding:var(--card-padding);border-radius:24px;background:#0f121cf2;box-shadow:0 40px 120px #0009;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>  <div class="card" style="margin-top: 50px; margin-bottom: 80px; padding-top: 40px; padding-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"> <header style="margin-bottom: 40px; text-align: center;">  <div style="margin-bottom: 24px;"> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;"> astro </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;"> Astro 2025–2026 (часть 3): Actions, API Routes, SSR/SSG и деплой — от разработки до production </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;"> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"> <span>Андрей Викулов</span> <span style="opacity: 0.5;">•</span> <time>30 января 2026 г.</time> </div> </header> <figure style="margin: 0 calc(-1 * var(--card-padding)) 60px calc(-1 * var(--card-padding)); text-align: center;"> <img src="/assets/covers/astro-2025-2026-part-3-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"> </figure> <article class="markdown-body"> <h1 id="astro-20252026-часть-3-actions-api-routes-ssrssg-и-деплой">Astro 2025–2026 (часть 3): Actions, API Routes, SSR/SSG и деплой</h1>
+<p>В первых двух частях мы разобрали фундамент: структуру проекта, MDX, Content Collections, islands и SEO. Теперь углубимся в <strong>серверную сторону</strong>: как обрабатывать формы через Actions, создавать API endpoints, выбирать между SSR и SSG, и деплоить приложение в production.</p>
+<p>План части 3:</p>
+<ul>
+<li><strong>Actions</strong>: обработка форм с валидацией Zod и type-safety</li>
+<li><strong>API Routes</strong>: создание REST endpoints для динамических данных</li>
+<li><strong>SSR vs SSG</strong>: в каких случаях использовать каждый режим</li>
+<li><strong>Адаптеры</strong>: настройка для разных платформ</li>
+<li><strong>Деплой</strong>: практические примеры для Netlify, Vercel, Node.js</li>
+</ul>
+<hr/>
+<h2 id="1-astro-actions-обработка-форм-без-боли">1) Astro Actions: обработка форм без боли</h2>
+<p><strong>Actions</strong> — это официальный способ обработки форм и серверных операций в Astro 5. Альтернатива API routes для форм, но с <strong>автоматической валидацией</strong>, <strong>type-safety</strong> и <strong>прогрессивным улучшением</strong>.</p>
+<h3 id="зачем-нужны-actions-когда-есть-api-routes">Зачем нужны Actions (когда есть API routes)</h3>
+<p>API routes хороши для REST API, но для форм есть нюансы:</p>
+<ul>
+<li>нужно вручную парсить <code>FormData</code></li>
+<li>нет встроенной валидации</li>
+<li>нет автоматической типизации</li>
+<li>сложнее реализовать прогрессивное улучшение (работа без JS)</li>
+</ul>
+<p>Actions как раз закрывают эти задачи: валидация, типы и работа без JS уже встроены.</p>
+<hr/>
+<h2 id="2-создание-первого-action-форма-обратной-связи">2) Создание первого Action: форма обратной связи</h2>
+<h3 id="21-определяем-action-в-srcactionsindexts">2.1) Определяем Action в <code>src/actions/index.ts</code></h3>
+<p>Все Actions должны экспортироваться из объекта <code>server</code> в файле <code>src/actions/index.ts</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/actions/index.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineAction } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/zod&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> server</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Action для формы обратной связи</span></span>
+<span class="line"><span style="color:#E1E4E8">  contact: </span><span style="color:#B392F0">defineAction</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#6A737D">    // accept: &quot;form&quot; - говорит, что принимаем FormData</span></span>
+<span class="line"><span style="color:#E1E4E8">    accept: </span><span style="color:#9ECBFF">&quot;form&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Схема валидации через Zod</span></span>
+<span class="line"><span style="color:#E1E4E8">    input: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      name: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;Имя должно быть минимум 2 символа&quot;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">      email: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">email</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Некорректный email&quot;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">      message: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;Сообщение должно быть минимум 10 символов&quot;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Обработчик - выполняется на сервере</span></span>
+<span class="line"><span style="color:#B392F0">    handler</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">formData</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // formData уже валиден и типизирован!</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">name</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">email</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">message</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> formData;</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#6A737D">      // Здесь может быть отправка email, запись в БД и т.д.</span></span>
+<span class="line"><span style="color:#E1E4E8">      console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Получена заявка:&quot;</span><span style="color:#E1E4E8">, { name, email, message });</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#6A737D">      // Пример: отправка в Telegram</span></span>
+<span class="line"><span style="color:#6A737D">      // await sendToTelegram({ name, email, message });</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#6A737D">      // Возвращаем результат (автоматически сериализуется)</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        message: </span><span style="color:#9ECBFF">&quot;Спасибо за обращение! Мы свяжемся с вами в ближайшее время.&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      };</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>Из документации:</strong> Actions используют Zod для валидации входных данных на этапе выполнения; данные валидируются перед передачей в <code>handler()</code>. При неуспешной валидации возвращается ошибка.</p>
+<h3 id="22-используем-action-в-html-форме">2.2) Используем Action в HTML-форме</h3>
+<p>Создаём страницу с формой. Actions работают <strong>без JavaScript</strong> (прогрессивное улучшение). Для вызова action через <code>action</code> формы страница должна быть отрендерена on-demand: добавь в frontmatter страницы <code>export const prerender = false</code> (или используй режим <code>output: &quot;server&quot;</code> / <code>&quot;hybrid&quot;</code>).</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/contacts.astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { actions } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Получаем результат после отправки формы</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> result</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Astro.</span><span style="color:#B392F0">getActionResult</span><span style="color:#E1E4E8">(actions.contact);</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Контакты&quot;</span><span style="color:#B392F0"> description</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Свяжитесь с нами&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Контактная форма&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#6A737D">/* Показываем сообщение об успехе */</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">  {result?.data?.success </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;success-message&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {result.data.message}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  )}</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#6A737D">/* Показываем ошибки валидации */</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">  {result?.error </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;error-message&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {result.error.message}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  )}</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">form</span><span style="color:#B392F0"> method</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;POST&quot;</span><span style="color:#B392F0"> action</span><span style="color:#E1E4E8">={actions.contact}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#E1E4E8">&gt;Имя&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">input</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;text&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        required</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#E1E4E8">      /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {</span><span style="color:#6A737D">/* Показываем ошибки для конкретного поля */</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">      {result?.error?.fields?.name </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">        &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#E1E4E8">&gt;{Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(result.error.fields.name) </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> result.error.fields.name[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> result.error.fields.name}&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      )}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#E1E4E8">&gt;Email&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">input</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        required</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#E1E4E8">      /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {result?.error?.fields?.email </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">        &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#E1E4E8">&gt;{Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(result.error.fields.email) </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> result.error.fields.email[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> result.error.fields.email}&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      )}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#E1E4E8">&gt;Сообщение&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">textarea</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        rows</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;5&quot;</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#B392F0">        required</span></span>
+<span class="line"><span style="color:#E1E4E8">      &gt;&lt;/</span><span style="color:#85E89D">textarea</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {result?.error?.fields?.message </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">        &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#E1E4E8">&gt;{Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(result.error.fields.message) </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> result.error.fields.message[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> result.error.fields.message}&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      )}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">button</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;submit&quot;</span><span style="color:#E1E4E8">&gt;Отправить&lt;/</span><span style="color:#85E89D">button</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">form</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#B392F0">  .form-group</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-bottom</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#85E89D">  label</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">block</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-bottom</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.25</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#85E89D">  input</span><span style="color:#E1E4E8">, </span><span style="color:#85E89D">textarea</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    border</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.2</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.2</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  .success-message</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-bottom</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.3</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">#0f0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  .error-message</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-bottom</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.3</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">#f00</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  .field-error</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">block</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin-top</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.25</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.875</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">#f00</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#85E89D">  button</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.75</span><span style="color:#F97583">rem</span><span style="color:#79B8FF"> 1.5</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">180</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.2</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">180</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.5</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">pointer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#85E89D">  button</span><span style="color:#B392F0">:hover</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">180</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.3</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>При отправке формы (даже без JS) браузер шлёт POST; Astro валидирует данные по Zod-схеме и при успехе вызывает <code>handler()</code>. Результат доступен через <code>Astro.getActionResult()</code>, страница отдаётся уже с сообщением об успехе или ошибке.</p>
+<hr/>
+<h2 id="3-улучшаем-action-добавляем-клиентскую-обработку">3) Улучшаем Action: добавляем клиентскую обработку</h2>
+<p>Для лучшего UX можно обрабатывать форму через JavaScript (прогрессивное улучшение):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/contacts-enhanced.astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Контакты (enhanced)&quot;</span><span style="color:#B392F0"> description</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Форма с JS&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Контактная форма (с улучшениями)&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;result-message&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">form</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;contact-form&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#E1E4E8">&gt;Имя&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">input</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;text&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name&quot;</span><span style="color:#B392F0"> required</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;name-error&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#E1E4E8">&gt;Email&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">input</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email&quot;</span><span style="color:#B392F0"> required</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;email-error&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;form-group&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">label</span><span style="color:#B392F0"> for</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#E1E4E8">&gt;Сообщение&lt;/</span><span style="color:#85E89D">label</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">textarea</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message&quot;</span><span style="color:#B392F0"> rows</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;5&quot;</span><span style="color:#B392F0"> required</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">textarea</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;field-error&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;message-error&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">button</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;submit&quot;</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;submit-btn&quot;</span><span style="color:#E1E4E8">&gt;Отправить&lt;/</span><span style="color:#85E89D">button</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">form</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">  import</span><span style="color:#E1E4E8"> { actions, isInputError } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> form</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;contact-form&quot;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">as</span><span style="color:#B392F0"> HTMLFormElement</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> submitBtn</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;submit-btn&quot;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">as</span><span style="color:#B392F0"> HTMLButtonElement</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> resultDiv</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;result-message&quot;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">as</span><span style="color:#B392F0"> HTMLDivElement</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Очищаем ошибки полей</span></span>
+<span class="line"><span style="color:#F97583">  function</span><span style="color:#B392F0"> clearFieldErrors</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    document.</span><span style="color:#B392F0">querySelectorAll</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;.field-error&quot;</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">forEach</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">el</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">      el.textContent </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Показываем ошибки полей</span></span>
+<span class="line"><span style="color:#F97583">  function</span><span style="color:#B392F0"> showFieldErrors</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">fields</span><span style="color:#F97583">:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">[]&gt;) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Object.</span><span style="color:#B392F0">entries</span><span style="color:#E1E4E8">(fields).</span><span style="color:#B392F0">forEach</span><span style="color:#E1E4E8">(([</span><span style="color:#FFAB70">field</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">errors</span><span style="color:#E1E4E8">]) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#79B8FF"> errorEl</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`${</span><span style="color:#E1E4E8">field</span><span style="color:#9ECBFF">}-error`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (errorEl </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> errors.</span><span style="color:#79B8FF">length</span><span style="color:#F97583"> &gt;</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        errorEl.textContent </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> errors[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  form.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;submit&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">e</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    e.</span><span style="color:#B392F0">preventDefault</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Очищаем предыдущие ошибки</span></span>
+<span class="line"><span style="color:#B392F0">    clearFieldErrors</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    resultDiv.textContent </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Блокируем кнопку</span></span>
+<span class="line"><span style="color:#E1E4E8">    submitBtn.disabled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    submitBtn.textContent </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;Отправка...&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // Получаем данные формы</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#79B8FF"> formData</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> FormData</span><span style="color:#E1E4E8">(form);</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#6A737D">      // Вызываем Action</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">data</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">error</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> actions.</span><span style="color:#B392F0">contact</span><span style="color:#E1E4E8">(formData);</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (error) {</span></span>
+<span class="line"><span style="color:#6A737D">        // Проверяем, это ошибка валидации или серверная ошибка</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">isInputError</span><span style="color:#E1E4E8">(error)) {</span></span>
+<span class="line"><span style="color:#6A737D">          // Показываем ошибки полей</span></span>
+<span class="line"><span style="color:#B392F0">          showFieldErrors</span><span style="color:#E1E4E8">(error.fields);</span></span>
+<span class="line"><span style="color:#E1E4E8">          resultDiv.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> `&lt;div class=&quot;error-message&quot;&gt;${</span><span style="color:#E1E4E8">error</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">message</span><span style="color:#9ECBFF">}&lt;/div&gt;`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">          // Серверная ошибка</span></span>
+<span class="line"><span style="color:#E1E4E8">          resultDiv.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> `&lt;div class=&quot;error-message&quot;&gt;Произошла ошибка: ${</span><span style="color:#E1E4E8">error</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">message</span><span style="color:#9ECBFF">}&lt;/div&gt;`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">      } </span><span style="color:#F97583">else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (data) {</span></span>
+<span class="line"><span style="color:#6A737D">        // Успех!</span></span>
+<span class="line"><span style="color:#E1E4E8">        resultDiv.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> `&lt;div class=&quot;success-message&quot;&gt;${</span><span style="color:#E1E4E8">data</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">message</span><span style="color:#9ECBFF">}&lt;/div&gt;`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        form.</span><span style="color:#B392F0">reset</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (err) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      resultDiv.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> `&lt;div class=&quot;error-message&quot;&gt;Произошла непредвиденная ошибка&lt;/div&gt;`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">      console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(err);</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">finally</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // Разблокируем кнопку</span></span>
+<span class="line"><span style="color:#E1E4E8">      submitBtn.disabled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">      submitBtn.textContent </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> &quot;Отправить&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#6A737D">  /* ... те же стили, что и выше ... */</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Функция <code>isInputError()</code> из <code>astro:actions</code> различает ошибки валидации полей (input errors) и остальные ошибки, что удобно при обработке на клиенте.</p>
+<hr/>
+<h2 id="4-группировка-actions-организация-кода">4) Группировка Actions: организация кода</h2>
+<p>Когда Actions становится много, их удобно группировать в отдельные файлы:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/actions/user.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineAction } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/zod&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> user</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  login: </span><span style="color:#B392F0">defineAction</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    accept: </span><span style="color:#9ECBFF">&quot;form&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    input: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      email: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">email</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">      password: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">8</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }),</span></span>
+<span class="line"><span style="color:#B392F0">    handler</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">email</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">password</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // Логика авторизации</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8"> { success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">, token: </span><span style="color:#9ECBFF">&quot;...&quot;</span><span style="color:#E1E4E8"> };</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  register: </span><span style="color:#B392F0">defineAction</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    accept: </span><span style="color:#9ECBFF">&quot;form&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    input: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      name: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">      email: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">email</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">      password: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">8</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }),</span></span>
+<span class="line"><span style="color:#B392F0">    handler</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">name</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">email</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">password</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // Логика регистрации</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8"> { success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> };</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/actions/blog.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineAction } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/zod&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> blog</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  like: </span><span style="color:#B392F0">defineAction</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    accept: </span><span style="color:#9ECBFF">&quot;json&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    input: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      slug: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }),</span></span>
+<span class="line"><span style="color:#B392F0">    handler</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">slug</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">      // Логика лайка</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8"> { likes: </span><span style="color:#79B8FF">42</span><span style="color:#E1E4E8"> };</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/actions/index.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { user } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;./user&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { blog } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;./blog&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> server</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  user,   </span><span style="color:#6A737D">// actions.user.login, actions.user.register</span></span>
+<span class="line"><span style="color:#E1E4E8">  blog,   </span><span style="color:#6A737D">// actions.blog.like</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>Использование:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { actions } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">form</span><span style="color:#B392F0"> method</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;POST&quot;</span><span style="color:#B392F0"> action</span><span style="color:#E1E4E8">={actions.user.login}&gt;</span></span>
+<span class="line"><span style="color:#6A737D">  &lt;!-- форма авторизации --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">form</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="5-api-routes-когда-actions-недостаточно">5) API Routes: когда Actions недостаточно</h2>
+<p><strong>API Routes</strong> — это серверные endpoints для REST API. Их имеет смысл использовать, когда:</p>
+<ul>
+<li>нужен именно REST API (а не формы);</li>
+<li>нужна работа с разными HTTP-методами;</li>
+<li>нужна интеграция с внешними сервисами;</li>
+<li>нужен webhook.</li>
+</ul>
+<h3 id="51-создание-простого-api-endpoint">5.1) Создание простого API endpoint</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/pages/api/blog/[slug]/view.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { APIRoute } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> GET</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">slug</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> params;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Здесь может быть запрос к БД</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> views</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Math.</span><span style="color:#B392F0">floor</span><span style="color:#E1E4E8">(Math.</span><span style="color:#B392F0">random</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">    JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ slug, views }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">      status: </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      headers: {</span></span>
+<span class="line"><span style="color:#9ECBFF">        &quot;Content-Type&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;application/json&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> POST</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">request</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">slug</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> params;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Увеличиваем счётчик просмотров</span></span>
+<span class="line"><span style="color:#6A737D">  // await incrementViews(slug);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">    JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">      status: </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      headers: {</span></span>
+<span class="line"><span style="color:#9ECBFF">        &quot;Content-Type&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;application/json&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>Доступ:</strong></p>
+<ul>
+<li><code>GET /api/blog/my-post/view</code> — получить количество просмотров</li>
+<li><code>POST /api/blog/my-post/view</code> — зарегистрировать просмотр</li>
+</ul>
+<h3 id="52-обработка-разных-http-методов">5.2) Обработка разных HTTP методов</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/pages/api/products/[id].ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { APIRoute } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> GET</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Получить продукт</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ id: params.id, name: </span><span style="color:#9ECBFF">&quot;Product&quot;</span><span style="color:#E1E4E8"> }));</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> PUT</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">request</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Обновить продукт</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> body</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> request.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> }));</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> DELETE</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Удалить продукт</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> }));</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Fallback для неподдерживаемых методов</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> ALL</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">request</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">    JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ error: </span><span style="color:#9ECBFF">`Method ${</span><span style="color:#E1E4E8">request</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">method</span><span style="color:#9ECBFF">} not supported`</span><span style="color:#E1E4E8"> }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    { status: </span><span style="color:#79B8FF">405</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<h3 id="53-авторизация-в-api-routes">5.3) Авторизация в API Routes</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/pages/api/admin/posts.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { APIRoute } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> ADMIN_TOKEN</span><span style="color:#F97583"> =</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">ADMIN_TOKEN</span><span style="color:#F97583"> ||</span><span style="color:#9ECBFF"> &quot;admin123&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> GET</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">request</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Проверяем токен</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> token</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> request.headers.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Authorization&quot;</span><span style="color:#E1E4E8">)?.</span><span style="color:#B392F0">replace</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Bearer &quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (token </span><span style="color:#F97583">!==</span><span style="color:#79B8FF"> ADMIN_TOKEN</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">      JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ error: </span><span style="color:#9ECBFF">&quot;Unauthorized&quot;</span><span style="color:#E1E4E8"> }),</span></span>
+<span class="line"><span style="color:#E1E4E8">      { status: </span><span style="color:#79B8FF">401</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Возвращаем данные</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> posts</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [</span><span style="color:#6A737D">/* данные */</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">(posts));</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<hr/>
+<h2 id="6-ssr-vs-ssg-когда-использовать-каждый-режим">6) SSR vs SSG: когда использовать каждый режим</h2>
+<p>Astro поддерживает три режима рендеринга:</p>
+<ol>
+<li><strong>Static (SSG)</strong> — генерация статических файлов на этапе сборки (по умолчанию)</li>
+<li><strong>Server (SSR)</strong> — рендеринг на сервере по запросу</li>
+<li><strong>Hybrid</strong> — SSG по умолчанию, SSR выборочно</li>
+</ol>
+<h3 id="61-режим-static-ssg--по-умолчанию">6.1) Режим Static (SSG) — по умолчанию</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#6A737D">  // output: &quot;static&quot;, // можно не указывать, это дефолт</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Когда использовать:</strong></p>
+<ul>
+<li>блоги, документация, маркетинговые сайты;</li>
+<li>контент редко меняется;</li>
+<li>динамика на сервере не нужна.</li>
+</ul>
+<p><strong>Плюсы:</strong></p>
+<ul>
+<li>максимальная скорость (статические файлы);</li>
+<li>недорогой хостинг (Netlify, Vercel, Cloudflare Pages);</li>
+<li>CDN из коробки.</li>
+</ul>
+<p><strong>Минусы:</strong></p>
+<ul>
+<li>при изменении контента нужна пересборка;</li>
+<li>серверная логика недоступна.</li>
+</ul>
+<h3 id="62-режим-server-ssr--всё-на-сервере">6.2) Режим Server (SSR) — всё на сервере</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> node </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/node&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;server&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">node</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    mode: </span><span style="color:#9ECBFF">&quot;standalone&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Когда использовать:</strong></p>
+<ul>
+<li>приложения с частыми обновлениями;</li>
+<li>персонализация контента;</li>
+<li>авторизация и сессии;</li>
+<li>работа с БД.</li>
+</ul>
+<p><strong>Плюсы:</strong></p>
+<ul>
+<li>динамический контент;</li>
+<li>доступ к серверным API;</li>
+<li>работа с cookies и headers.</li>
+</ul>
+<p><strong>Минусы:</strong></p>
+<ul>
+<li>нужен постоянно работающий сервер (дороже);</li>
+<li>медленнее статики.</li>
+</ul>
+<h3 id="63-режим-hybrid--лучшее-из-двух-миров">6.3) Режим Hybrid — лучшее из двух миров</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> node </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/node&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;hybrid&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// SSG по умолчанию</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">node</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>В Hybrid режиме:</strong></p>
+<ul>
+<li>по умолчанию все страницы — SSG</li>
+<li>отдельные страницы можно сделать SSR через <code>export const prerender = false</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/dashboard.astro</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> prerender</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// эта страница будет SSR</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Динамический контент: {</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Date</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">toLocaleString</span><span style="color:#E1E4E8">()}&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p><strong>Пример: блог с динамическими просмотрами</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/blog/[slug].astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { getCollection } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:content&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Генерируем статические страницы для всех постов</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getStaticPaths</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> posts</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> getCollection</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;blog&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> posts.</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">post</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> ({</span></span>
+<span class="line"><span style="color:#E1E4E8">    params: { slug: post.data.slug </span><span style="color:#F97583">??</span><span style="color:#E1E4E8"> post.slug },</span></span>
+<span class="line"><span style="color:#E1E4E8">    props: { post },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">post</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Astro.props;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> post.</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Получаем динамические просмотры через API</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> slug</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> post.data.slug </span><span style="color:#F97583">??</span><span style="color:#E1E4E8"> post.slug;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> viewsRes</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`https://example.com/api/blog/${</span><span style="color:#E1E4E8">slug</span><span style="color:#9ECBFF">}/view`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">views</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> viewsRes.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;{post.data.title}&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Просмотров: {views}&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p><strong>Рекомендация:</strong> начни с <strong>Hybrid</strong> и включай SSR только там, где он действительно нужен.</p>
+<hr/>
+<h2 id="7-адаптеры-настройка-для-разных-платформ">7) Адаптеры: настройка для разных платформ</h2>
+<p>Для SSR нужен <strong>adapter</strong> — интеграция, которая адаптирует Astro под конкретную платформу.</p>
+<h3 id="71-установка-адаптера">7.1) Установка адаптера</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Node.js</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> node</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Netlify</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> netlify</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Vercel</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> vercel</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Cloudflare</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> cloudflare</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Deno</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @deno/astro-adapter</span></span></code></pre>
+<h3 id="72-настройка-nodejs-адаптера">7.2) Настройка Node.js адаптера</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> node </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/node&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;server&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">node</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    mode: </span><span style="color:#9ECBFF">&quot;standalone&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// standalone | middleware</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Режимы:</strong></p>
+<ul>
+<li><code>standalone</code> — самостоятельный сервер (запускается через <code>node dist/server/entry.mjs</code>)</li>
+<li><code>middleware</code> — для интеграции с Express/Fastify</li>
+</ul>
+<p><strong>Запуск после сборки:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> build</span></span>
+<span class="line"><span style="color:#B392F0">node</span><span style="color:#9ECBFF"> dist/server/entry.mjs</span></span></code></pre>
+<h3 id="73-настройка-netlify-адаптера">7.3) Настройка Netlify адаптера</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> netlify </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/netlify&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;server&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">netlify</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    edgeMiddleware: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// использовать Edge Functions для middleware</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Деплой на Netlify:</strong></p>
+<ol>
+<li>Подключи репозиторий к Netlify</li>
+<li>Build command: <code>pnpm build</code></li>
+<li>Publish directory: <code>dist</code></li>
+<li>Netlify автоматически определит Astro и настроит всё</li>
+</ol>
+<h3 id="74-настройка-vercel-адаптера">7.4) Настройка Vercel адаптера</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> vercel </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/vercel/serverless&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;server&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">vercel</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    isr: {</span></span>
+<span class="line"><span style="color:#6A737D">      // Incremental Static Regeneration</span></span>
+<span class="line"><span style="color:#E1E4E8">      expiration: </span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// ревалидация каждые 60 секунд</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Деплой на Vercel:</strong></p>
+<ol>
+<li>Подключи репозиторий к Vercel</li>
+<li>Framework Preset: Astro</li>
+<li>Build Command: <code>pnpm build</code></li>
+<li>Output Directory: <code>dist</code></li>
+<li>Деплой автоматический</li>
+</ol>
+<hr/>
+<h2 id="8-environment-variables-безопасное-хранение-секретов">8) Environment Variables: безопасное хранение секретов</h2>
+<h3 id="81-создание-env-файла">8.1) Создание <code>.env</code> файла</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># .env</span></span>
+<span class="line"><span style="color:#E1E4E8">PUBLIC_API_URL</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">https://api.example.com</span></span>
+<span class="line"><span style="color:#E1E4E8">ADMIN_TOKEN</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">super-secret-token</span></span>
+<span class="line"><span style="color:#E1E4E8">DATABASE_URL</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">postgresql://...</span></span></code></pre>
+<p><strong>Важно:</strong></p>
+<ul>
+<li>переменные с префиксом <code>PUBLIC_</code> доступны на клиенте</li>
+<li>остальные доступны только на сервере</li>
+</ul>
+<h3 id="82-использование-в-коде">8.2) Использование в коде</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// Серверная переменная (только на сервере)</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> adminToken</span><span style="color:#F97583"> =</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">ADMIN_TOKEN</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Публичная переменная (доступна на клиенте)</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> apiUrl</span><span style="color:#F97583"> =</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">PUBLIC_API_URL</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#6A737D">  // Публичная переменная доступна</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">PUBLIC_API_URL</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Серверная переменная НЕ доступна (undefined)</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">import</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">meta</span><span style="color:#E1E4E8">.env.</span><span style="color:#79B8FF">ADMIN_TOKEN</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// undefined</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="83-типизация-environment-variables">8.3) Типизация environment variables</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/env.d.ts</span></span>
+<span class="line"><span style="color:#6A737D">/// &lt;</span><span style="color:#85E89D">reference</span><span style="color:#B392F0"> types</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;astro/client&quot;</span><span style="color:#6A737D"> /&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ImportMetaEnv</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> PUBLIC_API_URL</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> ADMIN_TOKEN</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> DATABASE_URL</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ImportMeta</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  readonly</span><span style="color:#FFAB70"> env</span><span style="color:#F97583">:</span><span style="color:#B392F0"> ImportMetaEnv</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>После этого TypeScript будет знать о ваших переменных окружения.</p>
+<hr/>
+<h2 id="9-деплой-на-production-пошаговые-примеры">9) Деплой на production: пошаговые примеры</h2>
+<h3 id="91-деплой-на-netlify-рекомендуется-для-начинающих">9.1) Деплой на Netlify (рекомендуется для начинающих)</h3>
+<p><strong>Шаг 1:</strong> Установи адаптер</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> netlify</span></span></code></pre>
+<p><strong>Шаг 2:</strong> Настрой <code>netlify.toml</code> (опционально)</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#6A737D"># netlify.toml</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">  command = </span><span style="color:#9ECBFF">&quot;pnpm build&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">  publish = </span><span style="color:#9ECBFF">&quot;dist&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[[</span><span style="color:#B392F0">plugins</span><span style="color:#E1E4E8">]]</span></span>
+<span class="line"><span style="color:#E1E4E8">  package = </span><span style="color:#9ECBFF">&quot;@astrojs/netlify&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">environment</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">  NODE_VERSION = </span><span style="color:#9ECBFF">&quot;18&quot;</span></span></code></pre>
+<p><strong>Шаг 3:</strong> Подключи репозиторий</p>
+<ol>
+<li>Зайди на <a href="https://netlify.com">netlify.com</a></li>
+<li>“Add new site” → “Import an existing project”</li>
+<li>Выбери GitHub/GitLab/Bitbucket</li>
+<li>Выбери репозиторий</li>
+<li>Netlify автоматически определит Astro</li>
+</ol>
+<p><strong>Шаг 4:</strong> Настрой переменные окружения</p>
+<ol>
+<li>Site settings → Environment variables</li>
+<li>Добавь секреты (<code>ADMIN_TOKEN</code>, <code>DATABASE_URL</code>)</li>
+</ol>
+<p><strong>Готово!</strong> При каждом пуше в main ветку сайт автоматически деплоится.</p>
+<h3 id="92-деплой-на-vercel">9.2) Деплой на Vercel</h3>
+<p><strong>Шаг 1:</strong> Установи адаптер</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> vercel</span></span></code></pre>
+<p><strong>Шаг 2:</strong> Подключи репозиторий</p>
+<ol>
+<li>Зайди на <a href="https://vercel.com">vercel.com</a></li>
+<li>“Add New” → “Project”</li>
+<li>Выбери репозиторий</li>
+<li>Framework Preset: Astro</li>
+<li>Build Command: <code>pnpm build</code></li>
+</ol>
+<p><strong>Шаг 3:</strong> Добавь переменные окружения</p>
+<ol>
+<li>Project Settings → Environment Variables</li>
+<li>Добавь секреты</li>
+</ol>
+<p><strong>Готово!</strong> Деплой автоматический при каждом пуше.</p>
+<h3 id="93-деплой-на-vps-с-nodejs-самый-гибкий-вариант">9.3) Деплой на VPS с Node.js (самый гибкий вариант)</h3>
+<p><strong>Шаг 1:</strong> Настрой проект</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// astro.config.mjs</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineConfig } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/config&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> node </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;@astrojs/node&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> default</span><span style="color:#B392F0"> defineConfig</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  output: </span><span style="color:#9ECBFF">&quot;server&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  adapter: </span><span style="color:#B392F0">node</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    mode: </span><span style="color:#9ECBFF">&quot;standalone&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<p><strong>Шаг 2:</strong> Собери проект</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> build</span></span></code></pre>
+<p><strong>Шаг 3:</strong> Настрой сервер</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># На VPS</span></span>
+<span class="line"><span style="color:#6A737D"># 1. Установи Node.js</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -fsSL</span><span style="color:#9ECBFF"> https://deb.nodesource.com/setup_lts.x</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sudo</span><span style="color:#79B8FF"> -E</span><span style="color:#9ECBFF"> bash</span><span style="color:#9ECBFF"> -</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt-get</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> nodejs</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. Скопируй проект на сервер</span></span>
+<span class="line"><span style="color:#B392F0">scp</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> dist</span><span style="color:#9ECBFF"> user@server:/var/www/mysite/</span></span>
+<span class="line"><span style="color:#B392F0">scp</span><span style="color:#9ECBFF"> package.json</span><span style="color:#9ECBFF"> user@server:/var/www/mysite/</span></span>
+<span class="line"><span style="color:#B392F0">scp</span><span style="color:#9ECBFF"> pnpm-lock.yaml</span><span style="color:#9ECBFF"> user@server:/var/www/mysite/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. Установи зависимости</span></span>
+<span class="line"><span style="color:#B392F0">ssh</span><span style="color:#9ECBFF"> user@server</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> /var/www/mysite</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> --prod</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. Запусти сервер</span></span>
+<span class="line"><span style="color:#B392F0">node</span><span style="color:#9ECBFF"> dist/server/entry.mjs</span></span></code></pre>
+<p><strong>Шаг 4:</strong> Настрой systemd (автозапуск)</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D"># /etc/systemd/system/astro-site.service</span></span>
+<span class="line"><span style="color:#B392F0">[Unit]</span></span>
+<span class="line"><span style="color:#F97583">Description</span><span style="color:#E1E4E8">=Astro Site</span></span>
+<span class="line"><span style="color:#F97583">After</span><span style="color:#E1E4E8">=network.target</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">[Service]</span></span>
+<span class="line"><span style="color:#F97583">Type</span><span style="color:#E1E4E8">=simple</span></span>
+<span class="line"><span style="color:#F97583">User</span><span style="color:#E1E4E8">=www-data</span></span>
+<span class="line"><span style="color:#F97583">WorkingDirectory</span><span style="color:#E1E4E8">=/var/www/mysite</span></span>
+<span class="line"><span style="color:#F97583">EnvironmentFile</span><span style="color:#E1E4E8">=/var/www/mysite/.env</span></span>
+<span class="line"><span style="color:#F97583">ExecStart</span><span style="color:#E1E4E8">=/usr/bin/node dist/server/entry.mjs</span></span>
+<span class="line"><span style="color:#F97583">Restart</span><span style="color:#E1E4E8">=always</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">[Install]</span></span>
+<span class="line"><span style="color:#F97583">WantedBy</span><span style="color:#E1E4E8">=multi-user.target</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#9ECBFF"> astro-site</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> start</span><span style="color:#9ECBFF"> astro-site</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> status</span><span style="color:#9ECBFF"> astro-site</span></span></code></pre>
+<p><strong>Шаг 5:</strong> Настрой Nginx (reverse proxy)</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#6A737D"># /etc/nginx/sites-available/mysite</span></span>
+<span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">example.com;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        proxy_pass </span><span style="color:#E1E4E8">http://localhost:4321;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_http_version </span><span style="color:#79B8FF">1.1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">Upgrade $http_upgrade;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">Connection </span><span style="color:#9ECBFF">&#39;upgrade&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">Host $host;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">X-Real-IP $remote_addr;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">X-Forwarded-For $proxy_add_x_forwarded_for;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_set_header </span><span style="color:#E1E4E8">X-Forwarded-Proto $scheme;</span></span>
+<span class="line"><span style="color:#F97583">        proxy_cache_bypass </span><span style="color:#E1E4E8">$http_upgrade;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> ln</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> /etc/nginx/sites-available/mysite</span><span style="color:#9ECBFF"> /etc/nginx/sites-enabled/</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> nginx</span><span style="color:#79B8FF"> -t</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> reload</span><span style="color:#9ECBFF"> nginx</span></span></code></pre>
+<hr/>
+<h2 id="10-production-ready-чеклист-перед-деплоем">10) Production-ready: чеклист перед деплоем</h2>
+<h3 id="101-безопасность">10.1) Безопасность</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Все секреты в environment variables (не в коде!)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>.env</code> в <code>.gitignore</code></li>
+<li class="task-list-item"><input type="checkbox" disabled/> HTTPS настроен (Let’s Encrypt)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> CORS настроен правильно (если есть API)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Rate limiting для API endpoints</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Валидация всех входных данных</li>
+</ul>
+<h3 id="102-производительность">10.2) Производительность</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Изображения оптимизированы (через <code>&lt;Image /&gt;</code>)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> CSS/JS минифицированы (автоматически при build)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Используется CDN для статики</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Настроено кеширование (Cache-Control headers)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Lazy loading для изображений ниже фолда</li>
+</ul>
+<h3 id="103-seo">10.3) SEO</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Sitemap.xml настроен</li>
+<li class="task-list-item"><input type="checkbox" disabled/> RSS лента настроена</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Canonical URLs корректные</li>
+<li class="task-list-item"><input type="checkbox" disabled/> OpenGraph метатеги на всех страницах</li>
+<li class="task-list-item"><input type="checkbox" disabled/> robots.txt настроен</li>
+</ul>
+<h3 id="104-мониторинг">10.4) Мониторинг</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Логирование ошибок (Sentry, LogRocket)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Аналитика (Google Analytics, Plausible)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> Uptime monitoring (UptimeRobot, Pingdom)</li>
+</ul>
+<hr/>
+<h2 id="11-практический-пример-блог-с-лайками-и-просмотрами">11) Практический пример: блог с лайками и просмотрами</h2>
+<p>Создадим полноценный пример, объединяющий всё изученное:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/actions/index.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineAction } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/zod&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> server</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  blog: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    like: </span><span style="color:#B392F0">defineAction</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      accept: </span><span style="color:#9ECBFF">&quot;json&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      input: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">        slug: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">      }),</span></span>
+<span class="line"><span style="color:#B392F0">      handler</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">slug</span><span style="color:#E1E4E8"> }, </span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">        // Получаем IP из контекста</span></span>
+<span class="line"><span style="color:#F97583">        const</span><span style="color:#79B8FF"> ip</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> context.clientAddress;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Проверяем, не лайкал ли пользователь уже</span></span>
+<span class="line"><span style="color:#6A737D">        // (здесь должна быть БД, например libSQL)</span></span>
+<span class="line"><span style="color:#F97583">        const</span><span style="color:#79B8FF"> hasLiked</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// await checkIfLiked(slug, ip);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (hasLiked) {</span></span>
+<span class="line"><span style="color:#F97583">          throw</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Вы уже лайкали этот пост&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Добавляем лайк</span></span>
+<span class="line"><span style="color:#6A737D">        // await addLike(slug, ip);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Возвращаем новое количество</span></span>
+<span class="line"><span style="color:#F97583">        const</span><span style="color:#79B8FF"> likes</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 42</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// await getLikesCount(slug);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> { likes };</span></span>
+<span class="line"><span style="color:#E1E4E8">      },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }),</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/pages/api/blog/[slug]/view.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { APIRoute } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> prerender</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// SSR для этого endpoint</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> GET</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">slug</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> params;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Получаем количество просмотров из БД</span></span>
+<span class="line"><span style="color:#6A737D">  // const views = await getViewsCount(slug);</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> views</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Math.</span><span style="color:#B392F0">floor</span><span style="color:#E1E4E8">(Math.</span><span style="color:#B392F0">random</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">    JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ views }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">      status: </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      headers: {</span></span>
+<span class="line"><span style="color:#9ECBFF">        &quot;Content-Type&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;application/json&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        &quot;Cache-Control&quot;</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;public, max-age=60&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// кешируем на 1 минуту</span></span>
+<span class="line"><span style="color:#E1E4E8">      },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> POST</span><span style="color:#F97583">:</span><span style="color:#B392F0"> APIRoute</span><span style="color:#F97583"> =</span><span style="color:#F97583"> async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">params</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">request</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">slug</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> params;</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> ip</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> request.headers.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;x-forwarded-for&quot;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> &quot;unknown&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Регистрируем просмотр</span></span>
+<span class="line"><span style="color:#6A737D">  // await incrementView(slug, ip);</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">    JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ success: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> }),</span></span>
+<span class="line"><span style="color:#E1E4E8">    { status: </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// src/pages/blog/[slug].astro</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { getCollection } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:content&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getStaticPaths</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> posts</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> getCollection</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;blog&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> posts.</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">post</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> ({</span></span>
+<span class="line"><span style="color:#E1E4E8">    params: { slug: post.data.slug </span><span style="color:#F97583">??</span><span style="color:#E1E4E8"> post.slug },</span></span>
+<span class="line"><span style="color:#E1E4E8">    props: { post },</span></span>
+<span class="line"><span style="color:#E1E4E8">  }));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">post</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Astro.props;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> post.</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">={post.data.title} </span><span style="color:#B392F0">description</span><span style="color:#E1E4E8">={post.data.description}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;{post.data.title}&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;stats&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;views-count&quot;</span><span style="color:#E1E4E8">&gt;... просмотров&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">button</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;like-btn&quot;</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;button&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">        ❤️ &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;likes-count&quot;</span><span style="color:#E1E4E8">&gt;...&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;/</span><span style="color:#85E89D">button</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">  import</span><span style="color:#E1E4E8"> { actions } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:actions&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> slug</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> window.location.pathname.</span><span style="color:#B392F0">split</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;/&quot;</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">pop</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Загружаем просмотры</span></span>
+<span class="line"><span style="color:#F97583">  async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> loadViews</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> res</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`/api/blog/${</span><span style="color:#E1E4E8">slug</span><span style="color:#9ECBFF">}/view`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">views</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> res.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;views-count&quot;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">.textContent </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> `${</span><span style="color:#E1E4E8">views</span><span style="color:#9ECBFF">} просмотров`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Регистрируем просмотр</span></span>
+<span class="line"><span style="color:#F97583">  async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> registerView</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`/api/blog/${</span><span style="color:#E1E4E8">slug</span><span style="color:#9ECBFF">}/view`</span><span style="color:#E1E4E8">, { method: </span><span style="color:#9ECBFF">&quot;POST&quot;</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Обработка лайка</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> likeBtn</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;like-btn&quot;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> likesCount</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;likes-count&quot;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#E1E4E8">  likeBtn.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;click&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">data</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">error</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> actions.blog.</span><span style="color:#B392F0">like</span><span style="color:#E1E4E8">({ slug });</span></span>
+<span class="line"><span style="color:#E1E4E8">      </span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (error) {</span></span>
+<span class="line"><span style="color:#B392F0">        alert</span><span style="color:#E1E4E8">(error.message);</span></span>
+<span class="line"><span style="color:#E1E4E8">      } </span><span style="color:#F97583">else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (data) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        likesCount.textContent </span><span style="color:#F97583">=</span><span style="color:#B392F0"> String</span><span style="color:#E1E4E8">(data.likes);</span></span>
+<span class="line"><span style="color:#E1E4E8">        likeBtn.disabled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (err) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(err);</span></span>
+<span class="line"><span style="color:#B392F0">      alert</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Ошибка при лайке&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#6A737D">  // Инициализация</span></span>
+<span class="line"><span style="color:#B392F0">  loadViews</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">  registerView</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#B392F0">  .stats</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">flex</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    gap</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.2</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  #like-btn</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">rem</span><span style="color:#79B8FF"> 1</span><span style="color:#F97583">rem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.2</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.5</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">    border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">pointer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  #like-btn:hover:not</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">:disabled</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">    background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgba</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0.3</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">  </span></span>
+<span class="line"><span style="color:#B392F0">  #like-btn:disabled</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.5</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">not-allowed</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="12-итог-части-3">12) Итог части 3</h2>
+<p>В этой части разобрали:</p>
+<ul>
+<li><strong>Actions</strong>: type-safe формы с валидацией Zod</li>
+<li><strong>API Routes</strong>: строить REST endpoints для динамических данных</li>
+<li><strong>SSR/SSG/Hybrid</strong>: выбирать правильный режим рендеринга</li>
+<li><strong>Адаптеры</strong>: настраивать деплой на разные платформы</li>
+<li><strong>Production</strong>: готовить проект к боевому использованию</li>
+</ul>
+<p><strong>Что дальше:</strong></p>
+<p>В следующих частях цикла можно разобрать:</p>
+<ul>
+<li>Работу с базами данных (libSQL, PostgreSQL)</li>
+<li>Авторизацию и сессии</li>
+<li>Интеграцию с CMS (Strapi, Directus, Contentful)</li>
+<li>Оптимизацию производительности</li>
+<li>E2E тестирование</li>
+</ul>
+<p><strong>Полезные ссылки:</strong></p>
+<ul>
+<li><a href="https://docs.astro.build">Официальная документация Astro</a></li>
+<li><a href="https://docs.astro.build/en/reference/modules/astro-actions/">Actions API Reference</a></li>
+<li><a href="https://docs.astro.build/en/guides/endpoints/">Endpoints Guide</a></li>
+<li><a href="https://docs.astro.build/en/guides/on-demand-rendering/">On-demand Rendering</a></li>
+<li><a href="https://docs.astro.build/en/guides/deploy/">Deploy Guide</a></li>
+</ul>
+<hr/>
+<p><strong>Итого:</strong> Astro 5 даёт всё необходимое для быстрых, SEO-дружелюбных сайтов с серверной логикой там, где она нужна. Actions упрощают формы, API Routes дают гибкость для REST, а hybrid-режим сочетает статику и SSR без лишних затрат.</p> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

@@ -1,0 +1,80 @@
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.projects-list li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1rem 1.2rem;
+    transition: var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.projects-list li:hover {
+    background: rgba(0, 198, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.projects-list a {
+    color: var(--accent);
+    font-weight: 500;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tech {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.tech span {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent);
+    transition: background 0.2s ease;
+    touch-action: manipulation;
+}
+
+.tech span:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Планшет */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .projects-list {
+        gap: 1.5rem;
+    }
+
+    .projects-list li {
+        padding: 1.2rem 1.5rem;
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 640px) {
+    .projects-list {
+        gap: 1rem;
+    }
+
+    .projects-list li {
+        padding: 0.9rem 1rem;
+    }
+
+    .tech span {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}

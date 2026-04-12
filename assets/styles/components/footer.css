@@ -1,0 +1,109 @@
+.site-footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 1rem 3rem;
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.footer-title {
+    color: var(--text);
+    font-size: 1.1rem;
+    opacity: .9;
+    margin-bottom: 1.2rem;
+}
+
+.footer-social {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 1.8rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.footer-social a {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.65rem 1.2rem;
+    font-size: 0.95rem;
+    min-height: 44px;
+    min-width: 44px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    color: var(--text);
+    transition: all .25s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.footer-social a:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.25);
+}
+
+.footer-social a:hover iconify-icon {
+    color: #fff;
+}
+
+.footer-copy {
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.footer-copy a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.footer-copy a:hover {
+    text-decoration: underline;
+    color: #fff;
+}
+
+.footer-logo-img {
+    width: 24px;
+    height: 24px;
+    color: inherit;
+    flex-shrink: 0;
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .site-footer {
+        padding: 2rem 1.5rem 2.5rem;
+        padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .site-footer {
+        padding: 1.5rem 1rem 2rem;
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .footer-social a span {
+        display: none;
+    }
+
+    .footer-social a {
+        padding: 0.55rem 0.8rem;
+        min-width: 44px;
+    }
+}

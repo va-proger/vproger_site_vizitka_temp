@@ -1,0 +1,421 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Как создать блог на Astro: установка, MDX, Content Collections</title><meta name="description" content="Пошаговая настройка блога на Astro: структура проекта, маршруты, MDX с компонентами, Content Collections со схемой Zod. Готовый фундамент для контентного сайта."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> astro </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Как создать блог на Astro: установка, MDX, Content Collections </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>7 января 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/astro-blog-setup-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="как-создать-блог-на-astro-полная-инструкция">Как создать блог на Astro: полная инструкция</h1>
+<p><strong>Проблема:</strong> нужно быстро поднять быстрый блог или контентный сайт с хорошим SEO, но без сложностей Next.js и без перегруженного JavaScript.</p>
+<p><strong>Решение:</strong> Astro — статический генератор (SSG), который рендерит HTML по умолчанию и добавляет интерактивность точечно (islands architecture). В итоге получается лёгкая страница, понятная поисковикам и пользователям.</p>
+<p>В этой статье — пошаговая настройка блога на Astro: установка, структура проекта, маршруты, <strong>MDX</strong> (Markdown с компонентами) и <strong>Content Collections</strong> со схемой на Zod для валидации контента.</p>
+<hr/>
+<h2 id="в-чём-проблема-выбор-фреймворка-для-контентного-сайта">В чём проблема: выбор фреймворка для контентного сайта</h2>
+<p>Если нужен блог, документация или маркетинговый сайт, есть три основных варианта:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Критерий</th><th>Astro</th><th>Next.js</th><th>Gatsby</th></tr></thead><tbody><tr><td><strong>Модель по умолчанию</strong></td><td>SSG, HTML-first</td><td>SSR/SSG, JS-heavy</td><td>SSG (React)</td></tr><tr><td><strong>JS в браузере</strong></td><td>Минимум (islands)</td><td>Много (гидрация всего)</td><td>Много (React-дерево)</td></tr><tr><td><strong>Контент из коробки</strong></td><td>MDX, Markdown, Collections</td><td>Нужны решения</td><td>GraphQL + плагины</td></tr><tr><td><strong>Скорость контент-сайта</strong></td><td>Очень высокая</td><td>Зависит от настроек</td><td>Хорошая после билда</td></tr><tr><td><strong>Кривая обучения</strong></td><td>Низкая (HTML + островки)</td><td>Выше (React, App Router)</td><td>Выше (GraphQL, плагины)</td></tr><tr><td><strong>Лучше всего под</strong></td><td>Блог, доки, лендинг, портфолио</td><td>SPA, приложения, сложный роутинг</td><td>Контент на React + CMS</td></tr></tbody></table>
+<p><strong>Вывод:</strong> для блога, документации или маркетингового сайта Astro часто даёт самый лёгкий результат при минимальном JavaScript.</p>
+<hr/>
+<h2 id="рабочее-решение-пошаговая-настройка">Рабочее решение: пошаговая настройка</h2>
+<h3 id="шаг-1-создание-проекта-astro">Шаг 1: Создание проекта Astro</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Официальный способ: интерактивный мастер</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> astro@latest</span></span>
+<span class="line"><span style="color:#6A737D"># или</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> astro@latest</span></span></code></pre>
+<p>Мастер спросит:</p>
+<ul>
+<li>Шаблон (выбери <code>blog</code> для блога или <code>minimal</code> для чистого старта)</li>
+<li>TypeScript (рекомендуется включить — пригодится для Content Collections)</li>
+<li>ESLint и форматирование (по желанию)</li>
+</ul>
+<h3 id="шаг-2-проверка-системных-требований">Шаг 2: Проверка системных требований</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Проверить Node.js (должно быть &gt;= 18)</span></span>
+<span class="line"><span style="color:#B392F0">node</span><span style="color:#79B8FF"> -v</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверить менеджер пакетов</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#79B8FF"> -v</span><span style="color:#6A737D">   # или pnpm -v / yarn -v</span></span></code></pre>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Node.js 18+ (рекомендуется LTS: 20 или 22)</li>
+<li>npm, pnpm или yarn</li>
+<li>Редактор кода (VS Code + плагин Astro)</li>
+</ul>
+<h3 id="шаг-3-запуск-dev-сервера">Шаг 3: Запуск dev-сервера</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Перейти в папку проекта</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#F97583"> &lt;</span><span style="color:#9ECBFF">имя-проект</span><span style="color:#E1E4E8">а</span><span style="color:#F97583">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Запустить dev-сервер</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> dev</span></span>
+<span class="line"><span style="color:#6A737D"># или</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> dev</span></span></code></pre>
+<p>Открой <code>http://localhost:4321</code> — должен открыться стартовый сайт.</p>
+<h3 id="шаг-4-проверка-сборки-перед-деплоем">Шаг 4: Проверка сборки перед деплоем</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Собрать проект в папку dist/</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> build</span></span>
+<span class="line"><span style="color:#6A737D"># или</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> build</span></span></code></pre>
+<p>Если сборка прошла без ошибок — проект готов к деплою.</p>
+<hr/>
+<h2 id="структура-проекта-astro">Структура проекта Astro</h2>
+<p>Типичная структура блога на Astro:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>/</span></span>
+<span class="line"><span>├─ astro.config.mjs       # Конфигурация Astro</span></span>
+<span class="line"><span>├─ package.json           # Зависимости и скрипты</span></span>
+<span class="line"><span>├─ src/</span></span>
+<span class="line"><span>│  ├─ pages/              # Маршруты (file-based routing)</span></span>
+<span class="line"><span>│  │  ├─ index.astro      # Главная страница</span></span>
+<span class="line"><span>│  │  ├─ about.astro      # /about</span></span>
+<span class="line"><span>│  │  └─ blog/</span></span>
+<span class="line"><span>│  │     ├─ index.astro   # /blog (список статей)</span></span>
+<span class="line"><span>│  │     └─ [slug].astro  # /blog/:slug (страница статьи)</span></span>
+<span class="line"><span>│  ├─ layouts/            # Layouts (общая обвязка)</span></span>
+<span class="line"><span>│  │  └─ BaseLayout.astro</span></span>
+<span class="line"><span>│  ├─ components/         # UI компоненты</span></span>
+<span class="line"><span>│  │  └─ Callout.astro</span></span>
+<span class="line"><span>│  ├─ content/            # Контент (Content Collections)</span></span>
+<span class="line"><span>│  │  └─ blog/            # Статьи блога</span></span>
+<span class="line"><span>│  └─ styles/             # Глобальные стили</span></span>
+<span class="line"><span>└─ public/                # Статика (копируется как есть)</span></span>
+<span class="line"><span>   └─ favicon.svg</span></span></code></pre>
+<p><strong>Правило маршрутизации:</strong> файл в <code>src/pages/</code> = маршрут.</p>
+<ul>
+<li><code>src/pages/index.astro</code> → <code>/</code></li>
+<li><code>src/pages/about.astro</code> → <code>/about</code></li>
+<li><code>src/pages/blog/[slug].astro</code> → <code>/blog/:slug</code></li>
+</ul>
+<hr/>
+<h2 id="первый-layout-baselayoutastro">Первый layout: BaseLayout.astro</h2>
+<p>Создай файл <code>src/layouts/BaseLayout.astro</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#6A737D">// Пропсы приходят со страницы; задаём значения по умолчанию</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  title</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &quot;Site&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  description</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &quot;Astro site&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Astro.props;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;!</span><span style="color:#85E89D">doctype</span><span style="color:#B392F0"> html</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">html</span><span style="color:#B392F0"> lang</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;ru&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">meta</span><span style="color:#B392F0"> charset</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;utf-8&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">meta</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;viewport&quot;</span><span style="color:#B392F0"> content</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;width=device-width, initial-scale=1&quot;</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;{title}&lt;/</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">meta</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;description&quot;</span><span style="color:#B392F0"> content</span><span style="color:#E1E4E8">={description} /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">header</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;padding:16px; border-bottom:1px solid rgba(255,255,255,.1)&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">a</span><span style="color:#B392F0"> href</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;/&quot;</span><span style="color:#E1E4E8">&gt;Главная&lt;/</span><span style="color:#85E89D">a</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">span</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;opacity:.6; margin-left:8px&quot;</span><span style="color:#E1E4E8">&gt;|&lt;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">a</span><span style="color:#B392F0"> href</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;/blog&quot;</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;margin-left:8px&quot;</span><span style="color:#E1E4E8">&gt;Блог&lt;/</span><span style="color:#85E89D">a</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">header</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">main</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;max-width: 860px; margin: 0 auto; padding: 24px;&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">slot</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">main</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">footer</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;padding:16px; border-top:1px solid rgba(255,255,255,.1); opacity:.7&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      © {</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Date</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">getFullYear</span><span style="color:#E1E4E8">()}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">footer</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<blockquote>
+<p><code>&lt;slot /&gt;</code> — это “сюда вставится содержимое страницы”.</p>
+</blockquote>
+<hr/>
+<h2 id="первая-страница-indexastro">Первая страница: index.astro</h2>
+<p>Создай файл <code>src/pages/index.astro</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Главная&quot;</span><span style="color:#B392F0"> description</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Стартовый проект на Astro&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Привет, Astro&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Если страница открылась — ты уже в деле.&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Открой <code>http://localhost:4321</code> — должна отобразиться главная страница.</p>
+<hr/>
+<h2 id="подключаем-mdx-markdown-с-компонентами">Подключаем MDX: Markdown с компонентами</h2>
+<h3 id="установка-mdx">Установка MDX</h3>
+<p>MDX — это Markdown, который умеет <strong>встраивать компоненты</strong> и JS-выражения.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> mdx</span></span>
+<span class="line"><span style="color:#6A737D"># или</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> astro</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> mdx</span></span></code></pre>
+<p>После установки в <code>astro.config.mjs</code> появится интеграция <code>@astrojs/mdx</code>.</p>
+<h3 id="первая-mdx-страница">Первая MDX-страница</h3>
+<p>Создай файл <code>src/pages/guide.mdx</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="mdx"><code><span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"><span style="color:#85E89D">title</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Гайд по Astro&quot;</span></span>
+<span class="line"><span style="color:#85E89D">description</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Пробная MDX-страница&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF;font-weight:bold"># MDX в Astro работает ✅</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">Это обычный Markdown… но с бонусами.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> списки</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#9ECBFF"> `</span><span style="color:#79B8FF">код</span><span style="color:#9ECBFF">`</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> и компоненты ниже</span></span></code></pre>
+<p>Открой <code>/guide</code> — должна отрендериться страница.</p>
+<hr/>
+<h2 id="встраиваем-компоненты-в-mdx">Встраиваем компоненты в MDX</h2>
+<h3 id="создаём-компонент-calloutastro">Создаём компонент Callout.astro</h3>
+<p>Создай файл <code>src/components/Callout.astro</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">type</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &quot;info&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">title</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> &quot;Важно&quot;</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Astro.props;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> styles</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  info: </span><span style="color:#9ECBFF">&quot;background: rgba(0, 180, 255, .08); border: 1px solid rgba(0, 180, 255, .35);&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  warn: </span><span style="color:#9ECBFF">&quot;background: rgba(255, 180, 0, .08); border: 1px solid rgba(255, 180, 0, .35);&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  danger: </span><span style="color:#9ECBFF">&quot;background: rgba(255, 80, 80, .08); border: 1px solid rgba(255, 80, 80, .35);&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">section</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">={</span><span style="color:#9ECBFF">`padding: 14px 16px; border-radius: 12px; ${</span><span style="color:#E1E4E8">styles</span><span style="color:#9ECBFF">[</span><span style="color:#E1E4E8">type</span><span style="color:#9ECBFF">] </span><span style="color:#F97583">??</span><span style="color:#E1E4E8"> styles</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">info</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">strong</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;display:block; margin-bottom: 6px&quot;</span><span style="color:#E1E4E8">&gt;{title}&lt;/</span><span style="color:#85E89D">strong</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;&lt;</span><span style="color:#85E89D">slot</span><span style="color:#E1E4E8"> /&gt;&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">section</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<h3 id="используем-компонент-в-mdx">Используем компонент в MDX</h3>
+<p>Обнови <code>src/pages/guide.mdx</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="mdx"><code><span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"><span style="color:#85E89D">title</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Гайд по Astro&quot;</span></span>
+<span class="line"><span style="color:#85E89D">description</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Пробная MDX-страница&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Callout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../components/Callout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF;font-weight:bold"># MDX + компоненты</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">Callout</span><span style="color:#B392F0"> type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;info&quot;</span><span style="color:#B392F0"> title</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;Смысл MDX&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  Ты пишешь статью как Markdown, но можешь вставлять &quot;живые&quot; компоненты.</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">Callout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">Callout</span><span style="color:#B392F0"> type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;warn&quot;</span><span style="color:#B392F0"> title</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;Пара слов о порядке&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  Не превращай статью в React-приложение. Это всё ещё контент.</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">Callout</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="content-collections-контент-с-валидацией">Content Collections: контент с валидацией</h2>
+<h3 id="зачем-нужны-collections">Зачем нужны collections</h3>
+<p>Чтобы:</p>
+<ul>
+<li>Описать <strong>схему фронтматтера</strong> (какие поля обязательны)</li>
+<li>Ловить ошибки <strong>на этапе билда</strong> (а не в проде)</li>
+<li>Получать <strong>типизацию</strong> (особенно приятно в TS)</li>
+</ul>
+<h3 id="настраиваем-srccontentconfigts">Настраиваем <code>src/content.config.ts</code></h3>
+<p>Создай файл <code>src/content.config.ts</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#6A737D">// src/content.config.ts</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { defineCollection } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:content&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro/zod&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> blog</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> defineCollection</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  schema: z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    title: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    description: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    pubDate: z.</span><span style="color:#B392F0">date</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    updatedDate: z.</span><span style="color:#B392F0">date</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">optional</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    tags: z.</span><span style="color:#B392F0">array</span><span style="color:#E1E4E8">(z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">()).</span><span style="color:#B392F0">default</span><span style="color:#E1E4E8">([]),</span></span>
+<span class="line"><span style="color:#E1E4E8">    category: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">default</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Frontend&quot;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    draft: z.</span><span style="color:#B392F0">boolean</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">default</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    cover: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">optional</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    slug: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> collections</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> { blog };</span></span></code></pre>
+<blockquote>
+<p><code>astro/zod</code> — это реэкспорт Zod для схем коллекций.</p>
+</blockquote>
+<hr/>
+<h2 id="первая-статья-в-коллекции">Первая статья в коллекции</h2>
+<p>Создай файл <code>src/content/blog/astro-part-1.mdx</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="mdx"><code><span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"><span style="color:#85E89D">title</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Astro: старт (часть 1)&quot;</span></span>
+<span class="line"><span style="color:#85E89D">description</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;Статья в content collection, чтобы потом красиво собрать список и страницы.&quot;</span></span>
+<span class="line"><span style="color:#85E89D">pubDate</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2026-01-05T16:00:00.000Z</span></span>
+<span class="line"><span style="color:#85E89D">tags</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">  - </span><span style="color:#9ECBFF">astro</span></span>
+<span class="line"><span style="color:#E1E4E8">  - </span><span style="color:#9ECBFF">mdx</span></span>
+<span class="line"><span style="color:#E1E4E8">  - </span><span style="color:#9ECBFF">frontend</span></span>
+<span class="line"><span style="color:#85E89D">category</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Frontend</span></span>
+<span class="line"><span style="color:#85E89D">draft</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">false</span></span>
+<span class="line"><span style="color:#85E89D">slug</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&quot;astro-part-1&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Callout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../../components/Callout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF;font-weight:bold"># Astro: старт (часть 1)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">Callout</span><span style="color:#B392F0"> type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;info&quot;</span><span style="color:#B392F0"> title</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;Это пост из коллекции&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  Он лежит в src/content/blog и валидируется схемой.</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">Callout</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">Здесь начинается содержание статьи…</span></span></code></pre>
+<hr/>
+<h2 id="выводим-список-статей-blog">Выводим список статей: /blog</h2>
+<p>Создай файл <code>src/pages/blog/index.astro</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { getCollection } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:content&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Загружаем все посты, скрываем черновики, сортируем по дате</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> posts</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">await</span><span style="color:#B392F0"> getCollection</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;blog&quot;</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">  .</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">p</span><span style="color:#F97583"> =&gt;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">p.data.draft)</span></span>
+<span class="line"><span style="color:#E1E4E8">  .</span><span style="color:#B392F0">sort</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">a</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">b</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> b.data.pubDate.</span><span style="color:#B392F0">valueOf</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> a.data.pubDate.</span><span style="color:#B392F0">valueOf</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Блог&quot;</span><span style="color:#B392F0"> description</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;Список статей на Astro&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Блог&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">ul</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    {posts.</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">post</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;</span><span style="color:#85E89D">li</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">        &lt;</span><span style="color:#85E89D">a</span><span style="color:#B392F0"> href</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">`/blog/${</span><span style="color:#E1E4E8">post</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">data</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">slug</span><span style="color:#9ECBFF">}/`</span><span style="color:#E1E4E8">}&gt;{post.data.title}&lt;/</span><span style="color:#85E89D">a</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">        &lt;</span><span style="color:#85E89D">div</span><span style="color:#B392F0"> style</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;opacity:.7; font-size: 14px&quot;</span><span style="color:#E1E4E8">&gt;{post.data.description}&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      &lt;/</span><span style="color:#85E89D">li</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    ))}</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">ul</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="страница-статьи-blogslug">Страница статьи: /blog/:slug</h2>
+<p>Создай файл <code>src/pages/blog/[slug].astro</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="astro"><code><span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseLayout </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;../../layouts/BaseLayout.astro&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { getCollection } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &quot;astro:content&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Для SSG Astro нужен список всех путей</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> getStaticPaths</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> posts</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> getCollection</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;blog&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> posts</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">p</span><span style="color:#F97583"> =&gt;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">p.data.draft)</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">post</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> ({</span></span>
+<span class="line"><span style="color:#E1E4E8">      params: { slug: post.data.slug },</span></span>
+<span class="line"><span style="color:#E1E4E8">      props: { post },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">post</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Astro.props;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// У коллекционных MDX/MD есть render() — получаем компонент контента</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> post.</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#B392F0"> title</span><span style="color:#E1E4E8">={post.data.title} </span><span style="color:#B392F0">description</span><span style="color:#E1E4E8">={post.data.description}&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;{post.data.title}&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">p</span><span style="color:#B392F0"> style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;opacity:.7; margin-top:-6px&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">      {post.data.pubDate.</span><span style="color:#B392F0">toLocaleDateString</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;ru-RU&quot;</span><span style="color:#E1E4E8">)}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#79B8FF">Content</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">article</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#79B8FF">BaseLayout</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<hr/>
+<h2 id="проверка-результата">Проверка результата</h2>
+<h3 id="1-проверка-списка-статей">1. Проверка списка статей</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Запустить dev-сервер</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> dev</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Открыть http://localhost:4321/blog</span></span></code></pre>
+<p>Должен отобразиться список статей из <code>src/content/blog/</code>.</p>
+<h3 id="2-проверка-страницы-статьи">2. Проверка страницы статьи</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Открыть http://localhost:4321/blog/astro-part-1/</span></span></code></pre>
+<p>Должна отобразиться страница статьи с содержимым MDX.</p>
+<h3 id="3-проверка-сборки">3. Проверка сборки</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Собрать проект</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> build</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Проверить dist/</span></span>
+<span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -la</span><span style="color:#9ECBFF"> dist/</span></span></code></pre>
+<p>Если сборка прошла без ошибок — все маршруты и коллекции настроены верно.</p>
+<hr/>
+<h2 id="типичные-ошибки">Типичные ошибки</h2>
+<h3 id="-ошибка-getcollectionblog--коллекция-не-найдена">❌ Ошибка: <code>getCollection(&quot;blog&quot;)</code> — коллекция не найдена</h3>
+<p><strong>Причина:</strong> Нет <code>src/content.config.ts</code> или папки <code>src/content/blog/</code>.</p>
+<p><strong>Решение:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Создать конфиг</span></span>
+<span class="line"><span style="color:#B392F0">touch</span><span style="color:#9ECBFF"> src/content.config.ts</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Создать папку для статей</span></span>
+<span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> src/content/blog</span></span></code></pre>
+<h3 id="-ошибка-валидации-frontmatter-при-билде">❌ Ошибка валидации frontmatter при билде</h3>
+<p><strong>Причина:</strong> Поля не совпадают со схемой (дата, обязательные поля).</p>
+<p><strong>Решение:</strong> Проверить <code>title</code>, <code>description</code>, <code>pubDate</code>, <code>slug</code> в <code>.mdx</code>. Даты в формате ISO: <code>2026-01-05T16:00:00.000Z</code>.</p>
+<h3 id="-mdx-страница-не-открывается--404">❌ MDX-страница не открывается / 404</h3>
+<p><strong>Причина:</strong> Файл не в <code>src/pages/</code> или опечатка в имени.</p>
+<p><strong>Решение:</strong> Роут = путь от <code>pages</code>: <code>guide.mdx</code> → <code>/guide</code>.</p>
+<h3 id="-компонент-в-mdx-не-найден">❌ Компонент в MDX не найден</h3>
+<p><strong>Причина:</strong> Неверный путь импорта (относительно файла MDX).</p>
+<p><strong>Решение:</strong> Импорт от корня файла: <code>../../components/Callout.astro</code>.</p>
+<h3 id="-postrender-is-not-a-function">❌ <code>post.render is not a function</code></h3>
+<p><strong>Причина:</strong> Используется сырой объект поста вместо результата <code>getCollection</code>.</p>
+<p><strong>Решение:</strong> В <code>[slug].astro</code> брать <code>post</code> из <code>getStaticPaths</code> → <code>props</code> и вызывать <code>post.render()</code>.</p>
+<hr/>
+<h2 id="где-применять">Где применять</h2>
+<ul>
+<li><strong>Блоги:</strong> контентные сайты с MDX и Collections</li>
+<li><strong>Документация:</strong> техническая документация с компонентами</li>
+<li><strong>Лендинги:</strong> маркетинговые страницы с быстрым SEO</li>
+<li><strong>Портфолио:</strong> сайты-визитки с минимальным JS</li>
+</ul>
+<p><strong>Связанные статьи:</strong></p>
+<ul>
+<li><a href="/blog/astro-seo-sitemap-rss-setup">SEO, sitemap и RSS в Astro</a></li>
+<li><a href="/blog/astro-2025-2026-part-3-actions-api-ssr-deploy">Actions, API Routes, SSR и деплой</a></li>
+<li><a href="/blog/typescript-basics-philosophy-and-start">TypeScript: основы и философия</a></li>
+</ul>
+<p><strong>Документация:</strong></p>
+<ul>
+<li><a href="https://docs.astro.build/">Astro Documentation</a></li>
+<li><a href="https://docs.astro.build/en/guides/markdown-content/">MDX Guide</a></li>
+<li><a href="https://docs.astro.build/en/guides/content-collections/">Content Collections</a></li>
+</ul>
+<hr/> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

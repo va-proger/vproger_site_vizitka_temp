@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-37fxchfa> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Как конвертировать CHM в один PDF на Linux: без мусора и битых ссылок</title><meta name="description" content="Пошагово: распаковать CHM в HTML, почистить ссылки и собрать один PDF через wkhtmltopdf. Диагностика, типовые ошибки, проверка результата."><!-- Canonical --><link rel="canonical" href="https://vproger.ru/"><meta property="og:title" content="Андрей Викулов — Full-Stack Developer"><meta property="og:description" content="Full-Stack разработчик: PHP · Laravel · Bitrix · Django · React · DevOps. Сайты, backend, CI/CD, инфраструктура."><meta property="og:image" content="https://vproger.ru/assets/avatar.png"><meta property="og:url" content="https://vproger.ru/"><meta property="og:type" content="profile"><meta property="profile:first_name" content="Андрей"><meta property="profile:last_name" content="Викулов"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Андрей Викулов — Full-Stack Developer"><meta name="twitter:description" content="PHP · Laravel · Bitrix · Django · React · DevOps · CI/CD"><meta name="twitter:image" content="https://vproger.ru/assets/avatar.png"><link rel="icon" href="/assets/avatar.png" type="image/png"><meta name="theme-color" content="#0e0f12"><link rel="stylesheet" href="/assets/reset.css"><link rel="stylesheet" href="/assets/style.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"><script src="https://kit.fontawesome.com/6e3ef981cb.js" crossorigin="anonymous"></script><style>.markdown-body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.125rem;line-height:1.75;color:#e2e8f0;max-width:720px;margin:0 auto;word-wrap:break-word}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:#f8fafc;font-weight:700;line-height:1.3;letter-spacing:-.02em;margin-top:2em;margin-bottom:1em}.markdown-body h1{font-size:2.25rem;line-height:1.2;margin-top:1.5em}.markdown-body h2{font-size:1.875rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.5em}.markdown-body h3{font-size:1.5rem}.markdown-body h4{font-size:1.25rem}.markdown-body p{margin-top:0;margin-bottom:1.5em}.markdown-body a{color:#60a5fa;text-decoration:underline;text-decoration-color:#60a5fa4d;text-underline-offset:4px;transition:all .2s ease}.markdown-body a:hover{text-decoration-color:#60a5fa;color:#93c5fd}.markdown-body blockquote{margin:2em 0;padding:1.2em 1.5em;color:#cbd5e1;font-style:italic;background:linear-gradient(90deg,#3b82f61a,#3b82f600);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0}.markdown-body blockquote p:last-child{margin-bottom:0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:1.5em;padding-left:1.5em}.markdown-body li{margin-bottom:.5em}.markdown-body li>p{margin-bottom:.5em}.markdown-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.9em;background-color:#ffffff1a;color:#a5b4fc;padding:.2em .4em;border-radius:6px}.markdown-body pre{position:relative;margin-top:0;margin-bottom:1.5em;padding:1.25rem;overflow:auto;font-size:.9em;line-height:1.5;background-color:#0f172a!important;border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 10px 20px -10px #00000080;white-space:pre;word-break:normal;word-wrap:normal}.markdown-body pre code{background-color:transparent;padding:0;color:inherit;border-radius:0}.markdown-body img{max-width:100%;height:auto;border-radius:12px;margin:2em 0;box-shadow:0 10px 30px #0006;display:block}.markdown-body hr{height:1px;background-color:#ffffff1a;border:none;margin:3em 0}.markdown-body table{width:100%;margin-bottom:1.5em;border-collapse:collapse;font-size:.95em}.markdown-body th,.markdown-body td{padding:.75em 1em;border:1px solid rgba(255,255,255,.1)}.markdown-body th{background-color:#ffffff0d;font-weight:600;text-align:left;color:#f8fafc}.markdown-body tr:nth-child(2n){background-color:#ffffff05}.markdown-body strong{font-weight:700;color:#f8fafc}.markdown-body em{font-style:italic}.markdown-body figure{margin:2em 0}.markdown-body figcaption{text-align:center;font-size:.85em;color:#94a3b8;margin-top:.5em}.markdown-body .copy-btn{position:absolute;top:8px;right:8px;background:#ffffff1a;border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;border-radius:6px;padding:6px;font-size:14px;transition:.2s;display:flex;align-items:center;justify-content:center}.markdown-body .copy-btn:hover{background:#fff3}.article-card[data-astro-cid-7jjqptxk]{--article-pad: clamp(24px, 5vw, 56px);padding:48px var(--article-pad)!important}.article-cover[data-astro-cid-7jjqptxk]{margin:0 calc(-1 * var(--article-pad)) 48px calc(-1 * var(--article-pad))}
+:root{color-scheme:dark}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#05070c;color:#e9eefc}dialog[data-astro-cid-37fxchfa]{inline-size:100%;block-size:100%;padding:0;border:0;background:transparent}dialog[data-astro-cid-37fxchfa]::backdrop{background:#000000bf}.card[data-astro-cid-37fxchfa]{max-width:760px;margin:auto;padding:24px;border-radius:24px;background:#0f121cf2;box-sizing:border-box}h1[data-astro-cid-37fxchfa]{margin:0 0 8px;font-size:28px}p[data-astro-cid-37fxchfa]{margin:10px 0;opacity:.9}a[data-astro-cid-37fxchfa]{color:#7db7ff}.row[data-astro-cid-37fxchfa]{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.btn[data-astro-cid-37fxchfa]{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}.btn-primary[data-astro-cid-37fxchfa]{background:#2d6cdf;color:#fff}.btn-ghost[data-astro-cid-37fxchfa]{background:transparent;color:#e9eefc;outline:1px solid rgba(255,255,255,.18)}.hint[data-astro-cid-37fxchfa]{margin-top:12px;font-size:14px;opacity:.7}code[data-astro-cid-37fxchfa]{background:#ffffff14;padding:2px 6px;border-radius:6px}
+</style><script type="module">document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".markdown-body pre").forEach(o=>{const e=document.createElement("button");e.className="copy-btn",e.innerHTML='<i class="fa-regular fa-copy"></i>',e.title="Скопировать код",e.addEventListener("click",()=>{const t=o.querySelector("code"),c=t?t.innerText:o.innerText;navigator.clipboard.writeText(c).then(()=>{e.innerHTML='<i class="fa-solid fa-check"></i>',e.style.color="#10b981",setTimeout(()=>{e.innerHTML='<i class="fa-regular fa-copy"></i>',e.style.color=""},2e3)}).catch(n=>{console.error("Failed to copy: ",n)})}),o.appendChild(e)})});
+</script></head> <body data-page="blog" data-astro-cid-37fxchfa> <main class="container" data-astro-cid-37fxchfa> <nav class="navbar"> <div class="nav-inner"> <a href="/" class="nav-logo"> <img src="/assets/avatar.png" alt="Андрей Викулов"> <span>VProger</span> </a> <div class="nav-right"> <button id="themeToggle" class="theme-btn" title="Переключить тему">🌙</button> <button id="navToggle" class="nav-toggle" aria-label="Открыть меню"> <svg class="burger" width="28" height="28" viewBox="0 0 24 24"> <line class="line top" x1="5" y1="7" x2="19" y2="7"></line> <line class="line middle" x1="5" y1="12" x2="19" y2="12"></line> <line class="line bottom" x1="5" y1="17" x2="19" y2="17"></line> </svg> </button> </div> <ul class="nav-links"> <li><a href="/" data-page="index">Главная</a></li> <li><a href="/blog" data-page="blog">Блог</a></li> <li><a href="/certificates.html" data-page="certificates">Сертификаты</a></li> <li><a href="/contacts.html" data-page="contacts">Контакты</a></li> </ul> </div> </nav>   <div class="card article-card" style="margin-top: 50px; margin-bottom: 80px;" data-astro-cid-7jjqptxk> <header style="margin-bottom: 40px; text-align: center;" data-astro-cid-7jjqptxk>  <div style="margin-bottom: 24px;" data-astro-cid-7jjqptxk> <span style="background: rgba(45, 108, 223, 0.15); color: #7db7ff; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;" data-astro-cid-7jjqptxk> linux </span> </div> <h1 style="font-size: 2.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;" data-astro-cid-7jjqptxk> Как конвертировать CHM в один PDF на Linux: без мусора и битых ссылок </h1> <div style="display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0.8; font-size: 0.95rem;" data-astro-cid-7jjqptxk> <img src="/assets/avatar.png" alt="Андрей Викулов" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);" data-astro-cid-7jjqptxk> <span data-astro-cid-7jjqptxk>Андрей Викулов</span> <span style="opacity: 0.5;" data-astro-cid-7jjqptxk>•</span> <time data-astro-cid-7jjqptxk>24 февраля 2026 г.</time> </div> </header> <figure class="article-cover" style="text-align: center;" data-astro-cid-7jjqptxk> <img src="/assets/covers/chm-to-pdf-dark.png" alt="Обложка" style="width: 100%; border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);" data-astro-cid-7jjqptxk> </figure> <article class="markdown-body" data-astro-cid-7jjqptxk> <h1 id="как-конвертировать-chm-в-один-pdf-на-linux-без-мусора-и-битых-ссылок">Как конвертировать CHM в один PDF на Linux: без мусора и битых ссылок</h1>
+<p>Если у тебя есть <code>bsm_api.chm</code> и нужно получить <strong>один нормальный PDF</strong>, а не «папку из 900 HTML + слёзы», вот рабочий пайплайн: <strong>CHM → HTML → (сборка) → PDF</strong>.</p>
+<p>В конце будет:</p>
+<ul>
+<li>один <code>manual.pdf</code></li>
+<li>без битых внутренних ссылок (насколько позволяет исходник)</li>
+<li>с нормальной навигацией/оглавлением (если CHM адекватный)</li>
+</ul>
+<hr/>
+<h2 id="в-чём-проблема">В чём проблема</h2>
+<p>CHM — это не “один файл с текстом”, а контейнер: HTML + картинки + оглавление + внутренние ссылки.</p>
+<p>Типовые боли:</p>
+<ul>
+<li>конвертеры делают <strong>1000 страниц</strong> вместо одного PDF</li>
+<li>ломают ссылки и кодировки</li>
+<li>получаешь PDF, который выглядит как скриншоты из 2007</li>
+</ul>
+<hr/>
+<h2 id="рабочее-решение">Рабочее решение</h2>
+<h3 id="1-установка-инструментов">1) Установка инструментов</h3>
+<p><strong>Ubuntu/Debian:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> update</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  extractchm</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  wkhtmltopdf</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  python3</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  python3-bs4</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  python3-lxml</span></span></code></pre>
+<p>Если <code>extractchm</code> нет (редко, но бывает), ставим из <code>chmlib</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> chmlib-tools</span></span>
+<span class="line"><span style="color:#6A737D"># потом будет утилита extract_chmLib</span></span></code></pre>
+<p>Проверка:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">extractchm</span><span style="color:#79B8FF"> -h</span><span style="color:#F97583"> ||</span><span style="color:#79B8FF"> true</span></span>
+<span class="line"><span style="color:#B392F0">wkhtmltopdf</span><span style="color:#79B8FF"> --version</span></span></code></pre>
+<hr/>
+<h3 id="2-распаковать-chm-в-html">2) Распаковать CHM в HTML</h3>
+<p>Создай рабочую папку:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/work/chm2pdf/{src,html,out}</span></span>
+<span class="line"><span style="color:#B392F0">cp</span><span style="color:#9ECBFF"> bsm_api.chm</span><span style="color:#9ECBFF"> ~/work/chm2pdf/src/</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/work/chm2pdf</span></span></code></pre>
+<p>Распаковка:</p>
+<p><strong>Вариант A (extractchm):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">extractchm</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> html</span><span style="color:#9ECBFF"> src/bsm_api.chm</span></span></code></pre>
+<p><strong>Вариант B (extract_chmLib):</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">extract_chmLib</span><span style="color:#9ECBFF"> src/bsm_api.chm</span><span style="color:#9ECBFF"> html</span></span></code></pre>
+<p>Проверка что распаковалось:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -la</span><span style="color:#9ECBFF"> html</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> html</span><span style="color:#79B8FF"> -maxdepth</span><span style="color:#79B8FF"> 2</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span></code></pre>
+<hr/>
+<h3 id="3-найти-точку-входа-главную-страницу">3) Найти “точку входа” (главную страницу)</h3>
+<p>Обычно это <code>index.html</code>, <code>default.html</code>, <code>start.html</code> или что-то из оглавления.</p>
+<p>Быстрый поиск кандидатов:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#9ECBFF"> html</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#79B8FF"> -iE</span><span style="color:#9ECBFF"> &#39;index|default|start|main&#39;</span><span style="color:#F97583"> ||</span><span style="color:#79B8FF"> true</span></span></code></pre>
+<p>Если не очевидно — ищем самый “толстый” HTML:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> html</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span><span style="color:#79B8FF"> -iname</span><span style="color:#9ECBFF"> &#39;*.html&#39;</span><span style="color:#79B8FF"> -printf</span><span style="color:#9ECBFF"> &#39;%s\t%p\n&#39;</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#79B8FF"> -n</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> tail</span><span style="color:#79B8FF"> -20</span></span></code></pre>
+<hr/>
+<h3 id="4-собрать-единый-html-важный-шаг">4) Собрать единый HTML (важный шаг)</h3>
+<p><code>wkhtmltopdf</code> лучше работает, когда ты отдаёшь ему <strong>одну HTML-страницу</strong>, а не тысячу.</p>
+<p>Сделаем “склейку”: берём список страниц и собираем в <code>out/merged.html</code>.</p>
+<p>Вот минимальный Python-скрипт, который:</p>
+<ul>
+<li>читает оглавление (если найдём файл типа <code>.hhc</code>/<code>toc</code>)</li>
+<li>если оглавления нет — склеивает HTML по алфавиту (хуже, но работает)</li>
+<li>вырезает мусорные <code>script</code>/<code>iframe</code></li>
+<li>приводит относительные ссылки к локальным путям</li>
+</ul>
+<p>Создай файл <code>tools/merge.py</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D">#!/usr/bin/env python3</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> os</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> re</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> pathlib </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Path</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> bs4 </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BeautifulSoup</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">ROOT</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Path(</span><span style="color:#9ECBFF">&quot;html&quot;</span><span style="color:#E1E4E8">).resolve()</span></span>
+<span class="line"><span style="color:#79B8FF">OUT</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Path(</span><span style="color:#9ECBFF">&quot;out&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">OUT</span><span style="color:#E1E4E8">.mkdir(</span><span style="color:#FFAB70">parents</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">exist_ok</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> list_html_files</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#6A737D">    # 1) Если есть оглавление — можно допилить парсер под конкретный CHM</span></span>
+<span class="line"><span style="color:#6A737D">    # 2) Универсальный fallback — склеим HTML по имени</span></span>
+<span class="line"><span style="color:#E1E4E8">    files </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sorted</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ROOT</span><span style="color:#E1E4E8">.rglob(</span><span style="color:#9ECBFF">&quot;*.html&quot;</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#6A737D">    # выкинем дубли/служебное</span></span>
+<span class="line"><span style="color:#E1E4E8">    files </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [p </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> p </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> files </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> p.is_file() </span><span style="color:#F97583">and</span><span style="color:#E1E4E8"> p.stat().st_size </span><span style="color:#F97583">&gt;</span><span style="color:#79B8FF"> 200</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> files</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> clean_body</span><span style="color:#E1E4E8">(html_path: Path) -&gt; </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> html_path.read_bytes()</span></span>
+<span class="line"><span style="color:#6A737D">    # грубая попытка с кодировкой</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> enc </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">&quot;utf-8&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;cp1251&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;windows-1251&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;latin-1&quot;</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#F97583">        try</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            text </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> data.decode(enc)</span></span>
+<span class="line"><span style="color:#F97583">            break</span></span>
+<span class="line"><span style="color:#F97583">        except</span><span style="color:#79B8FF"> UnicodeDecodeError</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">            continue</span></span>
+<span class="line"><span style="color:#F97583">    else</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        text </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> data.decode(</span><span style="color:#9ECBFF">&quot;utf-8&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;ignore&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    soup </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> BeautifulSoup(text, </span><span style="color:#9ECBFF">&quot;lxml&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # выкидываем потенциальный мусор</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> tag </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> soup([</span><span style="color:#9ECBFF">&quot;script&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;iframe&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;noscript&quot;</span><span style="color:#E1E4E8">]):</span></span>
+<span class="line"><span style="color:#E1E4E8">        tag.decompose()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    body </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> soup.body </span><span style="color:#F97583">or</span><span style="color:#E1E4E8"> soup</span></span>
+<span class="line"><span style="color:#6A737D">    # нормализуем якоря и локальные ресурсы</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> a </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> body.find_all(</span><span style="color:#9ECBFF">&quot;a&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">href</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#E1E4E8">        href </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> a[</span><span style="color:#9ECBFF">&quot;href&quot;</span><span style="color:#E1E4E8">].strip()</span></span>
+<span class="line"><span style="color:#6A737D">        # убираем внешние и mailto</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> href.startswith((</span><span style="color:#9ECBFF">&quot;http://&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;https://&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;mailto:&quot;</span><span style="color:#E1E4E8">)):</span></span>
+<span class="line"><span style="color:#F97583">            continue</span></span>
+<span class="line"><span style="color:#6A737D">        # normalize windows slashes</span></span>
+<span class="line"><span style="color:#E1E4E8">        a[</span><span style="color:#9ECBFF">&quot;href&quot;</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> href.replace(</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;/&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # добавим заголовок-разделитель</span></span>
+<span class="line"><span style="color:#E1E4E8">    title </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> soup.title.get_text(</span><span style="color:#FFAB70">strip</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> soup.title </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> html_path.name</span></span>
+<span class="line"><span style="color:#E1E4E8">    header </span><span style="color:#F97583">=</span><span style="color:#F97583"> f</span><span style="color:#9ECBFF">&quot;&lt;h1&gt;</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">title</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&lt;/h1&gt;</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">&quot;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> header </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> str</span><span style="color:#E1E4E8">(body)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    parts </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> p </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> list_html_files():</span></span>
+<span class="line"><span style="color:#F97583">        try</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            parts.append(clean_body(p))</span></span>
+<span class="line"><span style="color:#F97583">        except</span><span style="color:#79B8FF"> Exception</span><span style="color:#F97583"> as</span><span style="color:#E1E4E8"> e:</span></span>
+<span class="line"><span style="color:#79B8FF">            print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">&quot;skip </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">p</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">e</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    merged </span><span style="color:#F97583">=</span><span style="color:#F97583"> f</span><span style="color:#9ECBFF">&quot;&quot;&quot;&lt;!doctype html&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;html&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;head&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">  &lt;meta charset=&quot;utf-8&quot; /&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">  &lt;title&gt;CHM merged&lt;/title&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">  &lt;style&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">    body </span><span style="color:#79B8FF">{{</span><span style="color:#9ECBFF"> font-family: Arial, sans-serif; line-height: 1.45; </span><span style="color:#79B8FF">}}</span></span>
+<span class="line"><span style="color:#9ECBFF">    pre, code </span><span style="color:#79B8FF">{{</span><span style="color:#9ECBFF"> white-space: pre-wrap; word-wrap: break-word; </span><span style="color:#79B8FF">}}</span></span>
+<span class="line"><span style="color:#9ECBFF">    h1 </span><span style="color:#79B8FF">{{</span><span style="color:#9ECBFF"> page-break-before: always; </span><span style="color:#79B8FF">}}</span></span>
+<span class="line"><span style="color:#9ECBFF">  &lt;/style&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;/head&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;body&gt;</span></span>
+<span class="line"><span style="color:#79B8FF">{</span><span style="color:#9ECBFF">&#39;&#39;</span><span style="color:#E1E4E8">.join(parts)</span><span style="color:#79B8FF">}</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;/body&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&lt;/html&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    (</span><span style="color:#79B8FF">OUT</span><span style="color:#F97583"> /</span><span style="color:#9ECBFF"> &quot;merged.html&quot;</span><span style="color:#E1E4E8">).write_text(merged, </span><span style="color:#FFAB70">encoding</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">&quot;utf-8&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;OK -&gt; out/merged.html&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#79B8FF"> __name__</span><span style="color:#F97583"> ==</span><span style="color:#9ECBFF"> &quot;__main__&quot;</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    main()</span></span></code></pre>
+<p>Запуск:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> tools</span><span style="color:#9ECBFF"> out</span></span>
+<span class="line"><span style="color:#B392F0">python3</span><span style="color:#9ECBFF"> tools/merge.py</span></span>
+<span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -la</span><span style="color:#9ECBFF"> out/merged.html</span></span></code></pre>
+<hr/>
+<h3 id="5-конвертировать-mergedhtml--pdf">5) Конвертировать merged.html → PDF</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">wkhtmltopdf</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --enable-local-file-access</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --encoding</span><span style="color:#9ECBFF"> utf-8</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --page-size</span><span style="color:#9ECBFF"> A4</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  --margin-top</span><span style="color:#79B8FF"> 12</span><span style="color:#79B8FF"> --margin-bottom</span><span style="color:#79B8FF"> 12</span><span style="color:#79B8FF"> --margin-left</span><span style="color:#79B8FF"> 10</span><span style="color:#79B8FF"> --margin-right</span><span style="color:#79B8FF"> 10</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  out/merged.html</span><span style="color:#9ECBFF"> out/manual.pdf</span></span></code></pre>
+<p>Проверка результата:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -lah</span><span style="color:#9ECBFF"> out/manual.pdf</span></span>
+<span class="line"><span style="color:#B392F0">file</span><span style="color:#9ECBFF"> out/manual.pdf</span></span></code></pre>
+<hr/>
+<h2 id="проверка-результата">Проверка результата</h2>
+<p>Минимум:</p>
+<ol>
+<li>PDF открывается, вес адекватный (не 2 KB и не 2 GB)</li>
+<li>есть текст (не “картинки страниц”)</li>
+<li>код/таблицы читаются</li>
+</ol>
+<p>Быстрый sanity-check: извлечь пару строк текста:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">python3</span><span style="color:#9ECBFF"> -</span><span style="color:#F97583"> &lt;&lt;</span><span style="color:#9ECBFF">&#39;PY&#39;</span></span>
+<span class="line"><span style="color:#9ECBFF">import subprocess, sys</span></span>
+<span class="line"><span style="color:#9ECBFF">p = subprocess.run([&quot;pdftotext&quot;, &quot;out/manual.pdf&quot;, &quot;-&quot;], capture_output=True, text=True)</span></span>
+<span class="line"><span style="color:#9ECBFF">print(p.stdout[:800])</span></span>
+<span class="line"><span style="color:#9ECBFF">PY</span></span></code></pre>
+<p>Если <code>pdftotext</code> нет:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> poppler-utils</span></span></code></pre>
+<hr/>
+<h2 id="типичные-ошибки">Типичные ошибки</h2>
+<h3 id="-1-blocked-access-to-file--не-видит-картинки">❌ 1) “Blocked access to file” / не видит картинки</h3>
+<p><strong>Причина:</strong> wkhtmltopdf по умолчанию режет локальные ресурсы.
+<strong>Решение:</strong> добавь <code>--enable-local-file-access</code> (в примере уже есть).</p>
+<hr/>
+<h3 id="-2-кракозябры-вместо-русского">❌ 2) Кракозябры вместо русского</h3>
+<p><strong>Причина:</strong> HTML в CP1251, а ты склеил как UTF-8.
+<strong>Решение:</strong></p>
+<ul>
+<li>в <code>merge.py</code> мы пробуем <code>cp1251/windows-1251</code></li>
+<li>если всё равно плохо — найди реальную кодировку исходников:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">file</span><span style="color:#79B8FF"> -i</span><span style="color:#9ECBFF"> html/</span><span style="color:#79B8FF">*</span><span style="color:#9ECBFF">.html</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span></code></pre>
+<hr/>
+<h3 id="-3-оглавление-нет-порядок-глав-сломан">❌ 3) “Оглавление” нет, порядок глав сломан</h3>
+<p><strong>Причина:</strong> CHM хранит структуру в <code>.hhc</code>/<code>.hhk</code>, а мы склеили “по алфавиту”.
+<strong>Решение:</strong> дописать парсер оглавления под конкретный CHM (реально 20–40 строк, если структура нормальная).
+Если хочешь — кидай список файлов из <code>html/</code> (без содержимого), я подскажу точечно.</p>
+<hr/>
+<h2 id="где-применять">Где применять</h2>
+<ul>
+<li><strong>Локально:</strong> быстро получить PDF, отдать в LLM/коллегам/заказчику.</li>
+<li><strong>CI/CD:</strong> автогенерация документации в PDF (если CHM как артефакт).</li>
+<li><strong>VPS:</strong> можно крутить без GUI, чисто консолью.</li>
+</ul>
+<hr/>
+<h2 id="смотри-также">Смотри также</h2>
+<p>Если будешь ковыряться с файлами и поиском по дереву — пригодится:</p>
+<ul>
+<li><a href="/blog/linux-file-search-commands-ubuntu-centos-bitrix-laravel-wordpress">Поиск файлов в Linux: команды для Ubuntu/CentOS</a> — диагностика и find</li>
+<li><a href="/snippets/find-large-files-disk-usage">find: поиск больших файлов</a> — когда PDF внезапно 900MB</li>
+<li><a href="/snippets/rsync-safe-progress">rsync: безопасное копирование с прогрессом</a> — перенос распакованного CHM или готового PDF</li>
+</ul> </article> </div>  <footer class="footer fade-in"> <div class="contact-links"> <h3>💬 Написать мне:</h3> <ul> <li> <a href="https://vk.com/vproger_club" target="_blank" class="active"> <i class="fa-brands fa-vk"></i> ВКонтакте
+</a> </li> <li> <a href="https://t.me/vproger" target="_blank" class="active"> <i class="fa-brands fa-telegram"></i> Telegram
+</a> </li> <li> <a href="mailto:vproger@vk.com" class="active"> <i class="fa-solid fa-envelope"></i> Email
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-facebook"></i> Facebook
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-whatsapp"></i> WhatsApp
+</a> </li> <li> <a href="#" class="disabled"> <i class="fa-brands fa-viber"></i> Viber
+</a> </li> </ul> </div> <p>© 2025 Андрей Викулов · <a href="https://vproger.ru">vproger.ru</a></p> </footer> </main> <div class="modal" id="certModal" data-astro-cid-37fxchfa> <div class="modal-content" data-astro-cid-37fxchfa> <button class="modal-close" aria-label="Закрыть" data-astro-cid-37fxchfa> <svg viewBox="0 0 24 24" width="18" height="18" data-astro-cid-37fxchfa> <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" data-astro-cid-37fxchfa></path> </svg> </button> <img id="modalImg" src="" alt="" data-astro-cid-37fxchfa> <p id="modalTitle" data-astro-cid-37fxchfa></p> <span id="modalDate" data-astro-cid-37fxchfa></span> </div> </div> <div id="cookieModal" class="cookie-modal" data-astro-cid-37fxchfa> <div class="cookie-content" data-astro-cid-37fxchfa> <p data-astro-cid-37fxchfa>🍪 Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с <a href="/privacy.html" target="_blank" data-astro-cid-37fxchfa>Политикой конфиденциальности</a>.</p> <div class="cookie-actions" data-astro-cid-37fxchfa> <button id="acceptCookies" class="cookie-btn" data-astro-cid-37fxchfa>Принять</button> </div> </div> </div> <div class="share-widget" data-astro-cid-37fxchfa> <button class="share-btn" id="shareToggle" data-astro-cid-37fxchfa> <i class="fa-solid fa-share-nodes" data-astro-cid-37fxchfa></i> </button> <div class="share-panel" id="sharePanel" data-astro-cid-37fxchfa> <a class="sh vk" data-share="vk" data-astro-cid-37fxchfa><i class="fa-brands fa-vk" data-astro-cid-37fxchfa></i></a> <a class="sh tg" data-share="telegram" data-astro-cid-37fxchfa><i class="fa-brands fa-telegram" data-astro-cid-37fxchfa></i></a> <a class="sh wa" data-share="whatsapp" data-astro-cid-37fxchfa><i class="fa-brands fa-whatsapp" data-astro-cid-37fxchfa></i></a> <a class="sh fb" data-share="facebook" data-astro-cid-37fxchfa><i class="fa-brands fa-facebook" data-astro-cid-37fxchfa></i></a> <a class="sh tw" data-share="twitter" data-astro-cid-37fxchfa><i class="fa-brands fa-x-twitter" data-astro-cid-37fxchfa></i></a> <a class="sh em" data-share="email" data-astro-cid-37fxchfa><i class="fa-solid fa-envelope" data-astro-cid-37fxchfa></i></a> </div> </div> <script type="module" src="/assets/js/main.js"></script>  </body> </html>

@@ -1,0 +1,180 @@
+:root {
+  /* === Цвета (Dark) === */
+  --clr-bg: #0e0f12;
+  --clr-text: #eaeaea;
+  --clr-accent: #00c6ff;
+  --clr-accent-alt: #008cff;
+  /* hover-accent */
+  --clr-card-bg: #16181d;
+  --clr-card-bg-alt: rgba(255, 255, 255, 0.03);
+  --clr-border: rgba(255, 255, 255, 0.08);
+  --clr-border-light: rgba(255, 255, 255, 0.06);
+  --clr-shadow-accent: 0 0 25px rgba(0, 198, 255, 0.05);
+  --clr-shadow-accent-hover: 0 0 25px rgba(0, 198, 255, 0.2);
+  --clr-shadow-strong: 0 0 60px rgba(138, 43, 226, 0.4);
+
+  /* Иконки соцсетей */
+  --clr-vk: #4c75a3;
+  --clr-tg: #2aabee;
+  --clr-wa: #25d366;
+  --clr-fb: #1877f2;
+  --clr-tw: #ffffff;
+  --clr-email: #f1c40f;
+
+  /* === Цвета светлой темы === */
+  --light-bg: #f9fafb;
+  --light-text: #111;
+  --light-accent: #0072ff;
+  --light-card-bg: #ffffff;
+  --light-border: rgba(0, 0, 0, 0.1);
+  --light-card-bg-alt: rgba(0, 0, 0, 0.02);
+  --light-border-light: rgba(0, 0, 0, 0.06);
+  --light-text-muted: #666666;
+  --light-text-label: #555555;
+
+  /* === Радиусы === */
+  --radius-xs: 4px;
+  --radius-s: 6px;
+  --radius-m: 8px;
+  --radius-l: 10px;
+  --radius-xl: 14px;
+  --radius-xxl: 1rem;
+  /* 16px */
+  --radius-round: 50%;
+
+  /* === Отступы === */
+  --space-xxs: 0.3rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.8rem;
+  --space-m: 1rem;
+  --space-l: 1.2rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+
+  /* === Контейнер === */
+  --container-max: 820px;
+  --container-padding: 2rem;
+
+  /* === Тайпскейл === */
+  --fs-xs: 0.75rem;
+  --fs-s: 0.85rem;
+  --fs-m: 0.95rem;
+  --fs-base: 1rem;
+  --fs-l: 1.3rem;
+  --fs-xl: 2rem;
+
+  /* === Тени === */
+  --shadow-m: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-l: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 0 40px rgba(0, 198, 255, 0.3);
+
+  /* === Переходы === */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* === Прочее === */
+  --blur-backdrop: blur(12px);
+
+  /* ============================= */
+  /*     BREAKPOINT SYSTEM (2025)  */
+  /* ============================= */
+
+  /* Основные брейкпоинты */
+  --bp-mobile: 480px;
+  --bp-tablet: 768px;
+  --bp-laptop: 1024px;
+  --bp-desktop: 1280px;
+  --bp-desktop-xl: 1536px;
+
+  /* Диапазоны — удобнее применять */
+  --min-mobile: 0px;
+  --min-tablet: 481px;
+  --min-laptop: 769px;
+  --min-desktop: 1025px;
+  --min-desktop-xl: 1281px;
+
+  /* ============================= */
+  /*     CONTAINER SYSTEM          */
+  /* ============================= */
+
+  --container-padding-mobile: 1rem;
+  --container-padding-tablet: 1.5rem;
+  --container-padding-desktop: 2rem;
+
+  --container-max-mobile: 100%;
+  --container-max-tablet: 640px;
+  --container-max-laptop: 880px;
+  --container-max-desktop: 1200px;
+  --container-max-desktop-xl: 1400px;
+
+  /* ============================= */
+  /*     HEADER HEIGHT             */
+  /* ============================= */
+
+  --header-height-mobile: 56px;
+  --header-height-tablet: 64px;
+  --header-height-desktop: 74px;
+
+  /* ============================= */
+  /*     GRID SYSTEM               */
+  /* ============================= */
+
+  /* Кол-во колонок */
+  --grid-cols-mobile: 1;
+  --grid-cols-tablet: 2;
+  --grid-cols-laptop: 3;
+  --grid-cols-desktop: 4;
+
+  /* Gap */
+  --grid-gap-mobile: 1rem;
+  --grid-gap-tablet: 1.2rem;
+  --grid-gap-desktop: 1.5rem;
+
+  /* ============================= */
+  /*     TYPO SYSTEM               */
+  /* ============================= */
+
+  --fs-h1-mobile: 1.8rem;
+  --fs-h1-desktop: 2.4rem;
+
+  --fs-h2-mobile: 1.4rem;
+  --fs-h2-desktop: 1.8rem;
+
+  --fs-base-mobile: 0.95rem;
+  --fs-base-desktop: 1rem;
+
+  /* ============================= */
+  /*     BORDER / RADIUS           */
+  /* ============================= */
+
+  --radius-mobile: 8px;
+  --radius-desktop: 12px;
+
+  /* ============================= */
+  /*     SHADOWS                   */
+  /* ============================= */
+
+  --shadow-mobile: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-desktop: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+body.light {
+  --clr-bg: var(--light-bg);
+  --clr-text: var(--light-text);
+  --clr-accent: var(--light-accent);
+  --clr-card-bg: var(--light-card-bg);
+  --clr-card-bg-alt: var(--light-card-bg-alt);
+  --clr-border: var(--light-border);
+  --clr-border-light: var(--light-border-light);
+  --clr-text-muted: var(--light-text-muted);
+  --clr-text-label: var(--light-text-label);
+  --clr-shadow-accent: 0 0 25px rgba(0, 0, 0, 0.05);
+  --clr-shadow-accent-hover: 0 4px 15px rgba(0, 114, 255, 0.25);
+  --clr-shadow-strong: 0 0 40px rgba(0, 114, 255, 0.15);
+  --shadow-m: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-l: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 0 40px rgba(0, 114, 255, 0.2);
+  --shadow-mobile: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-desktop: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
