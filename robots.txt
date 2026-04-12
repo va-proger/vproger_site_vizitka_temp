@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Главная карта сайта
-Sitemap: https://vproger.ru/sitemap.xml
+Sitemap: https://vproger.ru/sitemap-index.xml
 
 # Поддомены (рекомендуется указывать)
 Sitemap: https://retro.vproger.ru/sitemap.xml
