@@ -102,13 +102,6 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/105208622" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TLC4B4B7');</script>
-    <!-- End Google Tag Manager -->
     <style>
         :root { color-scheme: dark; }
         body { margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#05070c; color:#e9eefc; }
@@ -337,53 +330,6 @@
 </div>
 
 <script type="module" src="assets/js/main.js"></script>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLC4B4B7"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-<dialog id="m" aria-label="Сайт переехал">
-    <div class="card">
-        <h1>vproger.ru переехал</h1>
-        <p>Новый адрес: <a id="newlink" href="https://viku-lov.ru/">viku-lov.ru</a></p>
-        <p>Сейчас перенаправлю на: <code id="target"></code></p>
-
-        <div class="row">
-            <a class="btn btn-primary" id="go" href="https://viku-lov.ru/">Перейти сейчас</a>
-            <button class="btn btn-ghost" id="stay" type="button">Остаться (не надо)</button>
-        </div>
-
-        <div class="hint">
-            Если редирект не сработал — нажми кнопку. А лучше — не спорь с прогрессом 😄
-        </div>
-    </div>
-</dialog>
-<script>
-    (function () {
-        const NEW = "https://viku-lov.ru";
-        const path = location.pathname.replace(/^\/+/, "/");
-        const target = NEW + path + location.search + location.hash;
-
-        const d = document.getElementById("m");
-        const t = document.getElementById("target");
-        const go = document.getElementById("go");
-        const link = document.getElementById("newlink");
-        const stay = document.getElementById("stay");
-
-        t.textContent = target;
-        go.href = target;
-        link.href = NEW + "/";
-
-        if (d && d.showModal) d.showModal();
-
-        // авто-редирект через 3.5 сек (можешь поставить 0 — будет мгновенно)
-        const timer = setTimeout(() => { location.replace(target); }, 3500);
-
-        stay.addEventListener("click", () => {
-            clearTimeout(timer);
-            if (d && d.close) d.close();
-        });
-    })();
-</script>
 </body>
 </html>
 
